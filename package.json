@@ -1,0 +1,45 @@
+{
+  "name": "gispl.js",
+  "version": "0.0.0",
+  "description": "gispl.js is a JavaScript implementation for GISpL (Gestural Interface Specification Language), a formal language for describing human-computer interfaces which use gestures.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmbuw/gispl.git"
+  },
+  "keywords": [
+    "gispl",
+    "gispl.js",
+    "gestures"
+  ],
+  "author": "Goran Košutić",
+  "license": "LGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/mmbuw/gispl/issues"
+  },
+  "homepage": "https://github.com/mmbuw/gispl#readme",
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "jspm": "^0.16.15",
+    "karma": "^0.13.15",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-jspm": "^2.0.2",
+    "karma-mocha": "^0.2.1",
+    "karma-mocha-reporter": "^1.1.3",
+    "mocha": "^2.3.4"
+  },
+  "jspm": {
+    "dependencies": {
+      "jquery": "github:components/jquery@^2.1.4"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4"
+    }
+  }
+}
