@@ -1,7 +1,11 @@
-import value from "../source/main";
+import TuioClient from "tuio/src/TuioClient";
 
-describe("project setup", () => {
-     
-    it("should use mocha with chai for testing and transpile es6 to es5",
-        () => expect(value).to.equal(1));
+describe("project setup", () => {    
+    
+    it("should have a TuioClient instance available", () => {
+        let client = new TuioClient({
+            host: "ws://localhost"
+        });
+        expect(client.getTuioPointers).to.be.a("function");
+    })
 });
