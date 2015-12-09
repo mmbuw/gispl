@@ -4,14 +4,17 @@ export default function elementSelector() {
     
     selectorApi.find = function selectorFind(params = {}) {
         let nodes = [],
-            {x, y} = params,
-            topElement = element(document.elementFromPoint(x, y));
+            {x, y} = params;
         
-        while (topElement.exists()) {
-            if (topElement.containsPoint({x, y})) {
-                nodes.push(topElement.node);
-            }
-            topElement.parent();
+        if (typeof x !== 'undefined' &&
+                typeof y !== 'undefined') {
+            let topElement = element(document.elementFromPoint(x, y));
+            while (topElement.exists()) {
+                if (topElement.containsPoint({x, y})) {
+                    nodes.push(topElement.node);
+                }
+                topElement.parent();
+            }   
         }
         return nodes;
     };

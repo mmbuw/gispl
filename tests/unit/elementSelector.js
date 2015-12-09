@@ -125,4 +125,10 @@ describe('ElementSelector', () => {
         helper.assertNodesExpectation(foundNodes, expectedNodes);
     });
     
+    it('should return nothing when not supplying coordinates to the find method', () => {
+        
+        let foundNodes = selector.find();
+        expect(foundNodes.length).to.equal(0);
+    });
+    
 });
