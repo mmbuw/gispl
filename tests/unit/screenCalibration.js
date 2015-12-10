@@ -51,11 +51,34 @@ describe('screenCalibration', () => {
             expect(function() {
                 calibration.mouseEvent(event);
             }).to.not.throw(); 
-        });        
+        });
+        
+        //TODO
+        //on construction
     });
     
     it('should throw an error if trying to access viewport position without passing a mouse event', () => {
         
         expect(calibration.viewportPosition).to.throw();
+    });
+    
+    it('should adapt passed screen point to a point in viewport coordinates', () => {
+        
+        let event = {
+            screenX: 50,
+            screenY: 50,
+            clientX: 0,
+            clientY: 0
+        },
+            screenX = 300,
+            screenY = 400,
+            // this is also exactly like it is implemented
+            // possibly useless test
+            x = screenX - (event.screenX - event.clientX),
+            y = screenY - (event.screenY - event.clientY);
+        
+        calibration.mouseEvent(event);
+        expect(calibration.screenToViewportCoordinates({screenX, screenY})).
+                to.deep.equal({x, y});
     });
 });

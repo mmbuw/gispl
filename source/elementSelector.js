@@ -1,10 +1,20 @@
-export default function elementSelector() {
+export default function elementSelector(params = {}) {
     
-    let selectorApi = {};
+    let selectorApi = {},
+        {calibration} = params;
     
     selectorApi.find = function selectorFind(params = {}) {
         let nodes = [],
-            {x, y} = params;
+            {x, y, screenX, screenY} = params;
+        
+        if (typeof screenX !== 'undefined' &&
+                typeof screenY !== 'undefined') {
+            let adjustedPoints = calibration.screenToViewportCoordinates({
+                screenX, screenY
+            });
+            x = adjustedPoints.x;
+            y = adjustedPoints.y;
+        }
         
         if (typeof x !== 'undefined' &&
                 typeof y !== 'undefined') {

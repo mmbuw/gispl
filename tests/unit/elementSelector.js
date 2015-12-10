@@ -1,7 +1,8 @@
 import $ from 'jquery';
 import elementSelector from '../../source/elementSelector';
+import screenCalibration from '../../source/screenCalibration';
 
-describe('ElementSelector', () => {
+describe('elementSelector', () => {
     
     let selector,
         appendedTestElements = [],
@@ -146,15 +147,34 @@ describe('ElementSelector', () => {
         expect(foundNodes.length).to.equal(0);
     });
     
-//    it('should find elements based on their screen size', () => {
-//        
-//        helper.appendElement({
-//            width: 200,
-//            height: 200
-//        });
-//        // a bit tricky
-//        // actual screen values depend on where the browser running the test is positioned
-//        console.log(window.screenY + window.outerHeight - window.innerHeight);
-//    });
+    it('should find elements based on their screen size', () => {
+        
+        // a bit tricky
+        // actual screen values depend on where the browser running the test is positioned
+        // and how it looks like - address bar, tabs, etc. influence the browser height
+        // so the test is possibly useless because the values are constructed
+        // the selector will use similar to construct its own results
+        let clientX = 0, clientY = 0,
+            // approximations - make actual element large, especially for height
+            screenX = window.screenX, 
+            screenY = window.screenY + window.outerHeight - window.innerHeight;
+        
+        let mockCalibration = screenCalibration().mouseEvent({
+            clientX, clientY, screenX, screenY
+        });
+        let selector = elementSelector({
+            calibration: mockCalibration
+        });
+        let element = helper.appendElement({
+            width: 100,
+            height: 300
+        });
+        
+        screenX = window.screenX + 50;
+        screenY = window.screenY + 200;
+        let foundNodes = selector.find({screenX, screenY});
+        
+        expect(foundNodes[0]).to.equal(element);
+    });
     
 });
