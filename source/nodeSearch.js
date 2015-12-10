@@ -1,6 +1,6 @@
-export default function elementSelector(params = {}) {
+export default function nodeSearch(params = {}) {
     
-    let selectorApi = {},
+    let searchApi = {},
         {calibration} = params;
     
     function coordinatesFromParams(params = {}) {
@@ -18,7 +18,7 @@ export default function elementSelector(params = {}) {
         return {x, y};
     }
     
-    selectorApi.find = function selectorFind(params = {}) {
+    searchApi.fromPoint = function nodeSearchFromPoint(params = {}) {
         let nodes = [],
             {x, y} = coordinatesFromParams(params);
         
@@ -37,7 +37,9 @@ export default function elementSelector(params = {}) {
         return nodes;
     };
     
-    return selectorApi;
+    searchApi.find = searchApi.fromPoint;
+    
+    return searchApi;
 }
 
 
@@ -52,6 +54,7 @@ function element(paramNode) {
     
     elementApi.moveToParent = function elementParent() {
         this.node = this.node.parentNode;
+        return this;
     };
     
     elementApi.containsPoint = function elementContainsPoint(point) {

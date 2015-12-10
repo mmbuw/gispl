@@ -1,10 +1,10 @@
 import $ from 'jquery';
-import elementSelector from '../../source/elementSelector';
+import nodeSearch from '../../source/nodeSearch';
 import screenCalibration from '../../source/screenCalibration';
 
-describe('elementSelector', () => {
+describe('nodeSearch', () => {
     
-    let selector,
+    let findNodes,
         appendedTestElements = [],
         helper = {
             appendElement: function (options = {}) {
@@ -46,7 +46,7 @@ describe('elementSelector', () => {
         };
     
     beforeEach(function() {
-        selector = elementSelector();
+        findNodes = nodeSearch();
         $('body').css({
             padding: 0,
             margin: 0
@@ -67,7 +67,7 @@ describe('elementSelector', () => {
             marginTop: 10
         });
         let x = 0, y = 0;
-        let foundNodes = selector.find({x, y});
+        let foundNodes = findNodes.fromPoint({x, y});
         
         expect(helper.tagName(foundNodes[0])).to.equal('html');
     });
@@ -79,7 +79,7 @@ describe('elementSelector', () => {
             marginTop: 10
         });
         let x = 15, y = 15;
-        let foundNodes = selector.find({x, y});
+        let foundNodes = findNodes.fromPoint({x, y});
         expect(helper.tagName(foundNodes[0])).to.equal('div');
     });
     
@@ -91,7 +91,7 @@ describe('elementSelector', () => {
             marginTop: 10
         });
         let x = 10, y = 10;
-        let foundNodes = selector.find({x, y});
+        let foundNodes = findNodes.fromPoint({x, y});
         let expectedNodes = ['div', 'body', 'html', '#document'];
         
         helper.assertNodesExpectation(foundNodes, expectedNodes);
@@ -104,7 +104,7 @@ describe('elementSelector', () => {
             width: x,
             height: y
         });
-        let foundNodes = selector.find({x, y});
+        let foundNodes = findNodes.fromPoint({x, y});
         
         expect(foundNodes.length).to.equal(1);
         expect(helper.tagName(foundNodes[0])).to.equal('#document');        
@@ -120,7 +120,7 @@ describe('elementSelector', () => {
             top: 10
         });
         let x = 15, y = 15;
-        let foundNodes = selector.find({x, y});
+        let foundNodes = findNodes.fromPoint({x, y});
         expect(foundNodes[0]).to.equal(element2);
     });
     
@@ -134,7 +134,7 @@ describe('elementSelector', () => {
                 top: 100
             });
         let x = 105, y = 105;
-        let foundNodes = selector.find({x, y});
+        let foundNodes = findNodes.fromPoint({x, y});
         // body has height of parent element, should not be in
         let expectedNodes = ['div', '#document'];
         
@@ -143,7 +143,7 @@ describe('elementSelector', () => {
     
     it('should return nothing when not supplying coordinates to the find method', () => {
         
-        let foundNodes = selector.find();
+        let foundNodes = findNodes.fromPoint();
         expect(foundNodes.length).to.equal(0);
     });
     
@@ -153,7 +153,7 @@ describe('elementSelector', () => {
         // actual screen values depend on where the browser running the test is positioned
         // and how it looks like - address bar, tabs, etc. influence the browser height
         // so the test is possibly useless because the values are constructed
-        // the selector will use similar to construct its own results
+        // findNodes will use similar methods to construct its own results
         let clientX = 0, clientY = 0,
             // approximations - make actual element large, especially for height
             screenX = window.screenX, 
@@ -162,7 +162,7 @@ describe('elementSelector', () => {
         let mockCalibration = screenCalibration().mouseEvent({
             clientX, clientY, screenX, screenY
         });
-        let selector = elementSelector({
+        let findNodes = nodeSearch({
             calibration: mockCalibration
         });
         let element = helper.appendElement({
@@ -172,7 +172,7 @@ describe('elementSelector', () => {
         
         screenX = window.screenX + 50;
         screenY = window.screenY + 200;
-        let foundNodes = selector.find({screenX, screenY});
+        let foundNodes = findNodes.fromPoint({screenX, screenY});
         
         expect(foundNodes[0]).to.equal(element);
     });
