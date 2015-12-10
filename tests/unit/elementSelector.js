@@ -10,6 +10,8 @@ describe('ElementSelector', () => {
                 let {
                     type = 'div',
                     parent = 'body',
+                    width = 10,
+                    height = 10,
                     marginLeft = 0,
                     marginTop = 0,
                     position = 'static',
@@ -18,8 +20,8 @@ describe('ElementSelector', () => {
                 } = options;
                 
                 let element = $(`<${type} style="
-                            width: 10px;
-                            height: 10px;
+                            width: ${width}px;
+                            height: ${height}px;
                             margin-left: ${marginLeft}px;
                             margin-top: ${marginTop}px;
                             position: ${position};
@@ -94,6 +96,19 @@ describe('ElementSelector', () => {
         helper.assertNodesExpectation(foundNodes, expectedNodes);
     });
     
+    it('should treat right and bottom dom element boundary as point non inclusive', () => {
+        
+        let x = 20, y = 15;
+        helper.appendElement({
+            width: x,
+            height: y
+        });
+        let foundNodes = selector.find({x, y});
+        
+        expect(foundNodes.length).to.equal(1);
+        expect(helper.tagName(foundNodes[0])).to.equal('#document');        
+    });
+    
     it('should ignore elements that are overlapped by other elements', () => {
         
         helper.appendElement();
@@ -130,5 +145,16 @@ describe('ElementSelector', () => {
         let foundNodes = selector.find();
         expect(foundNodes.length).to.equal(0);
     });
+    
+//    it('should find elements based on their screen size', () => {
+//        
+//        helper.appendElement({
+//            width: 200,
+//            height: 200
+//        });
+//        // a bit tricky
+//        // actual screen values depend on where the browser running the test is positioned
+//        console.log(window.screenY + window.outerHeight - window.innerHeight);
+//    });
     
 });
