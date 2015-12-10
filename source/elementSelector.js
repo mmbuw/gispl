@@ -3,9 +3,8 @@ export default function elementSelector(params = {}) {
     let selectorApi = {},
         {calibration} = params;
     
-    selectorApi.find = function selectorFind(params = {}) {
-        let nodes = [],
-            {x, y, screenX, screenY} = params;
+    function coordinatesFromParams(params = {}) {
+        let {x, y, screenX, screenY} = params;
         
         if (typeof screenX !== 'undefined' &&
                 typeof screenY !== 'undefined') {
@@ -15,6 +14,13 @@ export default function elementSelector(params = {}) {
             x = adjustedPoints.x;
             y = adjustedPoints.y;
         }
+        
+        return {x, y};
+    }
+    
+    selectorApi.find = function selectorFind(params = {}) {
+        let nodes = [],
+            {x, y} = coordinatesFromParams(params);
         
         if (typeof x !== 'undefined' &&
                 typeof y !== 'undefined') {
@@ -27,6 +33,7 @@ export default function elementSelector(params = {}) {
                 topElement.moveToParent();
             }
         }
+        
         return nodes;
     };
     
