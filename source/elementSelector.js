@@ -10,11 +10,12 @@ export default function elementSelector() {
                 typeof y !== 'undefined') {
             let topElement = element(document.elementFromPoint(x, y));
             while (topElement.exists()) {
-                if (topElement.containsPoint({x, y})) {
+                if (topElement.isDocument() ||
+                        topElement.containsPoint({x, y})) {
                     nodes.push(topElement.node);
                 }
-                topElement.parent();
-            }   
+                topElement.moveToParent();
+            }
         }
         return nodes;
     };
@@ -32,7 +33,7 @@ function element(paramNode) {
         return this.node !== null;
     };
     
-    elementApi.parent = function elementParent() {
+    elementApi.moveToParent = function elementParent() {
         this.node = this.node.parentNode;
     };
     
@@ -43,11 +44,14 @@ function element(paramNode) {
         if (this.node.getBoundingClientRect) {
             elementGeometry = this.node.getBoundingClientRect();
         }
-        return (this.node === document || (
-                    elementGeometry.left <= x &&
+        return (elementGeometry.left <= x &&
                     x < elementGeometry.right &&
                     elementGeometry.top <= y &&
-                    y < elementGeometry.bottom));
+                    y < elementGeometry.bottom);
+    };
+    
+    elementApi.isDocument = function elementIsDocument() {
+        return this.node === document;
     };
     
     return elementApi;
