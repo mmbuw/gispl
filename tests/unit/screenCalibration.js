@@ -41,19 +41,23 @@ describe('screenCalibration', () => {
             ];
         expect(eventsThatWillCauseException[0]).to.be.undefined;
         
-        eventsThatWillCauseException.forEach((event) => {
+        eventsThatWillCauseException.forEach((mouseEvent) => {
+            //on construction
             expect(function() {
-                calibration.mouseEvent(event);
-            }).to.throw(); 
+                screenCalibration({mouseEvent});
+            }).to.throw();
+            //on add
+            expect(function() {
+                calibration.mouseEvent(mouseEvent);
+            }).to.throw();
         });
         
-        eventsThatWillNotCauseException.forEach((event) => {
+        eventsThatWillNotCauseException.forEach((mouseEvent) => {
             expect(function() {
-                calibration.mouseEvent(event);
+                calibration.mouseEvent(mouseEvent);
             }).to.not.throw(); 
         });
         
-        //TODO
         //on construction
     });
     
@@ -80,5 +84,36 @@ describe('screenCalibration', () => {
         calibration.mouseEvent(event);
         expect(calibration.screenToViewportCoordinates({screenX, screenY})).
                 to.deep.equal({x, y});
+    });
+    
+    it('should attach a mouseover event listener for document on creation to capture a mouse event', () => {
+        // not set yet
+        expect(calibration.viewportPosition).to.throw();
+        
+        let mouseEvent = new MouseEvent('mouseover', {
+            clientX: 0, clientY: 0,
+            screenX: 199, screenY: 199
+        });
+        
+        document.dispatchEvent(mouseEvent);
+        expect(calibration.viewportPosition()).to.deep.equal({top: 199, left: 199});
+    });
+    
+    it('should immediately remove the mouseover listener once the mouse event is captured', () => {
+        
+        let params = {
+            clientX: 0, clientY: 0,
+            screenX: 199, screenY: 199
+        };
+        let mouseEvent = new MouseEvent('mouseover', params);
+        
+        document.dispatchEvent(mouseEvent);
+        // dispatch a different mouseover
+        // should be ignored
+        params.screenY = 100;
+        mouseEvent = new MouseEvent('mouseover', params);
+        document.dispatchEvent(mouseEvent);
+        
+        expect(calibration.viewportPosition()).to.deep.equal({top: 199, left: 199});
     });
 });

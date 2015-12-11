@@ -3,6 +3,10 @@ export default function screenCalibration(params = {}) {
     let calibrationApi = {},
         {mouseEvent} = params;
     
+    if (typeof mouseEvent !== 'undefined') {
+        mouseEvent - calibrationApi.mouseEvent(mouseEvent);
+    }
+    
     function viewportPositionTop() {
         return mouseEvent.screenY - mouseEvent.clientY;
     }
@@ -10,6 +14,13 @@ export default function screenCalibration(params = {}) {
     function viewportPositionLeft() {
         return mouseEvent.screenX - mouseEvent.clientX;
     }
+    
+    function captureEvent(event) {
+        calibrationApi.mouseEvent(event);
+        document.removeEventListener('mouseover', captureEvent);
+    }
+    
+    document.addEventListener('mouseover', captureEvent);
     
     calibrationApi.mouseEvent = function calibrationMouseEvent(event = {}) {
         if (typeof event.clientX === 'undefined' ||
