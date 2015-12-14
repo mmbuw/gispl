@@ -15,8 +15,8 @@ client.on('refresh', function() {
     let pointers = client.getTuioPointers();
     
     pointers.forEach((pointer) => {
-        let screenX = pointer.getScreenX(window.innerWidth),
-            screenY = pointer.getScreenY(window.innerHeight);
+        let screenX = pointer.getScreenX(window.screen.width),
+            screenY = pointer.getScreenY(window.screen.height);
         
         let foundNodes = findNodes.fromPoint({screenX, screenY});
         if (foundNodes.shift() === element) {
