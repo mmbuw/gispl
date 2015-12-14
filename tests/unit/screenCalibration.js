@@ -116,4 +116,28 @@ describe('screenCalibration', () => {
         
         expect(calibration.viewportPosition()).to.deep.equal({top: 199, left: 199});
     });
+    
+    it('should adjust to browser window repositioning on the screen', () => {
+        
+        let _window = {
+            screenX: 0,
+            screenY: 0
+        },
+            mouseEvent = {
+            screenX: 50,
+            screenY: 50,
+            clientX: 0,
+            clientY: 0
+        };
+        
+        calibration = screenCalibration({_window, mouseEvent});
+        
+        _window.screenX = 50;
+        _window.screenY = 50;
+        
+        expect(calibration.viewportPosition()).to.deep.equal({
+            top: 100,
+            left: 100
+        });
+    });
 });
