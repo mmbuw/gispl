@@ -62,6 +62,10 @@ export default function screenCalibration(params = {}) {
         return {x, y};
     };
     
+    calibrationApi.isScreenUsable = function calibrationScreenUsable() {
+        return typeof mouseEvent !== 'undefined';
+    }
+    
     objectInit();
     
     return calibrationApi;

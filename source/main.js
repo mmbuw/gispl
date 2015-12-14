@@ -12,7 +12,16 @@ let element = document.getElementById('element');
 client.connect();
 
 client.on('refresh', function() {
+    
+    if (!calibration.isScreenUsable()) {
+        return;
+    }
+    
     let pointers = client.getTuioPointers();
+    
+    if(pointers.length === 0) {
+        element.style.backgroundColor = 'black';
+    }
     
     pointers.forEach((pointer) => {
         let screenX = pointer.getScreenX(window.screen.width),

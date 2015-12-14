@@ -140,4 +140,14 @@ describe('screenCalibration', () => {
             left: 100
         });
     });
+    
+    it('should indicate if the screen has been calibrated', () => {
+        
+        expect(calibration.isScreenUsable()).to.equal(false);
+        
+        calibration.mouseEvent({
+            screenX: 0, clientX: 0, screenY: 0, clientY: 0
+        });
+        expect(calibration.isScreenUsable()).to.equal(true);
+    });
 });
