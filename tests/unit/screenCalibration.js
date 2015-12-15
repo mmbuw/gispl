@@ -2,15 +2,31 @@ import screenCalibration from "../../source/screenCalibration";
 
 describe('screenCalibration', () => {
     
-    let calibration;
+    let calibration,
+        clock,
+        helper = {
+            dispatchMouseOver: function(params) {
+                document.dispatchEvent(new MouseEvent('mouseover', params));
+            },
+            dispatchAfterTime: function(callback, params, time) {
+                
+                clock.tick(time);
+                callback.call(undefined, params);
+            }
+        };
     
     beforeEach(() => {
+        clock = sinon.useFakeTimers();
         calibration = screenCalibration();
+    });
+    
+    afterEach(() => {
+        clock.restore();
     });
     
     it('should indicate the browser viewport position on the screen', () => {
         
-        let event = new MouseEvent('mouseenter', {
+        let event = new MouseEvent('mouseover', {
                 screenX: 150,
                 screenY: 150,
                 clientX: 10,
@@ -31,7 +47,7 @@ describe('screenCalibration', () => {
                 {clientX: 100, clientY: 200, screenY: 100},
             ],
             eventsThatWillNotCauseException = [
-                new MouseEvent('mouseenter'),
+                new MouseEvent('mouseover'),
                 {
                     clientX: 0,
                     clientY: 0,
@@ -86,10 +102,7 @@ describe('screenCalibration', () => {
                 to.deep.equal({x, y});
     });
     
-    it('should attach a mouseover event listener for document on creation to capture a mouse event', () => {
-        // not set yet
-        expect(calibration.viewportPosition).to.throw();
-        
+    it('should attach a mouseover event listener for document on creation to capture a mouse event', () => {    
         let mouseEvent = new MouseEvent('mouseover', {
             clientX: 0, clientY: 0,
             screenX: 199, screenY: 199
@@ -117,28 +130,54 @@ describe('screenCalibration', () => {
         expect(calibration.viewportPosition()).to.deep.equal({top: 199, left: 199});
     });
     
-    it('should adjust to browser window repositioning on the screen', () => {
+    it('should continuously use mouse events every two seconds (default) to recalibrate if needed', () => {
         
-        let _window = {
-            screenX: 0,
-            screenY: 0
-        },
-            mouseEvent = {
+        let params = {
             screenX: 50,
             screenY: 50,
             clientX: 0,
             clientY: 0
         };
         
-        calibration = screenCalibration({_window, mouseEvent});
+        helper.dispatchMouseOver(params);
         
-        _window.screenX = 50;
-        _window.screenY = 50;
+        params.screenX = 100;
+        params.screenY = 100;
+        helper.dispatchAfterTime(helper.dispatchMouseOver, params, 2000);
         
         expect(calibration.viewportPosition()).to.deep.equal({
             top: 100,
             left: 100
         });
+        
+        params.screenX = 200;
+        params.screenY = 200;
+        helper.dispatchAfterTime(helper.dispatchMouseOver, params, 2000);
+        
+        expect(calibration.viewportPosition()).to.deep.equal({
+            top: 200,
+            left: 200
+        });
+    });
+    
+    it('should not attach multiple listeners every two seconds if previous was not cleared', () => {
+        
+        let addingEvent = sinon.spy(document, 'addEventListener'),
+            pause = 2000,
+            calibration = screenCalibration({pause}),
+            params = {
+                screenX: 50,
+                screenY: 50,
+                clientX: 0,
+                clientY: 0
+            };
+        
+        helper.dispatchAfterTime(helper.dispatchMouseOver, params, 2000);
+        clock.tick(2000);
+        
+        expect(addingEvent.callCount).to.equal(1);
+        
+        addingEvent.restore();
     });
     
     it('should indicate if the screen has been calibrated', () => {

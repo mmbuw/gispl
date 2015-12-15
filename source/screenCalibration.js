@@ -1,30 +1,28 @@
 export default function screenCalibration(params = {}) {
     
     let calibrationApi = {},
+        listenForInputEvent = true,
         {mouseEvent,
-            _window = window} = params,
-        browserX = _window.screenX,
-        browserY = _window.screenY;
-    
-    function browserMovedByX() {
-        return _window.screenX - browserX;
-    }
-    
-    function browserMovedByY() {
-        return _window.screenY - browserY;
-    }
+         pause: inputEventPause = 2000} = params;
     
     function viewportPositionTop() {
-        return mouseEvent.screenY - mouseEvent.clientY + browserMovedByX();
+        return mouseEvent.screenY - mouseEvent.clientY;
     }
     
     function viewportPositionLeft() {
-        return mouseEvent.screenX - mouseEvent.clientX + browserMovedByY();
+        return mouseEvent.screenX - mouseEvent.clientX;
     }
     
     function captureEvent(event) {
-        calibrationApi.mouseEvent(event);
-        document.removeEventListener('mouseover', captureEvent);
+        if (listenForInputEvent) {
+            
+            calibrationApi.mouseEvent(event);
+            listenForInputEvent = false;
+            
+            setTimeout(function() {
+                listenForInputEvent = true;
+            }, inputEventPause);
+        }
     }
     
     function objectInit() {
