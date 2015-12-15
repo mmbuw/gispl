@@ -1,9 +1,0 @@
-{
-    "expr": true,
-    "browser": true,
-    "esnext": true,
-    "mocha": true,
-    "globals": {
-        "expect": true
-    }
-}
