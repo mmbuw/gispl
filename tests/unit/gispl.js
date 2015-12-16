@@ -11,6 +11,7 @@ describe('gispl', () => {
     
     it('should construct without parameter', () => {
         expect(gispl()).to.be.an('object');
+        expect(gispl().length).to.equal(0);
     });
     
     it('should accept a DOM element as parameter and make it accesible over indices', () => {

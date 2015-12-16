@@ -1,4 +1,4 @@
-export default function gispl(params = {}) {
+export default function gispl(params) {
     
     let gisplApi = {};
     
@@ -14,7 +14,9 @@ export default function gispl(params = {}) {
     
     gisplApi.length = 0;
     
-    addElementsToGispl(params);
+    if (typeof params !== 'undefined') {
+        addElementsToGispl(params);
+    }
     
     gisplApi.add = function gisplAddElements(params = {}) {
         let gisplIndex = gisplApi.length;
