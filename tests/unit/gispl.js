@@ -57,4 +57,36 @@ describe('gispl', () => {
         expect(testGispl[4]).to.equal(jqueryElements[1]);
         expect(testGispl.length).to.equal(5);
     });
+    
+    it('should accept a string to be used with queryselectorall', function() {
+        let elements = $('<div class="first"></div><div class="second"></div>')
+                                .appendTo('body');
+        
+        testGispl = gispl('div.second');
+        expect(testGispl[0]).to.equal(elements[1]);
+        expect(testGispl.length).to.equal(1);
+        
+        testGispl = gispl('div');
+        expect(testGispl[0]).to.equal(elements[0]);
+        expect(testGispl[1]).to.equal(elements[1]);
+        expect(testGispl.length).to.equal(2);
+        
+        elements.remove();
+    });
+    
+    it('should accept a string for selecting additional elements', () => {
+        let elements = $('<div class="first"></div><div class="second"></div>')
+                                .appendTo('body');
+        
+        testGispl.add('div');
+        expect(testGispl[1]).to.equal(elements[0]);
+        expect(testGispl[2]).to.equal(elements[1]);
+        expect(testGispl.length).to.equal(3);
+        
+        testGispl.add('.first');
+        expect(testGispl[3]).to.equal(elements[0]);
+        expect(testGispl.length).to.equal(4);
+        
+        elements.remove();
+    });
 });

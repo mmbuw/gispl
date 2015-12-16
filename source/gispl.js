@@ -14,12 +14,19 @@ export default function gispl(params) {
     
     gisplApi.length = 0;
     
+    if (typeof params === 'string') {
+        params = document.querySelectorAll(params);
+    }
+    
     if (typeof params !== 'undefined') {
         addElementsToGispl(params);
     }
     
     gisplApi.add = function gisplAddElements(params = {}) {
         let gisplIndex = gisplApi.length;
+        if (typeof params === 'string') {
+            params = document.querySelectorAll(params);
+        }
         addElementsToGispl(params, gisplIndex);
     }
     
