@@ -2,7 +2,7 @@ export default function gispl(params) {
     
     let gisplApi = {};
     
-    function addElementsToGispl(params, gisplIndex = 0) {
+    function insertElements(params, gisplIndex = 0) {
         let elements = assureParamsAreArrayLike(params),
             length = elements.length;
         
@@ -12,23 +12,22 @@ export default function gispl(params) {
         }
     }
     
-    gisplApi.length = 0;
+    function addElementsToGispl(params) {
     
-    if (typeof params === 'string') {
-        params = document.querySelectorAll(params);
-    }
-    
-    if (typeof params !== 'undefined') {
-        addElementsToGispl(params);
-    }
-    
-    gisplApi.add = function gisplAddElements(params = {}) {
-        let gisplIndex = gisplApi.length;
         if (typeof params === 'string') {
             params = document.querySelectorAll(params);
         }
-        addElementsToGispl(params, gisplIndex);
+
+        if (typeof params !== 'undefined') {
+            insertElements(params, gisplApi.length);
+        }
     }
+    
+    gisplApi.length = 0;
+    
+    addElementsToGispl(params);
+    
+    gisplApi.add = addElementsToGispl;
     
     return gisplApi;
 }

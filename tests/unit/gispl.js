@@ -34,6 +34,12 @@ describe('gispl', () => {
         expect(testGispl.length).to.equal(4);
     });
     
+    it('should do nothing when adding no additional elements', () => {
+        
+        testGispl.add();
+        expect(testGispl.length).to.equal(1);
+    });
+    
     it('should accept an iterable collection of elements', () => {
         let elements = ['div', 'div'].map(tag => document.createElement(tag));
         expect(elements.length).to.equal(2);
