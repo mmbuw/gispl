@@ -37,6 +37,7 @@
   },
   "jspm": {
     "dependencies": {
+      "EventEmitter": "github:Olical/EventEmitter@^4.3.0",
       "tuio": "npm:tuio-extended@^0.1.0"
     },
     "devDependencies": {

@@ -13,6 +13,7 @@ System.config({
   },
 
   map: {
+    "EventEmitter": "github:Olical/EventEmitter@4.3.0",
     "babel": "npm:babel-core@5.8.34",
     "babel-runtime": "npm:babel-runtime@5.8.34",
     "core-js": "npm:core-js@1.2.6",
