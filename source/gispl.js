@@ -15,8 +15,8 @@ export default function gispl(selection) {
 
 let elementInsertion = (function () {
     
-    function assureSelectionAreArrayLike(selection) {
-        return typeof selection[0] === 'undefined' ?
+    function assureSelectionAreArrayLike(selection = []) {
+        return typeof selection.length === 'undefined' ?
                                         [selection] :
                                         selection;
     }

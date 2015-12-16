@@ -95,4 +95,11 @@ describe('gispl', () => {
         
         elements.remove();
     });
+        
+    it('should return length 0 when no elements found', () => {
+        testGispl = gispl();
+        expect(testGispl.length).to.equal(0);
+        testGispl.add('div');
+        expect(testGispl.length).to.equal(0);
+    });
 });
