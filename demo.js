@@ -1,5 +1,5 @@
-import nodeSearch from './nodeSearch';
-import screenCalibration from './screenCalibration';
+import nodeSearch from './source/nodeSearch';
+import screenCalibration from './source/screenCalibration';
 import TuioClient from 'tuio/src/TuioClient';
 
 let calibration = screenCalibration();
