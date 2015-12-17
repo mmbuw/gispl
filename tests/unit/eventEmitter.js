@@ -50,5 +50,15 @@ describe('gispl event emitting', () => {
     
     it('should pass parameters to register listeners', () => {
         
+        let element = gispl(document),
+            spy = sinon.spy();
+        
+        element.on('event', spy);
+        
+        element.emit('event', 1);
+        expect(spy.lastCall.calledWith(1)).to.equal(true);
+        
+        element.emit('event', 1, 2, 3);
+        expect(spy.lastCall.calledWith(1, 2, 3)).to.equal(true);
     });
 });
