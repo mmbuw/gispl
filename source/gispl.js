@@ -2,13 +2,14 @@ import eventEmitter from './eventEmitter';
 
 export default function gispl(selection) {
     
-    let gisplApi = {};
+    let gisplApi = {},
+        selectionSet = new WeakSet();
     
     // extend with event emitting
     eventEmitter(gisplApi);
     
     //initial selection insertion as gispl[index]
-    elementInsertion(gisplApi, selection);
+    elementInsertion(gisplApi, selectionSet, selection);
     
     //iterate over the selection collection
     gisplApi.forEach = function gisplForEach(callback) {
@@ -16,7 +17,7 @@ export default function gispl(selection) {
     };
     
     //additional elements
-    gisplApi.add = elementInsertion.bind(undefined, gisplApi);
+    gisplApi.add = elementInsertion.bind(undefined, gisplApi, selectionSet);
     
     return gisplApi;
 }
@@ -29,18 +30,23 @@ let elementInsertion = (function () {
                                         selection;
     }
     
-    function modifyObject(arrayLike, selection) {
+    function modifyObject(arrayLike, currentSet, selection) {
         let elements = assureSelectionAreArrayLike(selection),
             gisplIndex = arrayLike.length, 
             length = elements.length;
 
-        for (let i = 0; i < length; i += 1, gisplIndex += 1) {
-            arrayLike[gisplIndex] = elements[i];
-            arrayLike.length += 1;
+        for (let i = 0; i < length; i += 1) {
+            let element = elements[i];
+            if (!currentSet.has(element)) {
+                arrayLike[gisplIndex] = elements[i];
+                arrayLike.length += 1;
+                gisplIndex += 1;
+                currentSet.add(element);
+            } 
         }
     }
     
-    return function elementInsertion(arrayLike = {}, selection) {
+    return function elementInsertion(arrayLike = {}, currentSet, selection) {
 
         if (typeof arrayLike.length === 'undefined') {
             arrayLike.length = 0;
@@ -51,7 +57,7 @@ let elementInsertion = (function () {
         }
 
         if (typeof selection !== 'undefined') {
-            modifyObject(arrayLike, selection);
+            modifyObject(arrayLike, currentSet, selection);
         }   
     };
 })();

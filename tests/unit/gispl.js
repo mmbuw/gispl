@@ -98,16 +98,17 @@ describe('gispl', () => {
         });
 
         it('should accept a string for selecting additional elements', () => {
-            let elements = $('<div class="first"></div><div class="second"></div>')
-                                    .appendTo('body');
+            let elements = $(`<div class="first"
+                                ></div><div class="second"
+                                ></div><span class="third"></span>`).appendTo('body');
 
             testGispl.add('div');
             expect(testGispl[1]).to.equal(elements[0]);
             expect(testGispl[2]).to.equal(elements[1]);
             expect(testGispl.length).to.equal(3);
 
-            testGispl.add('.first');
-            expect(testGispl[3]).to.equal(elements[0]);
+            testGispl.add('.third');
+            expect(testGispl[3]).to.equal(elements[2]);
             expect(testGispl.length).to.equal(4);
 
             elements.remove();
@@ -122,6 +123,9 @@ describe('gispl', () => {
         
         it('should not accept duplicate values for selection elements', () => {
             
+            testGispl.add(document);
+            testGispl.add(document);
+            expect(testGispl.length).to.equal(1);
         });
     });
 });
