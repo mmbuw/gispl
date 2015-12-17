@@ -10,10 +10,13 @@ export default function eventEmitter(object = {}) {
             if (typeof cachedEvents === 'undefined') {
                 cachedEvents = {};
                 eventCache.set(element, cachedEvents);
-            };
-            let cachedListeners = cachedEvents[event] || [];
+            }
+            let cachedListeners = cachedEvents[event];
+            if (typeof cachedListeners === 'undefined') {
+                cachedListeners = [];
+                cachedEvents[event] = cachedListeners;
+            }
             cachedListeners.push(listener);
-            cachedEvents[event] = cachedListeners;
         });
     };
     
