@@ -1,4 +1,34 @@
-let eventCache = new WeakMap();
+let eventCache = {
+    map: new WeakMap(),
+    getListeners: function(params = {}) {
+        let {element, event} = params;
+        
+        let cachedEvents = this.map.get(element);
+        if (typeof cachedEvents === 'undefined') {
+            cachedEvents = {};
+            this.map.set(element, cachedEvents);
+        }
+        
+        let cachedListeners = cachedEvents[event];
+        if (typeof cachedListeners === 'undefined') {
+            cachedListeners = [];
+            cachedEvents[event] = cachedListeners;
+        }
+        
+        return cachedListeners;
+    },
+    callListeners: function(params = {}) {
+        let {args} = params;
+        this.getListeners(params)
+            .forEach(listener => listener(...args));
+    },
+    addListener: function(params = {}) {
+        let {listener} = params;
+        if (typeof listener === 'function') {
+            this.getListeners(params).push(listener);   
+        }
+    }
+};
 
 export default function eventEmitter(object = {}) {
     
@@ -6,29 +36,13 @@ export default function eventEmitter(object = {}) {
     
     eventApi.on = function eventOn(event, listener) {
         this.forEach((element) => {
-            let cachedEvents = eventCache.get(element);
-            if (typeof cachedEvents === 'undefined') {
-                cachedEvents = {};
-                eventCache.set(element, cachedEvents);
-            }
-            let cachedListeners = cachedEvents[event];
-            if (typeof cachedListeners === 'undefined') {
-                cachedListeners = [];
-                cachedEvents[event] = cachedListeners;
-            }
-            cachedListeners.push(listener);
+            eventCache.addListener({element, event, listener});
         });
     };
     
     eventApi.emit = function eventEmit(event, ...args) {
         this.forEach((element) => {
-            let cachedEvents = eventCache.get(element);
-            if (typeof cachedEvents !== 'undefined') {
-                let listeners = cachedEvents[event];
-                listeners.forEach(
-                    listener => listener(...args)
-                );
-            }
+            eventCache.callListeners({element, event, args});
         });
     };
     

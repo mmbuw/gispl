@@ -61,4 +61,19 @@ describe('gispl event emitting', () => {
         element.emit('event', 1, 2, 3);
         expect(spy.lastCall.calledWith(1, 2, 3)).to.equal(true);
     });
+    
+    it('should not add anything except functions as listeners', () => {
+        
+        let element = gispl(document);
+        
+        element.on('event');
+        expect(function() {
+            element.emit('event');
+        }).to.not.throw();
+        
+        element.on('event', {});
+        expect(function() {
+            element.emit('event');
+        }).to.not.throw();
+    });
 });
