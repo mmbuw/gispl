@@ -32,8 +32,23 @@ describe('gispl event emitting', () => {
         let selectedElement = document,
             spy = sinon.spy();
         
-        gispl(document).on('custom-event', spy);
-        gispl(document).emit('custom-event');
+        gispl(selectedElement).on('custom-event', spy);
+        gispl(selectedElement).emit('custom-event');
         expect(spy.callCount).to.equal(1);
+    });
+    
+    it('should accept multiple listeners on the same event', () => {        
+        let element = gispl(document),
+            spy = sinon.spy();
+        
+        element.on('event', spy);
+        element.on('event', spy);
+        element.emit('event');
+        
+        expect(spy.callCount).to.equal(2);
+    });
+    
+    it('should pass parameters to register listeners', () => {
+        
     });
 });

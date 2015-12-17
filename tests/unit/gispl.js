@@ -119,5 +119,9 @@ describe('gispl', () => {
             testGispl.add('div');
             expect(testGispl.length).to.equal(0);
         });
+        
+        it('should not accept duplicate values for selection elements', () => {
+            
+        });
     });
 });

@@ -4,10 +4,16 @@ export default function gispl(selection) {
     
     let gisplApi = {};
     
+    // extend with event emitting
     eventEmitter(gisplApi);
     
     //initial selection insertion as gispl[index]
     elementInsertion(gisplApi, selection);
+    
+    //iterate over the selection collection
+    gisplApi.forEach = function gisplForEach(callback) {
+        [].forEach.call(this, callback);
+    };
     
     //additional elements
     gisplApi.add = elementInsertion.bind(undefined, gisplApi);
