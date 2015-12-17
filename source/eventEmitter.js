@@ -27,6 +27,31 @@ let eventCache = {
         if (typeof listener === 'function') {
             this.getListeners(params).push(listener);   
         }
+    },
+    removeListener: function(params = {}) {
+        let {element, event, listener} = params,
+            listeners = this.getListeners(params);
+        
+        let indexOfListener = listeners.indexOf(listener);
+        if (indexOfListener !== -1) {
+            listeners.splice(indexOfListener, 1);
+        }
+    },
+    removeListeners: function(params = {}) {
+        let {element, event, listener} = params;
+        
+        if (typeof listener !== 'undefined') {
+            this.removeListener(params);
+            return;
+        }
+        
+        let cachedEvents = this.map.get(element);
+        if (typeof cachedEvents !== 'undefined') {
+            delete cachedEvents[event];   
+        }
+    },
+    clear: function() {
+        this.map = new WeakMap();
     }
 };
 
@@ -40,10 +65,20 @@ export default function eventEmitter(object = {}) {
         });
     };
     
+    eventApi.off = function eventOff(event, listener) {
+        this.forEach((element) => {
+            eventCache.removeListeners({element, event, listener});
+        });
+    };
+    
     eventApi.emit = function eventEmit(event, ...args) {
         this.forEach((element) => {
             eventCache.callListeners({element, event, args});
         });
+    };
+    
+    eventApi.clearGlobalEventsCache = function eventClearGlobalCache() {
+        eventCache.clear();
     };
     
     return eventApi;

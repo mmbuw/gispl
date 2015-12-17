@@ -76,4 +76,37 @@ describe('gispl event emitting', () => {
             element.emit('event');
         }).to.not.throw();
     });
+    
+    it('should allow removal of listeners from an element', () => {
+        
+        let element = gispl(document),
+            spy = sinon.spy();
+        
+        element.clearGlobalEventsCache();
+        element.off('event');
+        
+        element.on('event', spy);
+        element.on('event', spy);
+        element.on('event', spy);
+        
+        element.off('event');
+        element.emit('event');
+        
+        expect(spy.callCount).to.equal(0);
+    });
+    
+    it('should allow removal of a specific listener from an element', () => {
+        let element = gispl(document),
+            spy = sinon.spy(),
+            spy2 = sinon.spy();
+        
+        element.on('event', spy);
+        element.on('event', spy2);
+        element.off('event', spy2);
+        
+        element.emit('event');
+        
+        expect(spy.callCount).to.equal(1);
+        expect(spy2.callCount).to.equal(0);
+    });
 });
