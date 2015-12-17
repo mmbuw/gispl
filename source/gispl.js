@@ -2,13 +2,9 @@ export default function gispl(selection) {
     
     let gisplApi = {};
     
-    function addElementsToGispl(selection) {
-        elementInsertion(gisplApi, selection);
-    }
+    elementInsertion(gisplApi, selection);
     
-    addElementsToGispl(selection);
-    
-    gisplApi.add = addElementsToGispl;
+    gisplApi.add = elementInsertion.bind(undefined, gisplApi);
     
     return gisplApi;
 }
