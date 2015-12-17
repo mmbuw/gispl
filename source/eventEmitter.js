@@ -29,7 +29,7 @@ let eventCache = {
         }
     },
     removeListener: function(params = {}) {
-        let {element, event, listener} = params,
+        let {listener} = params,
             listeners = this.getListeners(params);
         
         let indexOfListener = listeners.indexOf(listener);

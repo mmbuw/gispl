@@ -6,7 +6,11 @@ describe('gispl event emitting', () => {
     let testGispl;
     
     beforeEach(() => {
-        testGispl = gispl();
+        testGispl = gispl(document);
+    });
+    
+    afterEach(() => {
+        testGispl.clearGlobalEventsCache();
     });
     
     it('should construct', () => {        
@@ -14,7 +18,7 @@ describe('gispl event emitting', () => {
     });
     
     it('should extend objects passed into it', () => {
-        expect(eventEmitter({})).to.be.an('object');        
+        expect(eventEmitter({})).to.be.an('object');
         let testEmitter = eventEmitter({prop: 1});
         expect(testEmitter.prop).to.equal(1);
     });
@@ -38,73 +42,65 @@ describe('gispl event emitting', () => {
     });
     
     it('should accept multiple listeners on the same event', () => {        
-        let element = gispl(document),
-            spy = sinon.spy();
+        let spy = sinon.spy();
         
-        element.on('event', spy);
-        element.on('event', spy);
-        element.emit('event');
+        testGispl.on('event', spy);
+        testGispl.on('event', spy);
+        testGispl.emit('event');
         
         expect(spy.callCount).to.equal(2);
     });
     
     it('should pass parameters to register listeners', () => {
         
-        let element = gispl(document),
-            spy = sinon.spy();
+        let spy = sinon.spy();
         
-        element.on('event', spy);
+        testGispl.on('event', spy);
         
-        element.emit('event', 1);
+        testGispl.emit('event', 1);
         expect(spy.lastCall.calledWith(1)).to.equal(true);
         
-        element.emit('event', 1, 2, 3);
+        testGispl.emit('event', 1, 2, 3);
         expect(spy.lastCall.calledWith(1, 2, 3)).to.equal(true);
     });
     
     it('should not add anything except functions as listeners', () => {
         
-        let element = gispl(document);
-        
-        element.on('event');
+        testGispl.on('event');
         expect(function() {
-            element.emit('event');
+            testGispl.emit('event');
         }).to.not.throw();
         
-        element.on('event', {});
+        testGispl.on('event', {});
         expect(function() {
-            element.emit('event');
+            testGispl.emit('event');
         }).to.not.throw();
     });
     
     it('should allow removal of listeners from an element', () => {
+        let spy = sinon.spy();
         
-        let element = gispl(document),
-            spy = sinon.spy();
+        testGispl.off('event');
         
-        element.clearGlobalEventsCache();
-        element.off('event');
+        testGispl.on('event', spy);
+        testGispl.on('event', spy);
+        testGispl.on('event', spy);
         
-        element.on('event', spy);
-        element.on('event', spy);
-        element.on('event', spy);
-        
-        element.off('event');
-        element.emit('event');
+        testGispl.off('event');
+        testGispl.emit('event');
         
         expect(spy.callCount).to.equal(0);
     });
     
     it('should allow removal of a specific listener from an element', () => {
-        let element = gispl(document),
-            spy = sinon.spy(),
+        let spy = sinon.spy(),
             spy2 = sinon.spy();
         
-        element.on('event', spy);
-        element.on('event', spy2);
-        element.off('event', spy2);
+        testGispl.on('event', spy);
+        testGispl.on('event', spy2);
+        testGispl.off('event', spy2);
         
-        element.emit('event');
+        testGispl.emit('event');
         
         expect(spy.callCount).to.equal(1);
         expect(spy2.callCount).to.equal(0);
