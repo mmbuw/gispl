@@ -14,6 +14,21 @@ describe('gispl', () => {
         expect(gispl().length).to.equal(0);
     });
     
+    it('should have basic event on/off/emit capabilities on passed elements', () => {
+        let spy = sinon.spy();
+        testGispl.on('custom-event', spy);
+        testGispl.emit('custom-event');
+        expect(spy.callCount).to.equal(1);
+    });
+    
+    it('should trigger events on selected dom elements', () => {
+        let selectedElement = document,
+            spy = sinon.spy();
+        gispl(document).on('custom-event', spy);
+        gispl(document).emit('custom-event');
+        expect(spy.callCount).to.equal(1);
+    });
+    
     describe('selecting elements to trigger events on', () => {
     
         it('should accept a DOM element as parameter and make it accesible over indices', () => {

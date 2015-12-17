@@ -1,9 +1,15 @@
+import eventEmitter from './eventEmitter';
+
 export default function gispl(selection) {
     
     let gisplApi = {};
     
+    eventEmitter(gisplApi);
+    
+    //initial selection insertion as gispl[index]
     elementInsertion(gisplApi, selection);
     
+    //additional elements
     gisplApi.add = elementInsertion.bind(undefined, gisplApi);
     
     return gisplApi;
