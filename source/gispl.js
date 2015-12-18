@@ -12,8 +12,8 @@ export default function gispl(selection) {
     elementInsertion(gisplApi, selectionSet, selection);
     
     //iterate over the selection collection
-    gisplApi.forEach = function gisplForEach(callback) {
-        [].forEach.call(this, callback);
+    gisplApi.forEach = function gisplForEach(...args) {
+        [].forEach.apply(this, args);
     };
     
     //additional elements
