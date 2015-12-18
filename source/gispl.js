@@ -9,7 +9,7 @@ export default function gispl(selection) {
     eventEmitter(gisplApi);
     
     //initial selection insertion as gispl[index]
-    selectionInsertion.insert(selection);
+    selectionInsertion.append(selection);
     
     //iterate over the selection collection
     gisplApi.forEach = function gisplForEach(...args) {
@@ -17,51 +17,42 @@ export default function gispl(selection) {
     };
     
     //additional elements
-    gisplApi.add = selectionInsertion.insert;
+    gisplApi.add = selectionInsertion.append;
     
     return gisplApi;
 }
 
 let elementInsertion = (function () {
     
-    function assureSelectionAreArrayLike(selection = []) {
+    function assureSelectionIsArrayLike(selection = []) {
         return typeof selection.length === 'undefined' ?
                                         [selection] :
                                         selection;
     }
     
-    function modifyObject(arrayLike, currentSet, selection) {
-        let elements = assureSelectionAreArrayLike(selection),
-            gisplIndex = arrayLike.length, 
-            length = elements.length;
-
-        for (let i = 0; i < length; i += 1) {
-            let element = elements[i];
-            if (!currentSet.has(element)) {
-                arrayLike[gisplIndex] = elements[i];
-                arrayLike.length += 1;
-                gisplIndex += 1;
-                currentSet.add(element);
-            } 
-        }
-    }
-    
     return function elementInsertion(object) {
-        let currentSet = new WeakSet(),
+        let elementCollection = new WeakSet(),
             insertionApi = {};
 
         if (typeof object.length === 'undefined') {
             object.length = 0;
         }
         
-        insertionApi.insert = function(selection) {
-
+        insertionApi.append = function(selection) {
             if (typeof selection === 'string') {
                 selection = document.querySelectorAll(selection);
             }
 
             if (typeof selection !== 'undefined') {
-                modifyObject(object, currentSet, selection);
+                let elements = assureSelectionIsArrayLike(selection);
+
+                [].forEach.call(elements, (element, index) => {
+                    if (!elementCollection.has(element)) {
+                        object[object.length] = elements[index];
+                        object.length += 1;
+                        elementCollection.add(element);
+                    }
+                });
             }
         };
         

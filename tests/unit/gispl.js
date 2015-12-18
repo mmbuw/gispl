@@ -79,6 +79,12 @@ describe('gispl', () => {
             expect(testGispl[3]).to.equal(jqueryElements[0]);
             expect(testGispl[4]).to.equal(jqueryElements[1]);
             expect(testGispl.length).to.equal(5);
+
+            let nodeList = document.querySelectorAll('body');
+
+            testGispl.add(nodeList);
+            expect(testGispl[5]).to.equal(nodeList[0]);
+            expect(testGispl.length).to.equal(6);
         });
 
         it('should accept a string to be used with queryselectorall', function() {
