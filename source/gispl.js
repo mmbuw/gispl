@@ -3,13 +3,13 @@ import eventEmitter from './eventEmitter';
 export default function gispl(selection) {
     
     let gisplApi = {},
-        selectionSet = new WeakSet();
+        selectionInsertion = elementInsertion(gisplApi);
     
     // extend with event emitting
     eventEmitter(gisplApi);
     
     //initial selection insertion as gispl[index]
-    elementInsertion(gisplApi, selectionSet, selection);
+    selectionInsertion.insert(selection);
     
     //iterate over the selection collection
     gisplApi.forEach = function gisplForEach(...args) {
@@ -17,7 +17,7 @@ export default function gispl(selection) {
     };
     
     //additional elements
-    gisplApi.add = elementInsertion.bind(undefined, gisplApi, selectionSet);
+    gisplApi.add = selectionInsertion.insert;
     
     return gisplApi;
 }
@@ -46,18 +46,25 @@ let elementInsertion = (function () {
         }
     }
     
-    return function elementInsertion(arrayLike = {}, currentSet, selection) {
+    return function elementInsertion(object) {
+        let currentSet = new WeakSet(),
+            insertionApi = {};
 
-        if (typeof arrayLike.length === 'undefined') {
-            arrayLike.length = 0;
+        if (typeof object.length === 'undefined') {
+            object.length = 0;
         }
+        
+        insertionApi.insert = function(selection) {
 
-        if (typeof selection === 'string') {
-            selection = document.querySelectorAll(selection);
-        }
+            if (typeof selection === 'string') {
+                selection = document.querySelectorAll(selection);
+            }
 
-        if (typeof selection !== 'undefined') {
-            modifyObject(arrayLike, currentSet, selection);
-        }   
+            if (typeof selection !== 'undefined') {
+                modifyObject(object, currentSet, selection);
+            }
+        };
+        
+        return insertionApi;
     };
 })();
