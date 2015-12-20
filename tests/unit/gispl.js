@@ -29,6 +29,11 @@ describe('gispl', () => {
         expect(spy.callCount).to.equal(1);
     });
     
+    it('should accept gestures as javascript objects');
+    it('should accept gestures as JSON');
+    it('should have access to one TuioClient');
+    it('should listen to TUIO refresh events');
+    
     describe('selecting elements to trigger events on', () => {
     
         it('should accept a DOM element as parameter and make it accesible over indices', () => {
