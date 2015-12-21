@@ -122,5 +122,6 @@ describe('gispl', () => {
     
     it('should have access to one TuioClient');
     it('should listen to TUIO refresh events');
+    it('should create a gesture object based on gesture definition');
     
 });
