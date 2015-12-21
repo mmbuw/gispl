@@ -21,9 +21,49 @@ export default function gispl(selection) {
     
     return gisplApi;
 }
+   
+let userDefinedGestures = Object.create(null);
 
-let elementInsertion = (function () {
+function gestureObjectCheck(gesture) {
+    if (typeof gesture === 'undefined') {
+        throw new Error('Attempting to define a gesture without passing a gesture');
+    }
     
+    let {name, features} = gesture;
+    
+    if (typeof name === 'undefined') {
+        throw new Error('Attempting to define a gesture without name');
+    }
+    if (typeof features === 'undefined' ||
+            typeof features.length === 'undefined' ||
+            features.length === 0) {
+        throw new Error('Attempting to define a gestures without features');
+    }
+    if (typeof userDefinedGestures[name] !== 'undefined') {
+        throw new Error('Attempting to define a gesture that already exists');
+    }
+}
+
+gispl.addGesture = function gisplAddGesture(gesture) {
+    if (typeof gesture === 'string') {
+        gesture = JSON.parse(gesture);
+    }
+    gestureObjectCheck(gesture);
+    
+    let {name} = gesture;
+    userDefinedGestures[name] = gesture;
+    return gispl;
+};
+
+gispl.clearGestures = function gisplClearGestures() {
+    userDefinedGestures = Object.create(null);
+};
+
+gispl.gesture = function gisplGesture(gestureName) {
+    return userDefinedGestures[gestureName];
+};
+
+let elementInsertion = (function () {    
     function assureSelectionIsArrayLike(selection = []) {
         return typeof selection.length === 'undefined' ?
                                         [selection] :
