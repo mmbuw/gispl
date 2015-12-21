@@ -1,13 +1,11 @@
-import eventEmitter from './eventEmitter';
+import domCollectionEvents from './domCollectionEvents';
 import elementInsertion from './elementInsertion';
 
 export default function gispl(selection) {
     
     let gisplApi = {},
-        selectionInsertion = elementInsertion(gisplApi);
-    
-    // extend with event emitting
-    eventEmitter(gisplApi);
+        selectionInsertion = elementInsertion(gisplApi),
+        events = domCollectionEvents();
     
     //initial selection insertion as gispl[index]
     selectionInsertion.append(selection);
@@ -19,6 +17,13 @@ export default function gispl(selection) {
     
     //additional elements
     gisplApi.add = selectionInsertion.append;
+    
+    //add event options
+    Object.keys(events).forEach(key => {
+        gisplApi[key] = events[key];
+    });
+    //event method aliases
+    gisplApi.trigger = events.emit;
     
     return gisplApi;
 }

@@ -22,7 +22,8 @@ describe('gispl', () => {
         let spy = sinon.spy();
         testGispl.on('custom-event', spy);
         testGispl.emit('custom-event');
-        expect(spy.callCount).to.equal(1);
+        testGispl.trigger('custom-event');
+        expect(spy.callCount).to.equal(2);
     });
     
     it('should trigger events on selected dom elements', () => {

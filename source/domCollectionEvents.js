@@ -1,4 +1,4 @@
-let eventCache = {
+let globalEventCache = {
     map: new WeakMap(),
     getListeners: function(params = {}) {
         let {element, event} = params;
@@ -55,31 +55,29 @@ let eventCache = {
     }
 };
 
-export default function eventEmitter(object = {}) {
+export default function domCollectionEvents(object = {}) {
     
-    let eventApi = object;
-    
-    eventApi.on = function eventOn(event, listener) {
+    object.on = function eventOn(event, listener) {
         this.forEach((element) => {
-            eventCache.addListener({element, event, listener});
+            globalEventCache.addListener({element, event, listener});
         });
     };
     
-    eventApi.off = function eventOff(event, listener) {
+    object.off = function eventOff(event, listener) {
         this.forEach((element) => {
-            eventCache.removeListeners({element, event, listener});
+            globalEventCache.removeListeners({element, event, listener});
         });
     };
     
-    eventApi.emit = function eventEmit(event, ...args) {
+    object.emit = function eventEmit(event, ...args) {
         this.forEach((element) => {
-            eventCache.callListeners({element, event, args});
+            globalEventCache.callListeners({element, event, args});
         });
     };
     
-    eventApi.clearGlobalEventsCache = function eventClearGlobalCache() {
-        eventCache.clear();
+    object.clearGlobalEventsCache = function eventClearGlobalCache() {
+        globalEventCache.clear();
     };
     
-    return eventApi;
+    return object;
 }

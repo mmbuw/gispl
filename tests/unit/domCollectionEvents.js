@@ -1,5 +1,5 @@
 import gispl from '../../source/gispl';
-import eventEmitter from '../../source/eventEmitter';
+import domCollectionEvents from '../../source/domCollectionEvents';
 
 describe('gispl event emitting', () => {
     
@@ -14,12 +14,12 @@ describe('gispl event emitting', () => {
     });
     
     it('should construct', () => {        
-        expect(eventEmitter()).to.be.an('object');
+        expect(domCollectionEvents()).to.be.an('object');
     });
     
     it('should extend objects passed into it', () => {
-        expect(eventEmitter({})).to.be.an('object');
-        let testEmitter = eventEmitter({prop: 1});
+        expect(domCollectionEvents({})).to.be.an('object');
+        let testEmitter = domCollectionEvents({prop: 1});
         expect(testEmitter.prop).to.equal(1);
     });
     

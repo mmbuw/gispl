@@ -31,4 +31,4 @@ export default function elementInsertion(object) {
     };
 
     return insertionApi;
-};
+}
