@@ -55,24 +55,35 @@ let globalEventCache = {
     }
 };
 
+export function eventTrigger(element, event, ...args) {
+    globalEventCache.callListeners({element,
+                                        event,
+                                        args});
+}
+
 export default function domCollectionEvents(object = {}) {
     
     object.on = function eventOn(event, listener) {
         this.forEach((element) => {
-            globalEventCache.addListener({element, event, listener});
+            globalEventCache.addListener({element,
+                                            event,
+                                            listener});
         });
     };
     
     object.off = function eventOff(event, listener) {
         this.forEach((element) => {
-            globalEventCache.removeListeners({element, event, listener});
+            globalEventCache.removeListeners({element,
+                                                event,
+                                                listener});
         });
     };
     
     object.emit = function eventEmit(event, ...args) {
-        this.forEach((element) => {
-            globalEventCache.callListeners({element, event, args});
-        });
+        this.forEach((element) => eventTrigger(element,
+                                                event,
+                                                ...args)
+        );
     };
     
     object.clearGlobalEventsCache = function eventClearGlobalCache() {
