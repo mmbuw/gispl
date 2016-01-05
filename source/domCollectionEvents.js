@@ -64,7 +64,7 @@ export function eventTrigger(element, event, ...args) {
 export default function domCollectionEvents(object = {}) {
     
     object.on = function eventOn(event, listener) {
-        this.forEach((element) => {
+        this.forEach(element => {
             globalEventCache.addListener({element,
                                             event,
                                             listener});
@@ -72,7 +72,7 @@ export default function domCollectionEvents(object = {}) {
     };
     
     object.off = function eventOff(event, listener) {
-        this.forEach((element) => {
+        this.forEach(element => {
             globalEventCache.removeListeners({element,
                                                 event,
                                                 listener});
@@ -80,7 +80,7 @@ export default function domCollectionEvents(object = {}) {
     };
     
     object.emit = function eventEmit(event, ...args) {
-        this.forEach((element) => eventTrigger(element,
+        this.forEach(element => eventTrigger(element,
                                                 event,
                                                 ...args)
         );
