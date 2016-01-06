@@ -1,4 +1,4 @@
-import domCollectionEvents from './domCollectionEvents';
+import {domCollectionEvents} from './events';
 import elementInsertion from './elementInsertion';
 
 export default function gispl(selection) {

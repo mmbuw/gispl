@@ -1,5 +1,5 @@
 import gispl from '../../source/gispl';
-import domCollectionEvents from '../../source/domCollectionEvents';
+import {domCollectionEvents, events} from '../../source/events';
 
 describe('gispl event emitting', () => {
     
@@ -10,7 +10,7 @@ describe('gispl event emitting', () => {
     });
     
     afterEach(() => {
-        testGispl.clearGlobalEventsCache();
+        events.clearGlobalEventsCache();
     });
     
     it('should construct', () => {        

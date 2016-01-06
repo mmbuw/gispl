@@ -1,17 +1,16 @@
-import {eventTrigger} from './domCollectionEvents';
-import TuioClient from 'tuio/src/TuioClient';
+import {events} from './events';
 
 export default function tuioInput(params = {}) {
     let inputApi = {},
-        {tuio} = params;
+        {tuioClient} = params;
     
-    // listen to tuio
-    tuio.connect();
-    tuio.on('refresh', () => {
-        let pointers = tuio.getTuioPointers();
+    // listen to tuio/websocket
+    tuioClient.connect();
+    tuioClient.on('refresh', () => {
+        let pointers = tuioClient.getTuioPointers();
     });
     //
-    inputApi.emit = eventTrigger;
+    inputApi.emit = events.emit;
     
     return inputApi;
 }

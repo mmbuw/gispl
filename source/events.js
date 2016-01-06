@@ -55,39 +55,47 @@ let globalEventCache = {
     }
 };
 
-export function eventTrigger(element, event, ...args) {
-    globalEventCache.callListeners({element,
+export let events = {
+    emit: function eventEmit(element, event, ...args) {
+        globalEventCache.callListeners({element,
+                                            event,
+                                            args});
+    },
+    on: function eventOn(element, event, listener) {
+        globalEventCache.addListener({element,
                                         event,
-                                        args});
-}
-
-export default function domCollectionEvents(object = {}) {
-    
-    object.on = function eventOn(event, listener) {
-        this.forEach(element => {
-            globalEventCache.addListener({element,
+                                        listener});
+        
+    },
+    off: function eventOff(element, event, listener) {
+        globalEventCache.removeListeners({element,
                                             event,
                                             listener});
-        });
+    },
+    clearGlobalEventsCache: function eventClearGlobalCache() {
+        globalEventCache.clear();
+    }
+};
+
+export function domCollectionEvents(object = {}) {
+    
+    object.on = function collectionEventOn(event, listener) {
+        this.forEach(element => events.on(element,
+                                            event,
+                                            listener));
     };
     
-    object.off = function eventOff(event, listener) {
-        this.forEach(element => {
-            globalEventCache.removeListeners({element,
-                                                event,
-                                                listener});
-        });
+    object.off = function collectionEventOff(event, listener) {
+        this.forEach(element => events.off(element,
+                                            event,
+                                            listener));
     };
     
-    object.emit = function eventEmit(event, ...args) {
-        this.forEach(element => eventTrigger(element,
+    object.emit = function collectionEventEmit(event, ...args) {
+        this.forEach(element => events.emit(element,
                                                 event,
                                                 ...args)
         );
-    };
-    
-    object.clearGlobalEventsCache = function eventClearGlobalCache() {
-        globalEventCache.clear();
     };
     
     return object;
