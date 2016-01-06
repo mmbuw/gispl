@@ -32,7 +32,7 @@ export function sendPointerBundle(server, ...pointers) {
         
         alive.push(sessionId); 
     });
-    console.log(alive);
+    
     server.send(getAliveBuffer(alive));
 }
     

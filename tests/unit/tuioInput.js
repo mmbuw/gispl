@@ -118,7 +118,7 @@ describe('tuioInput', () => {
         });
     });
     
-    it('should notify listeners with the node and points information', (asyncDone) => {
+    it('should notify listeners with the node and point information', (asyncDone) => {
         let sessionId = 10,
             tuioPointer = {
                 sessionId
@@ -138,6 +138,30 @@ describe('tuioInput', () => {
             //only one input object ->  tuioPointer
             expect(regions.get(document).length).to.equal(1);
             expect(regions.get(document)[0].getSessionId()).to.equal(sessionId);
+            asyncDone();
+        });
+    });
+    
+    it('should notify listeners with the correct multiple point information', (asyncDone) => {
+        let sessionId1 = 10,
+            tuioPointer1 = {
+                sessionId: sessionId1
+            },
+            sessionId2 = 11,
+            tuioPointer2 = {
+                sessionId: sessionId2
+            },
+            spy = sinon.spy(),
+            input = tuioInput({tuioClient, findNodes});
+        
+        input.listen(spy);
+        
+        setTimeout(() => {
+            sendPointerBundle(server, tuioPointer1, tuioPointer2);
+            let regions = spy.getCall(0).args[0];
+            expect(regions.get(document).length).to.equal(2);
+            expect(regions.get(document)[0].getSessionId()).to.equal(sessionId1);
+            expect(regions.get(document)[1].getSessionId()).to.equal(sessionId2);
             asyncDone();
         });
     });
