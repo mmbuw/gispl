@@ -1,37 +1,39 @@
 import osc from 'osc/dist/osc-browser';
 
-export function sendPointerBundle(server, params) {
-    params = params || {};
+export function sendPointerBundle(server, ...pointers) {
     
-    var sessionId = params.sessionId,
-        frameId = params.frameId,
-        source = params.source,
-        alive = params.alive,
-        xPos = params.xPos,
-        yPos = params.yPos,
-        xSpeed = params.xSpeed,
-        ySpeed = params.ySpeed,
-        pressureSpeed = params.pressureSpeed,
-        pressureAccel = params.pressureAccel,
-        motionAccel = params.motionAccel,
-        time = params.time;
+    server.send(getFrameBuffer());
     
-    server.send(getFrameBuffer({
-        frameId: frameId,
-        source: source,
-        time: time
-    }));
-    server.send(getPointerBuffer({
-        sessionId: sessionId,
-        xPos: xPos,
-        yPos: yPos,
-        xSpeed: xSpeed,
-        ySpeed: ySpeed,
-        pressureSpeed: pressureSpeed,
-        motionAccel: motionAccel,
-        pressureAccel: pressureAccel,
-    }));
-    server.send(getAliveBuffer(params.alive));
+    let alive = [],
+        defaultSessionId = 1;
+    
+    pointers.forEach(params => {
+        let sessionId = params.sessionId || defaultSessionId,
+            xPos = params.xPos,
+            yPos = params.yPos,
+            xSpeed = params.xSpeed,
+            ySpeed = params.ySpeed,
+            pressureSpeed = params.pressureSpeed,
+            pressureAccel = params.pressureAccel,
+            motionAccel = params.motionAccel;
+        
+        defaultSessionId = sessionId + 1;
+
+        server.send(getPointerBuffer({
+            sessionId: sessionId,
+            xPos: xPos,
+            yPos: yPos,
+            xSpeed: xSpeed,
+            ySpeed: ySpeed,
+            pressureSpeed: pressureSpeed,
+            motionAccel: motionAccel,
+            pressureAccel: pressureAccel,
+        }));
+        
+        alive.push(sessionId); 
+    });
+    console.log(alive);
+    server.send(getAliveBuffer(alive));
 }
     
 function getFrameBuffer(params) {
