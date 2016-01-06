@@ -1,16 +1,11 @@
-import {events} from './events';
-
 export default function tuioInput(params = {}) {
-    let inputApi = {},
-        {tuioClient} = params;
+    let {tuioClient,
+            events} = params;
     
     // listen to tuio/websocket
     tuioClient.connect();
     tuioClient.on('refresh', () => {
         let pointers = tuioClient.getTuioPointers();
+        events.emit(document, 'gesture');
     });
-    //
-    inputApi.emit = events.emit;
-    
-    return inputApi;
 }

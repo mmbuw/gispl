@@ -1,5 +1,6 @@
 import tuioInput from '../../source/tuioInput';
 import gispl from '../../source/gispl';
+import {events} from '../../source/events';
 import {WebMocket, MocketServer} from 'webmocket';
 import TuioClient from 'tuio/src/TuioClient';
 import {sendPointerBundle} from '../helpers/osc';
@@ -7,8 +8,9 @@ import {sendPointerBundle} from '../helpers/osc';
 describe('tuioInput', () => {
     
     let server,
-        tuio,
+        tuioClient,
         tuioSpy,
+        eventSpy,
         input,
         connectionUrl = 'test-url';
     
@@ -17,31 +19,16 @@ describe('tuioInput', () => {
         server = new MocketServer(connectionUrl);
         
         let host = connectionUrl;        
-        tuio = new TuioClient({host});
-        tuioSpy = sinon.spy(tuio, 'getTuioPointers');
-        input = tuioInput({tuio});
+        tuioClient = new TuioClient({host});
+        tuioSpy = sinon.spy(tuioClient, 'getTuioPointers');
+        eventSpy = sinon.spy(events, 'emit');
+        input = tuioInput({tuioClient, events});
     });
     
     afterEach(() => {
         server.close();
-        tuioSpy.reset();
-    });
-    
-    it('should be able to emit gispl events on dom nodes and pass data', () => {
-        let spy = sinon.spy(),
-            gestureName = 'gesture';
-        
-        gispl(document).on(gestureName, spy);
-        
-        let gestureData = {data: 1};
-        input.emit(document, gestureName);
-        expect(spy.callCount).to.equal(1);
-        
-        input.emit(document, gestureName, gestureData, gestureData);
-        expect(spy.callCount).to.equal(2);
-        expect(spy.lastCall.args.length).to.equal(2);
-        expect(spy.lastCall.args[0]).to.deep.equal(gestureData);
-        expect(spy.lastCall.args[1]).to.deep.equal(gestureData);
+        tuioSpy.restore();
+        eventSpy.restore();
     });
     
     it('should check for tuio pointers when pointers received', (asyncDone) => {
@@ -59,7 +46,7 @@ describe('tuioInput', () => {
             let pointers = tuioSpy.returnValues[0];
             expect(pointers[0].getSessionId()).to.equal(sessionId);
             asyncDone();
-        }, 0);        
+        }, 0);
     });
 
 });
