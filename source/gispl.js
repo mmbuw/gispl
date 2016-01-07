@@ -35,8 +35,8 @@ gispl.addGesture = function gisplAddGesture(gestureDefinition) {
         gestureDefinition = JSON.parse(gestureDefinition);
     }
     
-    let {name} = gestureDefinition,
-        gesture = createGesture(gestureDefinition);
+    let gesture = createGesture(gestureDefinition),
+        {name} = gestureDefinition;
     
     userDefinedGestures.set(name, gesture);
     return gispl;

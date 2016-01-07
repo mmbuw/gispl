@@ -22,14 +22,15 @@ export let gestureException = {
     
 
 function isValidGesture(definition) {
-    if (typeof definition === 'undefined') {
+    if (typeof definition === 'undefined' ||
+            Object.keys(definition).length === 0) {
         throw gestureException.EMPTY;
     }
     
     let {name, features} = definition;
     
     if (typeof name === 'undefined') {
-        throw gestureException.NONAME;
+        throw gestureException.NO_NAME;
     }
     if (typeof features === 'undefined' ||
             typeof features.length === 'undefined' ||

@@ -1,5 +1,6 @@
 import gispl from '../../source/gispl';
 import $ from 'jquery';
+import {gestureException} from '../../source/gesture';
 
 describe('gispl', () => {
     
@@ -56,11 +57,11 @@ describe('gispl', () => {
         
         expect(function() {
             gispl.addGesture();
-        }).to.throw();
+        }).to.throw(gestureException.EMPTY);
         
         expect(function() {
             gispl.addGesture({});
-        }).to.throw();
+        }).to.throw(gestureException.EMPTY);
         
         
         let gestureWithoutName = $.extend({
@@ -70,28 +71,28 @@ describe('gispl', () => {
             }, baseGesture);
         expect(function() {
             gispl.addGesture(gestureWithoutName);
-        }).to.throw();
+        }).to.throw(gestureException.NO_NAME);
         
         let gestureWithoutFeatures = $.extend({
             name: 'someGestureName'
         }, baseGesture);
         expect(function() {
             gispl.addGesture(gestureWithoutFeatures);
-        }).to.throw();
+        }).to.throw(gestureException.NO_FEATURES);
         
         let gestureWithEmptyFeatures = $.extend({
             features: [],
         }, gestureWithoutFeatures);
         expect(function() {
             gispl.addGesture(gestureWithEmptyFeatures);
-        }).to.throw();
+        }).to.throw(gestureException.NO_FEATURES);
         
         let gestureWithIncorrectFeaturesCollection = $.extend({
             features: {}
         }, gestureWithoutFeatures);
         expect(function() {
             gispl.addGesture(gestureWithIncorrectFeaturesCollection);
-        }).to.throw();
+        }).to.throw(gestureException.NO_FEATURES);
     });
     
     it('should throw when adding gestures with names that already exist', () => {
@@ -105,7 +106,7 @@ describe('gispl', () => {
         gispl.addGesture(gesture);
         expect(function() {
             gispl.addGesture(gesture);
-        }).to.throw();
+        }).to.throw(gestureException.DUPLICATE);
     });
     
     it('should accept gestures as JSON', () => {
