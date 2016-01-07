@@ -159,5 +159,58 @@ describe('tuioInput', () => {
             asyncDone();
         });
     });
+    
+    it('should allow a listener to be removed', (asyncDone) => {
+        let spy = sinon.spy(),
+            examplePointer = {},
+            input = tuioInput({tuioClient, findNodes});
+        
+        input.listen(spy);
+        input.mute(spy);
+        
+        setTimeout(() => {
+            sendPointerBundle(server, examplePointer);
+            expect(spy.callCount).to.equal(0);
+            asyncDone();
+        });
+    });
+    
+    it('should allow the input to be disabled', (asyncDone) => {
+        let tuioRefreshSpy = sinon.spy(tuioClient, 'off'),
+            examplePointer = {},
+            spy = sinon.spy();
+        
+        let input = tuioInput({tuioClient, findNodes});
+        
+        input.listen(spy);
+        input.disable();
+        
+        expect(tuioRefreshSpy.callCount).to.equal(1);
+        expect(tuioRefreshSpy.calledWith('refresh')).to.equal(true);
+        expect(tuioRefreshSpy.getCall(0).args[1]).to.be.a('function');
+        
+        setTimeout(() => {
+            sendPointerBundle(server, examplePointer);
+            expect(spy.callCount).to.equal(0);
+            asyncDone();
+        });
+    });
+    
+    it('should allow the input to be reenabled', (asyncDone) => {
+        let spy = sinon.spy(),
+            examplePointer = {};
+        
+        let input = tuioInput({tuioClient, findNodes});
+        
+        input.listen(spy);
+        input.disable();
+        input.enable();
+        
+        setTimeout(() => {
+            sendPointerBundle(server, examplePointer);
+            expect(spy.callCount).to.equal(1);
+            asyncDone();
+        });
+    });
 
 });

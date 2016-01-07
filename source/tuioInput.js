@@ -6,23 +6,7 @@ export default function tuioInput(params = {}) {
         inputApi = {},
         listeners = [];
     
-    inputApi.listen = function inputListen(callback) {
-        if (typeof callback !== 'function') {
-            throw new Error(`Attempting to register a listener that
-                                is not a function`);
-        }
-        listeners.push(callback);
-    };
-    
-    inputApi.notify = function inputNotify(...args) {
-        listeners.forEach(callback => {
-            callback(...args);
-        });
-    };
-    
-    // listen to tuio/websocket
-    tuioClient.connect();
-    tuioClient.on('refresh', () => {
+    function onTuioRefresh() {
         let pointers = tuioClient.getTuioPointers(),
             regions = new Map();
         
@@ -41,7 +25,41 @@ export default function tuioInput(params = {}) {
         });
         
         inputApi.notify(regions);
-    });
+    }
+    
+    inputApi.listen = function inputListen(callback) {
+        if (typeof callback !== 'function') {
+            throw new Error(`Attempting to register a listener that
+                                is not a function`);
+        }
+        listeners.push(callback);
+    };
+    
+    inputApi.notify = function inputNotify(...args) {
+        listeners.forEach(callback => {
+            callback(...args);
+        });
+    };
+    
+    inputApi.mute = function inputMute(callback) {
+        let callbackIndex = listeners.indexOf(callback);
+        if (callbackIndex !== -1) {
+            listeners.splice(callbackIndex, 1);
+        }
+    };
+    
+    // doesn't remove the listener
+    inputApi.disable = function inputDisable() {
+        tuioClient.off('refresh', onTuioRefresh);
+    };
+    
+    inputApi.enable = function inputEnable() {
+        tuioClient.on('refresh', onTuioRefresh);
+    };
+    
+    // listen to tuio/websocket
+    tuioClient.connect();
+    inputApi.enable();
     
     return inputApi;
 }
