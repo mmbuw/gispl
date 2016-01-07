@@ -160,6 +160,42 @@ describe('tuioInput', () => {
         });
     });
     
+    it(`should notify listeners with the correct multiple element,
+            multiple point information`, (asyncDone) => {
+        let tuioPointer1 = {
+                sessionId
+            },
+            tuioPointer2 = {
+                sessionId: sessionId2
+            },
+            spy = sinon.spy();
+        
+        calibrationStub.restore();
+        calibrationStub = sinon.stub(calibration, 'screenToViewportCoordinates');
+        calibrationStub.onCall(0).returns({x:0, y:0});
+        
+        let element = $(`<div style="
+                            width: 10px;
+                            height: 10px;
+                            margin-left: 95px;"></div>`).appendTo('body')[0];
+        //ensure second search finds the appended element
+        calibrationStub.onCall(1).returns({x:100, y:0});
+        
+        let input = tuioInput({tuioClient, findNodes});
+        input.listen(spy);
+        
+        setTimeout(() => {
+            sendPointerBundle(server, tuioPointer1, tuioPointer2);
+            let regions = spy.getCall(0).args[0];
+            //document contains both pointers
+            expect(regions.get(document).length).to.equal(2);
+            //element only one
+            expect(regions.get(element).length).to.equal(1);
+            expect(regions.get(element)[0].getSessionId()).to.equal(sessionId2);
+            asyncDone();
+        });
+    });
+    
     it('should allow a listener to be removed', (asyncDone) => {
         let spy = sinon.spy(),
             examplePointer = {},
