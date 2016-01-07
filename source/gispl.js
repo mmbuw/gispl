@@ -28,7 +28,7 @@ export default function gispl(selection) {
     return gisplApi;
 }
    
-let userDefinedGestures = Object.create(null);
+let userDefinedGestures = new Map();
 
 function gestureObjectCheck(gesture) {
     if (typeof gesture === 'undefined') {
@@ -45,7 +45,7 @@ function gestureObjectCheck(gesture) {
             features.length === 0) {
         throw new Error('Attempting to define a gestures without features');
     }
-    if (typeof userDefinedGestures[name] !== 'undefined') {
+    if (userDefinedGestures.has(name)) {
         throw new Error('Attempting to define a gesture that already exists');
     }
 }
@@ -57,14 +57,15 @@ gispl.addGesture = function gisplAddGesture(gesture) {
     gestureObjectCheck(gesture);
     
     let {name} = gesture;
-    userDefinedGestures[name] = gesture;
+    userDefinedGestures.set(name, gesture);
     return gispl;
 };
 
 gispl.clearGestures = function gisplClearGestures() {
-    userDefinedGestures = Object.create(null);
+    userDefinedGestures = new Map();
+    return gispl;
 };
 
 gispl.gesture = function gisplGesture(gestureName) {
-    return userDefinedGestures[gestureName];
+    return userDefinedGestures.get(gestureName);
 };
