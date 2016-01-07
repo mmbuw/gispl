@@ -45,7 +45,7 @@ describe('gispl', () => {
         };
         
         gispl.addGesture(gesture);
-        expect(gispl.gesture('someGestureName')).to.deep.equal(gesture);
+        expect(gispl.gesture('someGestureName').definition()).to.deep.equal(gesture);
     });
     
     it('should throw when adding gestures without required parameters', () => {
@@ -117,7 +117,7 @@ describe('gispl', () => {
         };
         gispl.addGesture(JSON.stringify(gesture));
         
-        expect(gispl.gesture('someGestureName')).to.deep.equal(gesture);
+        expect(gispl.gesture('someGestureName').definition()).to.deep.equal(gesture);
     });
     
 });

@@ -1,5 +1,7 @@
 import {domCollectionEvents} from './events';
 import elementInsertion from './elementInsertion';
+import {createGesture,
+            userDefinedGestures} from './gesture';
 
 export default function gispl(selection) {
     
@@ -27,42 +29,21 @@ export default function gispl(selection) {
     
     return gisplApi;
 }
-   
-let userDefinedGestures = new Map();
 
-function gestureObjectCheck(gesture) {
-    if (typeof gesture === 'undefined') {
-        throw new Error('Attempting to define a gesture without passing a gesture');
+gispl.addGesture = function gisplAddGesture(gestureDefinition) {
+    if (typeof gestureDefinition === 'string') {
+        gestureDefinition = JSON.parse(gestureDefinition);
     }
     
-    let {name, features} = gesture;
+    let {name} = gestureDefinition,
+        gesture = createGesture(gestureDefinition);
     
-    if (typeof name === 'undefined') {
-        throw new Error('Attempting to define a gesture without name');
-    }
-    if (typeof features === 'undefined' ||
-            typeof features.length === 'undefined' ||
-            features.length === 0) {
-        throw new Error('Attempting to define a gestures without features');
-    }
-    if (userDefinedGestures.has(name)) {
-        throw new Error('Attempting to define a gesture that already exists');
-    }
-}
-
-gispl.addGesture = function gisplAddGesture(gesture) {
-    if (typeof gesture === 'string') {
-        gesture = JSON.parse(gesture);
-    }
-    gestureObjectCheck(gesture);
-    
-    let {name} = gesture;
     userDefinedGestures.set(name, gesture);
     return gispl;
 };
 
 gispl.clearGestures = function gisplClearGestures() {
-    userDefinedGestures = new Map();
+    userDefinedGestures.clear();
     return gispl;
 };
 
