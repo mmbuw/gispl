@@ -4,14 +4,14 @@ export default function tuioInput(params = {}) {
             screenWidth = window.screen.width,
             screenHeight = window.screen.height} = params,
         inputApi = {},
-        listeners = new Set();
+        listeners = [];
     
     inputApi.listen = function inputListen(callback) {
         if (typeof callback !== 'function') {
             throw new Error(`Attempting to register a listener that
                                 is not a function`);
         }
-        listeners.add(callback);
+        listeners.push(callback);
     };
     
     inputApi.notify = function inputNotify(...args) {

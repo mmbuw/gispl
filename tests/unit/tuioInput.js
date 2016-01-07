@@ -14,7 +14,9 @@ describe('tuioInput', () => {
         connectionUrl = 'test-url',
         calibration,
         calibrationStub,
-        findNodes;
+        findNodes,
+        sessionId = 10,
+        sessionId2 = 11;
     
     beforeEach(() => {
         window.WebSocket = WebMocket;
@@ -36,13 +38,11 @@ describe('tuioInput', () => {
     
     it('should check for tuio pointers when pointers received', (asyncDone) => {
         
-        let sessionId = 10,
-            tuioPointer = {
+        let tuioPointer = {
                 sessionId
             },
-            tuioSpy = sinon.spy(tuioClient, 'getTuioPointers');
-        
-        tuioInput({tuioClient, findNodes});
+            tuioSpy = sinon.spy(tuioClient, 'getTuioPointers'),
+            input = tuioInput({tuioClient, findNodes});
         
         setTimeout(() => {
             sendPointerBundle(server, tuioPointer);
@@ -102,25 +102,21 @@ describe('tuioInput', () => {
     });
     
     it('should notify listeners when input received and nodes found', (asyncDone) => {
-        let sessionId = 10,
-            tuioPointer = {
-                sessionId
-            },
-            spy = sinon.spy(),
+        let spy = sinon.spy(),
+            examplePointer = {},
             input = tuioInput({tuioClient, findNodes});
         
         input.listen(spy);
         
         setTimeout(() => {
-            sendPointerBundle(server, tuioPointer);
+            sendPointerBundle(server, examplePointer);
             expect(spy.callCount).to.equal(1);
             asyncDone();
         });
     });
     
     it('should notify listeners with the node and point information', (asyncDone) => {
-        let sessionId = 10,
-            tuioPointer = {
+        let tuioPointer = {
                 sessionId
             },
             spy = sinon.spy(),
@@ -143,11 +139,9 @@ describe('tuioInput', () => {
     });
     
     it('should notify listeners with the correct multiple point information', (asyncDone) => {
-        let sessionId1 = 10,
-            tuioPointer1 = {
-                sessionId: sessionId1
+        let tuioPointer1 = {
+                sessionId
             },
-            sessionId2 = 11,
             tuioPointer2 = {
                 sessionId: sessionId2
             },
@@ -160,7 +154,7 @@ describe('tuioInput', () => {
             sendPointerBundle(server, tuioPointer1, tuioPointer2);
             let regions = spy.getCall(0).args[0];
             expect(regions.get(document).length).to.equal(2);
-            expect(regions.get(document)[0].getSessionId()).to.equal(sessionId1);
+            expect(regions.get(document)[0].getSessionId()).to.equal(sessionId);
             expect(regions.get(document)[1].getSessionId()).to.equal(sessionId2);
             asyncDone();
         });
