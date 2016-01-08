@@ -20,6 +20,10 @@ export function createGesture(definition) {
         return features;
     };
     
+    gestureApi.load = function gestureLoad(inputState) {
+        return features.every(feature => feature.load(inputState));
+    }
+    
     return gestureApi;
 }
     
