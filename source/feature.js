@@ -1,23 +1,17 @@
 import motion from './features/motion';
 
-export function featureFactory(name) {
+export function featureFactory(type) {
     
-    switch (name.toLowerCase()) {
+    switch (type.toLowerCase()) {
     case 'motion':
         return motion();
+    case 'count':
+        break;
     default:
-        throw new Error(`${featureException.NONEXISTING} name`);
+        throw new Error(`${featureException.NONEXISTING} ${type}`);
     }
 }
     
-export function createFeature(params = {}) {
-    let {name} = params;
-    
-    return {
-        name
-    };
-}
-    
 export let featureException = {
-    NONEXISTING: 'Trying to add a gesture with a non-existing feature: '
+    NONEXISTING: 'Trying to add a gesture with a non-existing feature:'
 };

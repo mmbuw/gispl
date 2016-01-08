@@ -1,12 +1,23 @@
+import {featureFactory} from './feature';
+
 export let userDefinedGestures = new Map();
 
 export function createGesture(definition) {
-    let gestureApi = {};
+    let gestureApi = {},
+        features = [];
     
     isValidGesture(definition);
     
+    definition.features.forEach(feature => {
+        features.push(featureFactory(feature.type));
+    });
+    
     gestureApi.definition = function gestureDefinition() {
         return definition;
+    };
+    
+    gestureApi.features = function gestureFeatures() {
+        return features;
     };
     
     return gestureApi;

@@ -5,7 +5,7 @@ describe('feature', () => {
         it('should construct', () => {
             let motion = featureFactory('Motion');
             expect(motion).to.be.an('object');
-            expect(motion.name()).to.equal('Motion');
+            expect(motion.type()).to.equal('Motion');
         });
     });
 });

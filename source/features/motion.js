@@ -1,9 +1,9 @@
 export default function motion() {
     let motionApi = {},
-        name = 'Motion';
+        type = 'Motion';
     
-    motionApi.name = function motionApi() {
-        return name;
+    motionApi.type = function motionApi() {
+        return type;
     };
     
     return motionApi;
