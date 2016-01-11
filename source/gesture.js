@@ -16,6 +16,10 @@ export function createGesture(definition) {
         return definition;
     };
     
+    gestureApi.name = function gestureName() {
+        return definition.name;
+    };
+    
     gestureApi.features = function gestureFeatures() {
         return features;
     };

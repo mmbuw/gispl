@@ -39,7 +39,7 @@ function handleInput(nodesMap) {
         userDefinedGestures.forEach(gesture => {
             // if gesture recognized
             if (gesture.load(inputState)) {
-                let event = gesture.definition().name;
+                let event = gesture.name();
                 events.emit(node, event);
             }
         });
