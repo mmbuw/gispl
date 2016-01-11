@@ -24,6 +24,15 @@ export function featureBase() {
     
     return featureApi;
 }
+       
+export function lowerUpperLimit(constraints = []) {
+    let limitApi = {};
+    
+    limitApi.lower = constraints[0];
+    limitApi.upper = constraints[1];
+    
+    return limitApi;
+}
     
 export let featureException = {
     NONEXISTING: 'Trying to add a gesture with a non-existing feature:'
