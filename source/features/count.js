@@ -4,9 +4,7 @@ import {featureBase,
 export default function count(params) {
     let countApi = {},
         baseApi = featureBase(),
-        {constraints} = params;
-    
-    let limit = lowerUpperLimit(constraints);
+        limit = lowerUpperLimit(params.constraints);
     
     countApi.type = function countType() {
         return 'Count';
@@ -17,7 +15,7 @@ export default function count(params) {
             return false;
         }
         let match = inputState.length >= limit.lower;
-        if (typeof constraints[1] !== 'undefined') {
+        if (typeof limit.upper !== 'undefined') {
             match = match && (inputState.length <= limit.upper);
         }
         
