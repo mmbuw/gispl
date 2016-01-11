@@ -9,6 +9,13 @@ export default function tuioInput(params = {}) {
     function onTuioRefresh() {
         let pointers = tuioClient.getTuioPointers(),
             regions = new Map();
+            
+        if (pointers.length === 0) {
+            let cursors = tuioClient.getTuioCursors();
+            for (var key in cursors) {
+                pointers.push(cursors[key]);
+            }
+        }
         
         pointers.forEach(pointer => {
             let screenX = pointer.getScreenX(screenWidth),
