@@ -1,14 +1,15 @@
+import {featureBase} from '../feature';
+
 export default function motion() {
     let motionApi = {},
-        type = 'Motion';
+        baseApi = featureBase();
     
     motionApi.type = function motionApi() {
-        return type;
+        return 'Motion';
     };
     
-    motionApi.load = function motionLoad(inputState = []) {
-        
-        if (!inputState.length) {
+    motionApi.load = function motionLoad(inputState) {
+        if (!baseApi.load(inputState)) {
             return false;
         }
         

@@ -1,4 +1,5 @@
 import motion from './features/motion';
+import count from './features/count';
 
 export function featureFactory(type) {
     
@@ -6,10 +7,20 @@ export function featureFactory(type) {
     case 'motion':
         return motion();
     case 'count':
-        break;
+        return count();
     default:
         throw new Error(`${featureException.NONEXISTING} ${type}`);
     }
+}
+    
+export function featureBase() {
+    let featureApi = {};
+    
+    featureApi.load = function featureLoad(inputState = []) {
+        return !!inputState.length;
+    };
+    
+    return featureApi;
 }
     
 export let featureException = {
