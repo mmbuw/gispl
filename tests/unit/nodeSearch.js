@@ -147,6 +147,12 @@ describe('nodeSearch', () => {
         expect(foundNodes.length).to.equal(0);
     });
     
+    it('should return nothing when the screen is not calibrated', () => {
+        
+        let foundNodes = findNodes.fromPoint({screenX: 10, screenY: 10});
+        expect(foundNodes.length).to.equal(0);
+    });
+    
     it('should find elements based on their screen size', () => {
         
         // a bit tricky

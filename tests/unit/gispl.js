@@ -144,12 +144,17 @@ describe('gispl', () => {
         gispl(document).on(motionName, spy);
         window.WebSocket = WebMocket;
         
-        let calibration = {screenToViewportCoordinates: function() {
-            return {
-                x: 0,
-                y: 0
-            };
-        }};
+        let calibration = {
+            screenToViewportCoordinates: function() {
+                return {
+                    x: 0,
+                    y: 0
+                };
+            },
+            isScreenUsable: function() {
+                return true;
+            }
+        };
         gispl.initTuio({host, calibration});
         
         let server = new MocketServer(host);

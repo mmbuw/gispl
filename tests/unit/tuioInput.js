@@ -13,7 +13,8 @@ describe('tuioInput', () => {
         tuioSpy,
         connectionUrl = 'test-url',
         calibration,
-        calibrationStub,
+        coordinatesStub,
+        screenUsableStub,
         findNodes,
         sessionId = 10,
         sessionId2 = 11;
@@ -26,14 +27,17 @@ describe('tuioInput', () => {
         tuioClient = new TuioClient({host});
         
         calibration = screenCalibration();
-        calibrationStub = sinon.stub(calibration, 'screenToViewportCoordinates')
+        coordinatesStub = sinon.stub(calibration, 'screenToViewportCoordinates')
                             .returns({x: 0, y: 0});
+        screenUsableStub = sinon.stub(calibration, 'isScreenUsable')
+                            .returns(true);
         findNodes = nodeSearch({calibration});
     });
     
     afterEach(() => {
         server.close();
-        calibrationStub.restore();
+        coordinatesStub.restore();
+        screenUsableStub.restore();
     });
     
     it('should check for tuio pointers when pointers received', (asyncDone) => {
@@ -170,16 +174,16 @@ describe('tuioInput', () => {
             },
             spy = sinon.spy();
         
-        calibrationStub.restore();
-        calibrationStub = sinon.stub(calibration, 'screenToViewportCoordinates');
-        calibrationStub.onCall(0).returns({x:0, y:0});
+        coordinatesStub.restore();
+        coordinatesStub = sinon.stub(calibration, 'screenToViewportCoordinates');
+        coordinatesStub.onCall(0).returns({x:0, y:0});
         
         let element = $(`<div style="
                             width: 10px;
                             height: 10px;
                             margin-left: 95px;"></div>`).appendTo('body')[0];
         //ensure second search finds the appended element
-        calibrationStub.onCall(1).returns({x:100, y:0});
+        coordinatesStub.onCall(1).returns({x:100, y:0});
         
         let input = tuioInput({tuioClient, findNodes});
         input.listen(spy);

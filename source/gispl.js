@@ -6,7 +6,6 @@ import {createGesture,
 import TuioClient from 'tuio/src/TuioClient';
 import nodeSearch from './nodeSearch';
 import tuioInput from './tuioInput';
-import screenCalibration from './screenCalibration';
 
 export default function gispl(selection) {
     
@@ -70,7 +69,7 @@ gispl.gesture = function gisplGesture(gestureName) {
 
 gispl.initTuio = function gisplInitTuio(params) {
     let {host,
-            calibration = screenCalibration()} = params;
+            calibration} = params;
     
     let tuioClient = new TuioClient({host}),
         findNodes = nodeSearch({calibration});

@@ -1,13 +1,16 @@
+import screenCalibration from './screenCalibration';
+
 export default function nodeSearch(params = {}) {
     
     let searchApi = {},
-        {calibration} = params;
+        {calibration = screenCalibration()} = params;
     
     function coordinatesFromParams(params = {}) {
         let {x, y, screenX, screenY} = params;
         
         if (typeof screenX !== 'undefined' &&
-                typeof screenY !== 'undefined') {
+                typeof screenY !== 'undefined' &&
+                calibration.isScreenUsable()) {
             let adjustedPoints = calibration.screenToViewportCoordinates({
                 screenX, screenY
             });
