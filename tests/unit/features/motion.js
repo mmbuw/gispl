@@ -4,7 +4,8 @@ import TuioPointer from 'tuio/src/TuioPointer';
 describe('feature', () => {
     describe('motion', () => {
         
-        let motion;
+        let type = 'motion',
+            motion;
         
         function buildPointer(params = {}) {
             let {x:xp, y:yp} = params;
@@ -24,7 +25,7 @@ describe('feature', () => {
         }
         
         beforeEach(() => {
-            motion = featureFactory('motion');
+            motion = featureFactory({type});
         });
         
         it('should return false when passed no, empty, or invalid object', () => {

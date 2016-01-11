@@ -9,7 +9,7 @@ export function createGesture(definition) {
     isValidGesture(definition);
     
     definition.features.forEach(feature => {
-        features.push(featureFactory(feature.type));
+        features.push(featureFactory(feature));
     });
     
     gestureApi.definition = function gestureDefinition() {

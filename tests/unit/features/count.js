@@ -4,17 +4,17 @@ import TuioPointer from 'tuio/src/TuioPointer';
 describe('feature', () => {
     describe('count', () => {
         
-        it('should construct', () => {
-            let count = featureFactory('count');
-            expect(count).to.be.an('object');
-            expect(count.type()).to.equal('Count');
+        let type = 'count',
+            countFeature;
+        
+        beforeEach(() => {
+            countFeature = featureFactory({type});
         });
         
         it('should return false when passed no, empty, or invalid object', () => {
-            let count = featureFactory('count');
-            expect(count.load()).to.equal(false);
-            expect(count.load([])).to.equal(false);
-            expect(count.load({})).to.equal(false);
+            expect(countFeature.load()).to.equal(false);
+            expect(countFeature.load([])).to.equal(false);
+            expect(countFeature.load({})).to.equal(false);
         });
     });
 });

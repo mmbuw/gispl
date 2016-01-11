@@ -1,13 +1,15 @@
 import motion from './features/motion';
 import count from './features/count';
 
-export function featureFactory(type) {
+export function featureFactory(params = {}) {
+    
+    let {type = ''} = params;
     
     switch (type.toLowerCase()) {
     case 'motion':
-        return motion();
+        return motion(params);
     case 'count':
-        return count();
+        return count(params);
     default:
         throw new Error(`${featureException.NONEXISTING} ${type}`);
     }
