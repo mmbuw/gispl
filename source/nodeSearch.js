@@ -56,8 +56,7 @@ function element(paramNode) {
     };
     
     elementApi.exists = function elementExists() {
-        return node !== null && //document.parentNode === null
-                    typeof node !== 'undefined'; // node is undefined
+        return node !== null;
     };
     
     elementApi.moveToParent = function elementParent() {
