@@ -1,38 +1,38 @@
-import nodeSearch from './source/nodeSearch';
-import screenCalibration from './source/screenCalibration';
-import TuioClient from 'tuio/src/TuioClient';
+import gispl from './source/gispl';
+import $ from 'jquery';
 
-let calibration = screenCalibration();
-let findNodes = nodeSearch({calibration});
-let client = new TuioClient({
-    host: 'ws://localhost:8080'
-});
-let element = document.getElementById('element');
-
-client.connect();
-
-client.on('refresh', function() {
-    
-    if (!calibration.isScreenUsable()) {
-        return;
+function getRandomBlue() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 4; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
     }
-    
-    let pointers = client.getTuioPointers();
-    
-    if(pointers.length === 0) {
-        element.style.backgroundColor = 'black';
-    }
-    
-    pointers.forEach((pointer) => {
-        let screenX = pointer.getScreenX(window.screen.width),
-            screenY = pointer.getScreenY(window.screen.height);
+    color += "ff";
+    return color;
+}
+
+let blackSquare = document.getElementById('element'),
+    isRed = false;
+
+$(document).ready(() => {
+    let gestureName = 'motion',
+        host = 'ws://localhost:8080';
         
-        let foundNodes = findNodes.fromPoint({screenX, screenY});
-        if (foundNodes.shift() === element) {
-            element.style.backgroundColor = 'red';
-        }
-        else {
-            element.style.backgroundColor = 'black';
-        }
+    gispl.addGesture({
+        name: gestureName,
+        features: [
+            {type:"Motion"}
+        ]
     });
+    
+    gispl(document).on(gestureName, () => {
+        document.body.style.background = getRandomBlue();
+    });
+    
+    gispl(blackSquare).on(gestureName, () => {
+        blackSquare.style.background = (isRed) ? 'black' : 'red';
+        isRed = !isRed;
+    });
+    
+    gispl.initTuio({host});
 });
