@@ -31,7 +31,7 @@ export default function nodeSearch(params = {}) {
             while (topElement.exists()) {
                 if (topElement.isDocument() ||
                         topElement.containsPoint({x, y})) {
-                    nodes.push(topElement.node);
+                    nodes.push(topElement.node());
                 }
                 topElement.moveToParent();
             }
@@ -49,21 +49,31 @@ export default function nodeSearch(params = {}) {
 function element(paramNode) {
     let elementApi = {};
     
-    elementApi.node = paramNode;
+    let node = paramNode;
+    
+    elementApi.node = function elementNode() {
+        return node;
+    };
     
     elementApi.exists = function elementExists() {
-        return this.node !== null;
+        return node !== null && //document.parentNode === null
+                    typeof node !== 'undefined'; // node is undefined
     };
     
     elementApi.moveToParent = function elementParent() {
-        this.node = this.node.parentNode;
+        node = node.parentNode;
         return this;
     };
     
     elementApi.containsPoint = function elementContainsPoint(point) {
+        
+        if (!this.exists()) {
+            return false;
+        }
+        
         let {x, y} = point;
         
-        let elementGeometry = this.node.getBoundingClientRect();
+        let elementGeometry = node.getBoundingClientRect();
         
         return (elementGeometry.left <= x &&
                     x < elementGeometry.right &&
@@ -72,7 +82,7 @@ function element(paramNode) {
     };
     
     elementApi.isDocument = function elementIsDocument() {
-        return this.node === document;
+        return node === document;
     };
     
     return elementApi;
