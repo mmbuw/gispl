@@ -12,8 +12,7 @@ export default function motion() {
             return false;
         }
         
-        let matches = false,
-            result = {x: 0, y: 0};
+        let result = {x: 0, y: 0};
         
         inputState.forEach(input => {
             let path = input.path;
@@ -23,8 +22,8 @@ export default function motion() {
                 
                 let tempVector = {
                     x: lastPoint.getX() - beforeLastPoint.getX(),
-                    y: lastPoint.getY() - beforeLastPoint.getY(),
-                }
+                    y: lastPoint.getY() - beforeLastPoint.getY()
+                };
                 
                 result.x += tempVector.x;
                 result.y += tempVector.y;
