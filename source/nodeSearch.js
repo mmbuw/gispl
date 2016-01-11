@@ -61,12 +61,10 @@ function element(paramNode) {
     };
     
     elementApi.containsPoint = function elementContainsPoint(point) {
-        let elementGeometry,
-            {x, y} = point;
+        let {x, y} = point;
         
-        if (this.node.getBoundingClientRect) {
-            elementGeometry = this.node.getBoundingClientRect();
-        }
+        let elementGeometry = this.node.getBoundingClientRect();
+        
         return (elementGeometry.left <= x &&
                     x < elementGeometry.right &&
                     elementGeometry.top <= y &&
