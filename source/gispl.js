@@ -1,7 +1,12 @@
-import {domCollectionEvents} from './events';
+import {domCollectionEvents,
+            events} from './events';
 import elementInsertion from './elementInsertion';
 import {createGesture,
             userDefinedGestures} from './gesture';
+import TuioClient from 'tuio/src/TuioClient';
+import nodeSearch from './nodeSearch';
+import tuioInput from './tuioInput';
+import screenCalibration from './screenCalibration';
 
 export default function gispl(selection) {
     
@@ -29,6 +34,18 @@ export default function gispl(selection) {
     
     return gisplApi;
 }
+    
+function handleInput(nodesMap) {
+    nodesMap.forEach((inputState, node) => {
+        userDefinedGestures.forEach(gesture => {
+            // if gesture recognized
+            if (gesture.load(inputState)) {
+                let event = gesture.definition().name;
+                events.emit(node, event);
+            }
+        });
+    });
+}
 
 gispl.addGesture = function gisplAddGesture(gestureDefinition) {
     if (typeof gestureDefinition === 'string') {
@@ -49,4 +66,14 @@ gispl.clearGestures = function gisplClearGestures() {
 
 gispl.gesture = function gisplGesture(gestureName) {
     return userDefinedGestures.get(gestureName);
+};
+
+gispl.initTuio = function gisplInitTuio(params) {
+    let {host,
+            calibration = screenCalibration()} = params;
+    
+    let tuioClient = new TuioClient({host}),
+        findNodes = nodeSearch({calibration});
+    
+    tuioInput({tuioClient, findNodes}).listen(handleInput);
 };

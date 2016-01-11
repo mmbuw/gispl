@@ -22,7 +22,7 @@ describe('tuioInput', () => {
         window.WebSocket = WebMocket;
         server = new MocketServer(connectionUrl);
         
-        let host = connectionUrl;        
+        let host = connectionUrl;
         tuioClient = new TuioClient({host});
         
         calibration = screenCalibration();

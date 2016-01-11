@@ -1,6 +1,11 @@
 import gispl from '../../source/gispl';
 import $ from 'jquery';
 import {gestureException} from '../../source/gesture';
+import tuioInput from '../../source/tuioInput';
+import screenCalibration from '../../source/screenCalibration';
+import nodeSearch from '../../source/nodeSearch';
+import {WebMocket, MocketServer} from 'webmocket';
+import {sendPointerBundle} from '../helpers/osc';
 
 describe('gispl', () => {
     
@@ -121,4 +126,47 @@ describe('gispl', () => {
         expect(gispl.gesture('someGestureName').definition()).to.deep.equal(gesture);
     });
     
+    it('should recognize a simple motion gesture', (assyncDone) => {
+        let spy = sinon.spy(),
+            motionName = 'motion',
+            sessionId = 10,
+            xPos = 0,
+            yPos = 0,
+            frameId = 1,
+            host = 'test-socket-url';
+        
+        gispl.addGesture({
+            name: motionName,
+            features: [
+                {type:"Motion"}
+            ]
+        });
+        gispl(document).on(motionName, spy);
+        window.WebSocket = WebMocket;
+        
+        let calibration = {screenToViewportCoordinates: function() {
+            return {
+                x: 0,
+                y: 0
+            };
+        }};
+        gispl.initTuio({host, calibration});
+        
+        let server = new MocketServer(host);
+        
+        setTimeout(() => {
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            expect(spy.callCount).to.equal(0);
+            //move pointer
+            xPos += 0.5;
+            yPos += 0.5;
+            frameId += 1;
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            
+            expect(spy.callCount).to.equal(1);
+            
+            server.close();
+            assyncDone();
+        }, 0);
+    });
 });

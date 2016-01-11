@@ -30,11 +30,11 @@ export default function motion() {
             }
         });
         
-        // vector length
-        let resultLength = Math.sqrt(Math.pow(result.x, 2) +
-                                Math.pow(result.y, 2));
+        let resultingVectorLength = Math.sqrt(
+            Math.pow(result.x, 2) + Math.pow(result.y, 2)
+        );
         
-        return resultLength !== 0;
+        return resultingVectorLength !== 0;
     };
     
     return motionApi;
