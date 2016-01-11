@@ -27,13 +27,13 @@ export default function nodeSearch(params = {}) {
         
         if (typeof x !== 'undefined' &&
                 typeof y !== 'undefined') {
-            let topElement = element(document.elementFromPoint(x, y));
-            while (topElement.exists()) {
-                if (topElement.isDocument() ||
-                        topElement.containsPoint({x, y})) {
-                    nodes.push(topElement.node());
+            let foundFromPoint = elementChain(document.elementFromPoint(x, y));
+            while (foundFromPoint.exists()) {
+                if (foundFromPoint.isRoot() ||
+                        foundFromPoint.containsPoint({x, y})) {
+                    nodes.push(foundFromPoint.currentNode());
                 }
-                topElement.moveToParent();
+                foundFromPoint.moveToParentNode();
             }
         }
         
@@ -46,12 +46,12 @@ export default function nodeSearch(params = {}) {
 }
 
 
-function element(paramNode) {
+function elementChain(topNode) {
     let elementApi = {};
     
-    let node = paramNode;
+    let node = topNode;
     
-    elementApi.node = function elementNode() {
+    elementApi.currentNode = function elementCurrentNode() {
         return node;
     };
     
@@ -59,7 +59,7 @@ function element(paramNode) {
         return node !== null;
     };
     
-    elementApi.moveToParent = function elementParent() {
+    elementApi.moveToParentNode = function elementParentNode() {
         node = node.parentNode;
         return this;
     };
@@ -80,7 +80,7 @@ function element(paramNode) {
                     y < elementGeometry.bottom);
     };
     
-    elementApi.isDocument = function elementIsDocument() {
+    elementApi.isRoot = function elementIsRoot() {
         return node === document;
     };
     
