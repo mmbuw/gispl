@@ -1,6 +1,6 @@
 import $ from 'jquery';
-import nodeSearch from '../../source/nodeSearch';
-import screenCalibration from '../../source/screenCalibration';
+import nodeSearch from '../../../source/tuio/nodeSearch';
+import screenCalibration from '../../../source/tuio/screenCalibration';
 
 describe('nodeSearch', () => {
     

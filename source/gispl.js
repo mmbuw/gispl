@@ -4,8 +4,8 @@ import elementInsertion from './elementInsertion';
 import {createGesture,
             userDefinedGestures} from './gesture';
 import TuioClient from 'tuio/src/TuioClient';
-import nodeSearch from './nodeSearch';
-import tuioInput from './tuioInput';
+import nodeSearch from './tuio/nodeSearch';
+import tuioInput from './tuio/tuioInput';
 
 export default function gispl(selection) {
     

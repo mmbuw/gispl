@@ -1,4 +1,4 @@
-import screenCalibration from "../../source/screenCalibration";
+import screenCalibration from "../../../source/tuio/screenCalibration";
 
 describe('screenCalibration', () => {
     

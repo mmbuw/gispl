@@ -1,10 +1,10 @@
-import tuioInput from '../../source/tuioInput';
-import gispl from '../../source/gispl';
-import screenCalibration from '../../source/screenCalibration';
-import nodeSearch from '../../source/nodeSearch';
+import tuioInput from '../../../source/tuio/tuioInput';
+import gispl from '../../../source/gispl';
+import screenCalibration from '../../../source/tuio/screenCalibration';
+import nodeSearch from '../../../source/tuio/nodeSearch';
 import {WebMocket, MocketServer} from 'webmocket';
 import TuioClient from 'tuio/src/TuioClient';
-import {sendPointerBundle} from '../helpers/osc';
+import {sendPointerBundle} from '../../helpers/osc';
 
 describe('tuioInput', () => {
     

@@ -1,9 +1,9 @@
 import gispl from '../../source/gispl';
 import $ from 'jquery';
 import {gestureException} from '../../source/gesture';
-import tuioInput from '../../source/tuioInput';
-import screenCalibration from '../../source/screenCalibration';
-import nodeSearch from '../../source/nodeSearch';
+import tuioInput from '../../source/tuio/tuioInput';
+import screenCalibration from '../../source/tuio/screenCalibration';
+import nodeSearch from '../../source/tuio/nodeSearch';
 import {WebMocket, MocketServer} from 'webmocket';
 import {sendPointerBundle} from '../helpers/osc';
 
