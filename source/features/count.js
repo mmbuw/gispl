@@ -1,8 +1,9 @@
 import {featureBase} from '../feature';
 
-export default function count() {
+export default function count(params) {
     let countApi = {},
-        baseApi = featureBase();
+        baseApi = featureBase(),
+        {constraints} = params;
     
     countApi.type = function countType() {
         return 'Count';
@@ -12,6 +13,12 @@ export default function count() {
         if (!baseApi.load(inputState)) {
             return false;
         }
+        let match = inputState.length >= constraints[0];
+        if (typeof constraints[1] !== 'undefined') {
+            match = match && (inputState.length <= constraints[1]);
+        }
+        
+        return match;
     };
     
     return countApi;
