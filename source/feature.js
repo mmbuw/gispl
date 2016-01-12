@@ -19,7 +19,7 @@ export function featureBase(params = {}) {
     let featureApi = {},
         {filters} = params;
     
-    featureApi.load = function featureLoad(inputState = []) {
+    featureApi.validInput = function featureLoad(inputState = []) {
         return !!inputState.length;
     };
     

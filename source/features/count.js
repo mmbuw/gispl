@@ -14,13 +14,13 @@ export default function count(params) {
     };
     
     countApi.load = function countLoad(inputState) {
-        if (!baseFeature.load(inputState)) {
+        if (!baseFeature.validInput(inputState)) {
             return false;
         }
             
         let count = 0;
-        inputState.forEach(input => {
-            if (baseFeature.matchFiltersWith(input)) {
+        inputState.forEach(inputObject => {
+            if (baseFeature.matchFiltersWith(inputObject)) {
                 count += 1;   
             }
         });
@@ -34,7 +34,7 @@ export default function count(params) {
     
     return countApi;
 }
-    
+
 function isValidCountFeature(countFeature) {
     if (typeof countFeature.constraints === 'undefined'
             || ! countFeature.constraints.length) {

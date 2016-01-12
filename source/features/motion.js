@@ -9,15 +9,16 @@ export default function motion(params) {
     };
     
     motionApi.load = function motionLoad(inputState) {
-        if (!baseFeature.load(inputState)) {
+        if (!baseFeature.validInput(inputState)) {
             return false;
         }
         
         let result = {x: 0, y: 0};
         
-        inputState.forEach(input => {
-            let path = input.path;
-            if (path.length > 1 && baseFeature.matchFiltersWith(input)) {
+        inputState.forEach(inputObject => {
+            let path = inputObject.path;
+            if (path.length > 1
+                    && baseFeature.matchFiltersWith(inputObject)) {
                 let lastPoint = path[path.length-1],
                     beforeLastPoint = path[path.length-2];
                 
