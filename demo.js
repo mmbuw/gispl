@@ -15,13 +15,14 @@ let blackSquare = document.getElementById('element'),
     isRed = false;
 
 $(document).ready(() => {
-    let gestureName = 'motion',
+    let gestureName = 'two-finger-drag',
         host = 'ws://localhost:8080';
         
     gispl.addGesture({
         name: gestureName,
         features: [
-            {type:"Motion"}
+            {type:"Motion"},
+            {type:"Count", constraints: [2,2]}
         ]
     });
     
