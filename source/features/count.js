@@ -2,6 +2,9 @@ import {featureBase,
         lowerUpperLimit} from '../feature';
 
 export default function count(params) {
+    
+    isValidCountFeature(params);
+    
     let countApi = {},
         baseApi = featureBase(),
         limit = lowerUpperLimit(params.constraints);
@@ -24,3 +27,14 @@ export default function count(params) {
     
     return countApi;
 }
+    
+function isValidCountFeature(countFeature) {
+    if (typeof countFeature.constraints === 'undefined'
+            || ! countFeature.constraints.length) {
+        throw new Error(countFeatureException.NO_CONSTRAINTS);
+    }
+}
+    
+export let countFeatureException = {
+    NO_CONSTRAINTS: `Attempting to add a count feature with no constraints; i.e. number of contact points`
+};

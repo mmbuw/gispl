@@ -1,10 +1,12 @@
 import {featureFactory} from '../../../source/feature';
 import TuioPointer from 'tuio/src/TuioPointer';
+import {countFeatureException} from '../../../source/features/count';
 
 describe('feature', () => {
     describe('count', () => {
         
-        let type = 'count';
+        let type = 'count',
+            constraints = [1,1];
         
         function inputStateByCount(count) {
             let tuioPointer = null,
@@ -20,7 +22,7 @@ describe('feature', () => {
         });
         
         it('should return false when passed no, empty, or invalid object', () => {
-            let countFeature = featureFactory({type});
+            let countFeature = featureFactory({type, constraints});
             expect(countFeature.load()).to.equal(false);
             expect(countFeature.load([])).to.equal(false);
             expect(countFeature.load({})).to.equal(false);
@@ -60,6 +62,21 @@ describe('feature', () => {
             expect(exactlyThreeInput.load(inputStateByCount(2))).to.equal(false);
             expect(exactlyThreeInput.load(inputStateByCount(3))).to.equal(true);
             expect(exactlyThreeInput.load(inputStateByCount(4))).to.equal(false);
+        });
+        
+        it('should only accept count features with explicit constraints', () => {
+            
+            expect(function() {
+                let countFeature = featureFactory({type});
+            }).to.throw(Error, new RegExp(countFeatureException.NO_CONSTRAINTS));
+            
+            expect(function() {
+                let countFeature = featureFactory({type, constraints: []});
+            }).to.throw(Error, new RegExp(countFeatureException.NO_CONSTRAINTS));
+            
+            expect(function() {
+                let countFeature = featureFactory({type, constraints: {}});
+            }).to.throw(Error, new RegExp(countFeatureException.NO_CONSTRAINTS));
         });
     });
 });
