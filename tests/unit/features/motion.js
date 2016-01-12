@@ -1,5 +1,6 @@
 import {featureFactory} from '../../../source/feature';
 import TuioPointer from 'tuio/src/TuioPointer';
+import TuioCursor from 'tuio/src/TuioCursor';
 
 describe('feature', () => {
     describe('motion', () => {
@@ -8,9 +9,15 @@ describe('feature', () => {
             motion;
         
         function buildPointer(params = {}) {
-            let {x:xp, y:yp} = params;
+            let {x:xp, y:yp,
+                    typeId} = params;
             
             let pointer = new TuioPointer({xp, yp});
+            
+            //not very clean
+            if (typeof typeId !== 'undefined') {
+                pointer.typeId = typeId;
+            }
             
             return {
                 moveTo: function(params) {
@@ -80,6 +87,49 @@ describe('feature', () => {
             let inputState = [staticPointer, staticPointer2];
             
             expect(motion.load(inputState)).to.equal(false);
+        });
+        
+        it(`should not recognize the feature if the input does not match
+                the defined filter`, () => {
+            let tuioRightThumbFinger = 5,
+                tuioRightIndexFinger = 1,
+                filteredMotion = featureFactory({type, filters: tuioRightThumbFinger});
+            
+            let movingPointer = buildPointer({x: 0.1, y: 0.2, typeId: tuioRightIndexFinger})
+                                    .moveTo({x: 0.4, y: 0.1})
+                                    .finished(),
+                inputState = [movingPointer];
+            
+            expect(filteredMotion.load(inputState)).to.equal(false);
+        });
+        
+        it('should match feature if feature filter matches the input type', () => {
+            let tuioRightThumbFinger = 5,
+                filteredMotion = featureFactory({type, filters: tuioRightThumbFinger});
+            
+            let movingPointer = buildPointer({x: 0.1, y: 0.2, typeId: tuioRightThumbFinger})
+                                    .moveTo({x: 0.4, y: 0.1})
+                                    .finished(),
+                inputState = [movingPointer];
+            
+            expect(filteredMotion.load(inputState)).to.equal(true);
+        });
+        
+        it('should not match with feature filter and tuio v1 input, e.g. cursor', () => {
+            let tuioRightThumbFinger = 5,
+                filteredMotion = featureFactory({type, filters: tuioRightThumbFinger});
+            
+            let xp = 0, yp = 0,
+                movingCursor = new TuioCursor({xp, yp});
+            
+            xp += 0.2;
+            yp += 0.2;
+            movingCursor.update({xp, yp});
+            
+            let inputState = [movingCursor];
+            
+            expect(filteredMotion.load(inputState)).to.equal(false);
+                
         });
     });
 });

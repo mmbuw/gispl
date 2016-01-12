@@ -1,8 +1,15 @@
 import {featureBase} from '../feature';
 
-export default function motion() {
+export default function motion(params) {
     let motionApi = {},
-        baseApi = featureBase();
+        baseApi = featureBase(),
+        {filters} = params;
+    
+    function matchFiltersWith(input) {
+        return typeof filters === 'undefined' ||
+                typeof input.getTypeId === 'function' &&
+                    filters === input.getTypeId();
+    }
     
     motionApi.type = function motionApi() {
         return 'Motion';
@@ -17,7 +24,7 @@ export default function motion() {
         
         inputState.forEach(input => {
             let path = input.path;
-            if (path.length > 1) {
+            if (path.length > 1 && matchFiltersWith(input)) {
                 let lastPoint = path[path.length-1],
                     beforeLastPoint = path[path.length-2];
                 
