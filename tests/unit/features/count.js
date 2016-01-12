@@ -8,10 +8,17 @@ describe('feature', () => {
         let type = 'count',
             constraints = [1,1];
         
-        function inputStateByCount(count) {
-            let tuioPointer = new TuioPointer(),
+        function buildInputState(params = {}) {
+            let {count = 1,
+                    typeId} = params,
+                tuioPointer = new TuioPointer(),
                 inputState = [];
-            for (let i = 0; i < count; i += 1) {
+            
+            if (typeof typeId !== 'undefined') {
+                tuioPointer.typeId = typeId;
+            }
+            
+            for(let i = 0; i < count; i += 1) {
                 inputState.push(tuioPointer);
             }
             
@@ -34,10 +41,18 @@ describe('feature', () => {
             
             let atLeastTwoInput = featureFactory({type, constraints: twoMinInputConstraint});
             
-            expect(atLeastTwoInput.load(inputStateByCount(1))).to.equal(false);
-            expect(atLeastTwoInput.load(inputStateByCount(2))).to.equal(true);
-            expect(atLeastTwoInput.load(inputStateByCount(3))).to.equal(true);
-            expect(atLeastTwoInput.load(inputStateByCount(30))).to.equal(true);
+            expect(atLeastTwoInput.load(buildInputState({
+                count: 1
+            }))).to.equal(false);
+            expect(atLeastTwoInput.load(buildInputState({
+                count: 2
+            }))).to.equal(true);
+            expect(atLeastTwoInput.load(buildInputState({
+                count: 3
+            }))).to.equal(true);
+            expect(atLeastTwoInput.load(buildInputState({
+                count: 30
+            }))).to.equal(true);
         });
         
         it(`should recognize the feature if the number of items in the inputState
@@ -46,10 +61,18 @@ describe('feature', () => {
             
             let maxTwoInput = featureFactory({type, constraints: twoMaxInputConstraint});
             
-            expect(maxTwoInput.load(inputStateByCount(1))).to.equal(true);
-            expect(maxTwoInput.load(inputStateByCount(2))).to.equal(true);
-            expect(maxTwoInput.load(inputStateByCount(3))).to.equal(false);
-            expect(maxTwoInput.load(inputStateByCount(4))).to.equal(false);
+            expect(maxTwoInput.load(buildInputState({
+                count: 1
+            }))).to.equal(true);
+            expect(maxTwoInput.load(buildInputState({
+                count: 2
+            }))).to.equal(true);
+            expect(maxTwoInput.load(buildInputState({
+                count: 3
+            }))).to.equal(false);
+            expect(maxTwoInput.load(buildInputState({
+                count: 4
+            }))).to.equal(false);
         });
         
         it(`should recognize the feature if the number of items in the inputState
@@ -58,10 +81,18 @@ describe('feature', () => {
                 tuioPointer = null;
             
             let exactlyThreeInput = featureFactory({type, constraints: onlyThreeConstraint});
-            expect(exactlyThreeInput.load(inputStateByCount(1))).to.equal(false);
-            expect(exactlyThreeInput.load(inputStateByCount(2))).to.equal(false);
-            expect(exactlyThreeInput.load(inputStateByCount(3))).to.equal(true);
-            expect(exactlyThreeInput.load(inputStateByCount(4))).to.equal(false);
+            expect(exactlyThreeInput.load(buildInputState({
+                count: 1
+            }))).to.equal(false);
+            expect(exactlyThreeInput.load(buildInputState({
+                count: 2
+            }))).to.equal(false);
+            expect(exactlyThreeInput.load(buildInputState({
+                count: 3
+            }))).to.equal(true);
+            expect(exactlyThreeInput.load(buildInputState({
+                count: 4
+            }))).to.equal(false);
         });
         
         it('should only accept count features with explicit constraints', () => {
@@ -81,15 +112,54 @@ describe('feature', () => {
         
         it(`should not recognize the feature if the input does not match
                 the defined filter`, () => {
-            let tuioRightThumbFinger = 5,
-                tuioRightIndexFinger = 1,
+            let tuioRightThumbFinger = 0b10000,
+                tuioRightIndexFinger = 0b1,
+                count: 1,
                 filteredCount = featureFactory({
                     type,
-                    constraints: [1, 1],
+                    constraints: [count, count],
                     filters: tuioRightThumbFinger
                 });
             
-            expect(filteredCount.load(inputStateByCount(1))).to.equal(false);
+            expect(filteredCount.load(filteredCount.load(buildInputState({
+                count
+            })))).to.equal(false);
+        });
+        
+        it('should allow multiple filters to be set as bitmask', () => {
+            let tuioRightIndexFinger = 1,
+                filters = 0b10000 | 0b1,
+                count = 1,
+                
+                filteredCount = featureFactory({
+                    type,
+                    constraints: [count, count],
+                    filters
+                }),
+                inputState = buildInputState({
+                    count,
+                    typeId: tuioRightIndexFinger
+                });
+            
+            expect(filteredCount.load(inputState)).to.equal(true);
+        });
+        
+        it('should not recognize pointers with unknown typeIds when filters set', () => {
+            let tuioUnknownInputType = 0,
+                filters = 0b10000 | 0b1,
+                count = 1,
+                
+                filteredCount = featureFactory({
+                    type,
+                    constraints: [count, count],
+                    filters
+                }),
+                inputState = buildInputState({
+                    count,
+                    typeId: tuioUnknownInputType
+                });
+            
+            expect(filteredCount.load(inputState)).to.equal(false);
         });
     });
 });

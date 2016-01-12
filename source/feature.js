@@ -14,6 +14,19 @@ export function featureFactory(params = {}) {
         throw new Error(`${featureException.NONEXISTING} ${type}`);
     }
 }
+
+function typeIdToBitmask(typeId) {
+    return 1<<(typeId-1);
+}
+
+function typeIdMatchesFilters(typeId, filters) {
+    let match = filters & typeIdToBitmask(typeId);
+    return !!match;
+}
+
+function isTuio2(input) {
+    return typeof input.getTypeId === 'function';
+}
     
 export function featureBase(params = {}) {
     let featureApi = {},
@@ -24,9 +37,13 @@ export function featureBase(params = {}) {
     };
     
     featureApi.matchFiltersWith = function featureMatchFiltersWith(input) {
+        //tuio v1 objects and cursors have not typeid
+        //unknown typeId in v2 is 0
+        let typeId = isTuio2(input) ? input.getTypeId() : 0;
+        
         return typeof filters === 'undefined' ||
-                typeof input.getTypeId === 'function' &&
-                    filters === input.getTypeId();
+                typeId !== 0 &&
+                    typeIdMatchesFilters(typeId, filters);
     };
     
     return featureApi;

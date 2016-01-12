@@ -93,7 +93,8 @@ describe('feature', () => {
                 the defined filter`, () => {
             let tuioRightThumbFinger = 5,
                 tuioRightIndexFinger = 1,
-                filteredMotion = featureFactory({type, filters: tuioRightThumbFinger});
+                filters = 0b10000, //5th bity
+                filteredMotion = featureFactory({type, filters});
             
             let movingPointer = buildPointer({x: 0.1, y: 0.2, typeId: tuioRightIndexFinger})
                                     .moveTo({x: 0.4, y: 0.1})
@@ -104,10 +105,12 @@ describe('feature', () => {
         });
         
         it('should match feature if feature filter matches the input type', () => {
-            let tuioRightThumbFinger = 5,
-                filteredMotion = featureFactory({type, filters: tuioRightThumbFinger});
+            let tuioRightThumbFingerId = 5,
+                filters = 0b10000, //5th bit set equals id 5
+                filteredMotion = featureFactory({type, filters});
             
-            let movingPointer = buildPointer({x: 0.1, y: 0.2, typeId: tuioRightThumbFinger})
+            let movingPointer = buildPointer({x: 0.1, y: 0.2,
+                                                typeId: tuioRightThumbFingerId})
                                     .moveTo({x: 0.4, y: 0.1})
                                     .finished(),
                 inputState = [movingPointer];
@@ -117,11 +120,13 @@ describe('feature', () => {
         
         it('should not match with feature filter and tuio v1 input, e.g. cursor', () => {
             let tuioRightThumbFinger = 5,
-                filteredMotion = featureFactory({type, filters: tuioRightThumbFinger});
+                filters = 0b1, //not 5th bit
+                filteredMotion = featureFactory({type, filters});
             
             let xp = 0, yp = 0,
                 movingCursor = new TuioCursor({xp, yp});
             
+            movingCursor.typeId = tuioRightThumbFinger;
             xp += 0.2;
             yp += 0.2;
             movingCursor.update({xp, yp});
