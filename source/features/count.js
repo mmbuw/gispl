@@ -6,7 +6,7 @@ export default function count(params) {
     isValidCountFeature(params);
     
     let countApi = {},
-        baseApi = featureBase(),
+        baseFeature = featureBase(params),
         limit = lowerUpperLimit(params.constraints);
     
     countApi.type = function countType() {
@@ -14,12 +14,19 @@ export default function count(params) {
     };
     
     countApi.load = function countLoad(inputState) {
-        if (!baseApi.load(inputState)) {
+        if (!baseFeature.load(inputState)) {
             return false;
         }
-        let match = inputState.length >= limit.lower;
+            
+        let count = 0;
+        inputState.forEach(input => {
+            if (baseFeature.matchFiltersWith(input)) {
+                count += 1;   
+            }
+        });
+        let match = count >= limit.lower;
         if (typeof limit.upper !== 'undefined') {
-            match = match && (inputState.length <= limit.upper);
+            match = match && (count <= limit.upper);
         }
         
         return match;

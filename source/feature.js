@@ -15,11 +15,18 @@ export function featureFactory(params = {}) {
     }
 }
     
-export function featureBase() {
-    let featureApi = {};
+export function featureBase(params = {}) {
+    let featureApi = {},
+        {filters} = params;
     
     featureApi.load = function featureLoad(inputState = []) {
         return !!inputState.length;
+    };
+    
+    featureApi.matchFiltersWith = function featureMatchFiltersWith(input) {
+        return typeof filters === 'undefined' ||
+                typeof input.getTypeId === 'function' &&
+                    filters === input.getTypeId();
     };
     
     return featureApi;

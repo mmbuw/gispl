@@ -9,7 +9,7 @@ describe('feature', () => {
             constraints = [1,1];
         
         function inputStateByCount(count) {
-            let tuioPointer = null,
+            let tuioPointer = new TuioPointer(),
                 inputState = [];
             for (let i = 0; i < count; i += 1) {
                 inputState.push(tuioPointer);
@@ -77,6 +77,19 @@ describe('feature', () => {
             expect(function() {
                 let countFeature = featureFactory({type, constraints: {}});
             }).to.throw(Error, new RegExp(countFeatureException.NO_CONSTRAINTS));
+        });
+        
+        it(`should not recognize the feature if the input does not match
+                the defined filter`, () => {
+            let tuioRightThumbFinger = 5,
+                tuioRightIndexFinger = 1,
+                filteredCount = featureFactory({
+                    type,
+                    constraints: [1, 1],
+                    filters: tuioRightThumbFinger
+                });
+            
+            expect(filteredCount.load(inputStateByCount(1))).to.equal(false);
         });
     });
 });
