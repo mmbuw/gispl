@@ -174,4 +174,15 @@ describe('gispl', () => {
             assyncDone();
         }, 0);
     });
+    
+    it('should return feature filter array as bitmask (helper method)', () => {
+        expect(gispl.filterBitmask()).to.equal(0);
+        expect(gispl.filterBitmask([1])).to.equal(0b1);
+        expect(gispl.filterBitmask([1,1])).to.equal(0b1);
+        expect(gispl.filterBitmask([1,2])).to.equal(0b11);
+        expect(gispl.filterBitmask([1,2,3])).to.equal(0b111);
+        expect(gispl.filterBitmask([4,1,2,3])).to.equal(0b1111);
+        expect(gispl.filterBitmask([4])).to.equal(0b1000);
+        expect(gispl.filterBitmask([5,13,11])).to.equal(0b1010000010000);
+    });
 });

@@ -76,3 +76,13 @@ gispl.initTuio = function gisplInitTuio(params) {
     
     tuioInput({tuioClient, findNodes}).listen(handleInput);
 };
+
+gispl.filterBitmask = function gisplFilterBitmask(filters = []) {
+    let bitmaskFilter = 0;
+    if (filters.length) {
+        filters.forEach(filter => {
+            bitmaskFilter = bitmaskFilter | (1<<(filter-1));
+        });
+    }
+    return bitmaskFilter;
+};
