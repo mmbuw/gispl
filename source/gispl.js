@@ -10,8 +10,9 @@ import tuioInput from './tuio/tuioInput';
 export default function gispl(selection) {
     
     let gisplApi = {},
-        selectionInsertion = elementInsertion(gisplApi),
-        events = domCollectionEvents();
+        selectionInsertion = elementInsertion(gisplApi);
+    
+    domCollectionEvents(gisplApi);
     
     //initial selection insertion as gispl[index]
     selectionInsertion.append(selection);
@@ -24,12 +25,8 @@ export default function gispl(selection) {
     //additional elements
     gisplApi.add = selectionInsertion.append;
     
-    //add event options
-    Object.keys(events).forEach(key => {
-        gisplApi[key] = events[key];
-    });
     //event method aliases
-    gisplApi.trigger = events.emit;
+    gisplApi.trigger = gisplApi.emit;
     
     return gisplApi;
 }
