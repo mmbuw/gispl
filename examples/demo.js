@@ -22,7 +22,7 @@ $(document).ready(() => {
         name: gestureName,
         features: [
             {type:"Motion"},
-            {type:"Count", constraints: [2,2]}
+            {type:"Count", constraints: [2,3]}
         ]
     });
     

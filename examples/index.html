@@ -1,10 +1,15 @@
 <!doctype html>
 <html>
     <head>
-        <script src="../jspm_packages/system.js"></script>
-        <script src="../config.js"></script>
+        <script src="/jspm_packages/system.js"></script>
+        <script>        
+            System.config({
+                baseURL: '/'
+            });
+        </script>
+        <script src="/config.js"></script>
         <script>
-            System.import('demo.js');
+            System.import('examples/demo.js');
         </script>
     </head>
     <body>
