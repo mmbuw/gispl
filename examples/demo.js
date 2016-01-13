@@ -1,4 +1,4 @@
-import gispl from './source/gispl';
+import gispl from '../source/gispl';
 import $ from 'jquery';
 
 function getRandomBlue() {
