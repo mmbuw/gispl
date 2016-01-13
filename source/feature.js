@@ -55,5 +55,5 @@ export function lowerUpperLimit(constraints = []) {
 }
     
 export let featureException = {
-    NONEXISTING: 'Trying to add a gesture with a non-existing feature:'
+    NONEXISTING: 'Attempting to add a gesture with a non-existing feature:'
 };
