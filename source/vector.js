@@ -1,56 +1,56 @@
 export function vector(params = {}) {
-    let vectorApi = {},
-        {x:coordinateX = 0,
-            y:coordinateY = 0} = params;
+    let _vector = {},
+        {x:_x = 0,
+            y:_y = 0} = params;
         
-    if (!validVector(coordinateX, coordinateY)) {
+    if (!validVector(_x, _y)) {
         throw new Error(`${vectorException.ILLEGAL_COORDINATES}. Instead using ${params}`);
     }
     
     let xAccessor = Object.assign({}, vectorValuesConfig, {
             get: function getX() {
-                return coordinateX;
+                return _x;
             }
         }),
         yAccessor = Object.assign({}, vectorValuesConfig, {
             get: function getY() {
-                return coordinateY;
+                return _y;
             }
         });
     
     
-    Object.defineProperties(vectorApi, {
+    Object.defineProperties(_vector, {
         x: xAccessor,
         y: yAccessor
     });
     
-    vectorApi.add = function vectorAdd(vector = {}) {
+    _vector.add = function vectorAdd(vector = {}) {
         let {x, y} = vector;
         
         if (!validVector(x, y)) {
             throw new Error(`${vectorException.ILLEGAL_ADD}. Instead using: ${vector}`);
         }
         
-        coordinateX += x;
-        coordinateY += y;
+        _x += x;
+        _y += y;
     };
     
-    vectorApi.withScalar = function vectorWithScalar(value) {
+    _vector.withScalar = function vectorWithScalar(value) {
         if (typeof value !== 'number') {
             throw new Error(`${vectorException.ILLEGAL_SCALAR}. Instead using: ${value}`);
         }
         
-        coordinateX *= value;
-        coordinateY *= value;
+        _x *= value;
+        _y *= value;
     };
     
-    vectorApi.length = function vectorLength() {
+    _vector.length = function vectorLength() {
         return Math.sqrt(
-            Math.pow(coordinateX, 2) + Math.pow(coordinateY, 2)
+            Math.pow(_x, 2) + Math.pow(_y, 2)
         );
     };
     
-    return vectorApi;
+    return _vector;
 }
 
 function validVector(x, y) {
