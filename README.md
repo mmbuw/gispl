@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mmbuw/gispl.svg?branch=master)](https://travis-ci.org/mmbuw/gispl)
+
 # gispl.js
 
 A work-in-progress port to the browser of the c++ gispl implementation.
