@@ -4,7 +4,7 @@
   "description": "gispl.js is a JavaScript implementation for GISpL (Gestural Interface Specification Language), a formal language for describing human-computer interfaces which use gestures.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "karma start --single-run"
   },
   "repository": {
     "type": "git",
