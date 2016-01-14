@@ -21,7 +21,7 @@ $(document).ready(() => {
     gispl.addGesture({
         name: gestureName,
         features: [
-            {type:"Motion"},
+            {type:"Motion", constraints: [[5, -1], [500, 1]]},
             {type:"Count", constraints: [2,3]}
         ]
     });
