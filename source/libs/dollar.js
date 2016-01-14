@@ -260,8 +260,8 @@ function Vectorize(points) // for Protractor
         sum += points[i].X * points[i].X + points[i].Y * points[i].Y;
     }
     var magnitude = Math.sqrt(sum);
-    for (var i = 0; i < vector.length; i++)
-        vector[i] /= magnitude;
+    for (var j = 0; j < vector.length; j++)
+        vector[j] /= magnitude;
     return vector;
 }
 function OptimalCosineDistance(v1, v2) // for Protractor

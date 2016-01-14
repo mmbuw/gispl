@@ -27,4 +27,19 @@ describe('dollar recognizer', () => {
             result = $r.Recognize(rectangleDrawnFromTopLeft, true);
         expect(result.Name).to.equal('rectangle');
     });
+
+    it('should recognize triangle path', () => {
+
+        let triangleDrawnFromTopToLeft = [];
+
+        triangleDrawnFromTopToLeft.push(new Point(100, 100));
+        triangleDrawnFromTopToLeft.push(new Point(0, 200));
+        triangleDrawnFromTopToLeft.push(new Point(200, 200));
+        triangleDrawnFromTopToLeft.push(new Point(90, 90));
+
+        let $r = new DollarRecognizer(),
+            result = $r.Recognize(triangleDrawnFromTopToLeft, true);
+
+        expect(result.Name).to.equal('triangle');
+    });
 });
