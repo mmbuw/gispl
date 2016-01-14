@@ -57,8 +57,8 @@ function getFrameBuffer(params) {
 function getPointerBuffer(params) {
     params = params || {};
     var sessionId = params.sessionId || 1,
-        xPos = params.xPos || 5,
-        yPos = params.yPos || 6,
+        xPos = (typeof params.xPos !== 'undefined') ? params.xPos : 5,
+        yPos = (typeof params.yPos !== 'undefined') ? params.yPos : 6,
         messageParams = [
             //session id
             {type: "i", value: sessionId},
