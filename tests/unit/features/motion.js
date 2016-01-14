@@ -62,7 +62,7 @@ describe('feature', () => {
                                     .finished();
             
             let inputState = [stoppedPointer];
-            expect(motion.load(stoppedPointer)).to.equal(false);
+            expect(motion.load(inputState)).to.equal(false);
         });
         
         it(`should recognize motion of several pointers,
@@ -133,8 +133,46 @@ describe('feature', () => {
             
             let inputState = [movingCursor];
             
-            expect(filteredMotion.load(inputState)).to.equal(false);
-                
+            expect(filteredMotion.load(inputState)).to.equal(false); 
+        });
+        
+        it(`should match the feature if direction constraints are defined,
+                and movement matches the constraints`, () => {
+                // constraints vectors -> origin is bottom left
+            let matchIfDiagonalTopRight = [[1, 0], [window.screen.width, window.screen.height]],
+                constrainedMotion = featureFactory({
+                    type, constraints: matchIfDiagonalTopRight
+                }),
+                // tuio origin is top left
+                movingPointer = buildPointer({x: 1, y: 1})
+                                    .moveTo({x: 0.5, y: 0.5});
+            
+            let inputState = [movingPointer.finished()];
+            expect(constrainedMotion.load(inputState)).to.equal(false);
+            
+            movingPointer.moveTo({x: 1, y: 1});
+            inputState = [movingPointer.finished()];
+            expect(constrainedMotion.load(inputState)).to.equal(false);
+            
+            movingPointer.moveTo({x: 0, y: 1});
+            inputState = [movingPointer.finished()];
+            expect(constrainedMotion.load(inputState)).to.equal(false);
+            
+            movingPointer.moveTo({x: 0, y: 1});
+            inputState = [movingPointer.finished()];
+            expect(constrainedMotion.load(inputState)).to.equal(false);
+            
+            movingPointer.moveTo({x: 0, y: 0});
+            inputState = [movingPointer.finished()];
+            expect(constrainedMotion.load(inputState)).to.equal(false);
+            
+            movingPointer.moveTo({x: 0.5, y: 0.5});
+            inputState = [movingPointer.finished()];
+            expect(constrainedMotion.load(inputState)).to.equal(false);
+            
+            movingPointer.moveTo({x: 1, y: 0});
+            inputState = [movingPointer.finished()];
+            expect(constrainedMotion.load(inputState)).to.equal(true);
         });
     });
 });

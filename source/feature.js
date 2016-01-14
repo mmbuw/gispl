@@ -23,7 +23,7 @@ function isTuio2(input) {
     return typeof input.getTypeId === 'function';
 }
     
-export function featureBase(params = {}) {
+export function featureBase(params) {
     let featureApi = {},
         {filters} = params;
     
