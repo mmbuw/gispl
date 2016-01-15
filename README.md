@@ -10,4 +10,4 @@ GISpL enables the unambiguous description of gestures used in human-computer int
 [gispl.org](http://gispl.org/)
 
 ## License
-LGPL-3.0
+LGPL-3.0, except the $1 Recognizer, which is licensed under the New BSD License (BSD-3-Clause).
