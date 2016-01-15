@@ -1,7 +1,7 @@
 import {featureBase,
         lowerUpperLimit} from '../feature';
 
-export default function count(params = {}) {
+export default function count(params) {
 
     isValidCountFeature(params);
 

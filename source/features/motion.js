@@ -1,7 +1,7 @@
 import {featureBase} from '../feature';
 import {vector} from '../vector';
 
-export default function motion(params = {}) {
+export default function motion(params) {
     let motionApi = {},
         baseFeature = featureBase(params),
         {constraints} = params;
