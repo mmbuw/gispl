@@ -2,13 +2,13 @@ import gispl from '../../source/gispl';
 import $ from 'jquery';
 
 describe('elementInsertion', () => {
-    
+
     let testGispl;
-    
+
     beforeEach(() => {
         testGispl = gispl(document);
     });
-    
+
     it('should accept a DOM element as parameter and make it accesible over indices', () => {
         expect(testGispl[0]).to.equal(document);
     });

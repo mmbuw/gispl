@@ -6,7 +6,7 @@ describe('Integration: WebMocket', () => {
         serverInstance,
         clientInstance;
 
-    
+
     beforeEach(() => {
         var connectionUrl = "test-url";
         // replace WebSocket constructor for each test
@@ -14,9 +14,9 @@ describe('Integration: WebMocket', () => {
         window.WebSocket = WebMocket;
         // setup
         serverInstance = new MocketServer(connectionUrl);
-        clientInstance = new WebSocket(connectionUrl); 
+        clientInstance = new WebSocket(connectionUrl);
     });
-    
+
     afterEach(() => {
         //
         WebSocket = realWebSocket;
@@ -31,7 +31,7 @@ describe('Integration: WebMocket', () => {
     });
 
     it("Mocked WebSocket replaces WebSocket constructor", () => {
-        
+
         expect(WebMocket).to.equal(WebSocket);
     });
 

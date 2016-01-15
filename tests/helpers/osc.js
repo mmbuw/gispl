@@ -1,12 +1,12 @@
 import osc from 'osc/dist/osc-browser';
 
 export function sendPointerBundle(server, ...pointers) {
-    
+
     server.send(getFrameBuffer());
-    
+
     let alive = [],
         defaultSessionId = 1;
-    
+
     pointers.forEach(params => {
         let sessionId = params.sessionId || defaultSessionId,
             xPos = params.xPos,
@@ -16,7 +16,7 @@ export function sendPointerBundle(server, ...pointers) {
             pressureSpeed = params.pressureSpeed,
             pressureAccel = params.pressureAccel,
             motionAccel = params.motionAccel;
-        
+
         defaultSessionId = sessionId + 1;
 
         server.send(getPointerBuffer({
@@ -29,19 +29,19 @@ export function sendPointerBundle(server, ...pointers) {
             motionAccel: motionAccel,
             pressureAccel: pressureAccel,
         }));
-        
-        alive.push(sessionId); 
+
+        alive.push(sessionId);
     });
-    
+
     server.send(getAliveBuffer(alive));
 }
-    
+
 function getFrameBuffer(params) {
     params = params || {};
     var time = params.time || new Date().getTime(),
         frameId = typeof params.frameId === "undefined" ? 1 : params.frameId,
         source = params.source || "name:1@address";
-    
+
     return writeOscMessage("/tuio2/frm", [
         // frame id
         {type: "i", value: frameId},
@@ -88,11 +88,11 @@ function getPointerBuffer(params) {
             params.motionAccel,
             params.pressureAccel
         ];
-    
+
     optionalMessageParams.forEach(function(optionalParam){
         if (typeof optionalParam !== "undefined") {
             messageParams.push({
-                type: "f", 
+                type: "f",
                 value: optionalParam
             });
         }
@@ -109,20 +109,20 @@ function getAliveBuffer(sessionIds) {
             value: id
         }
     });
-    
+
     return writeOscMessage("/tuio2/alv", oscArgs);
 }
 
 function writeOscMessage(address, args) {
-    
+
     var arrayBuffer = new ArrayBuffer(1000),
         bufferView = new DataView(arrayBuffer),
         index = 0,
         args = args || [];
-    
+
     function writeString(characters) {
         var ui8View = new Uint8Array(arrayBuffer);
-        
+
         for (var i = 0; i < characters.length; i+=1) {
             ui8View[index] = characters[i].charCodeAt();
             index += 1;
@@ -133,23 +133,23 @@ function writeOscMessage(address, args) {
         // Round to the nearest 4-byte block. //osc.js
         index = (index + 3) & ~0x03;
     }
-    
+
     // write address
     writeString(address);
-    
+
     if (args.length !== 0) {
-        
+
         var typeTags = args.map(function(arg){
             return arg.type;
         });
         typeTags.unshift(",");
         writeString(typeTags.join(""));
-        
+
         for( var i = 0; i < args.length; i += 1) {
             var type = args[i].type,
                 value = args[i].value,
                 time;
-            
+
             switch(type) {
                 case "s":
                     writeString(value);
@@ -166,12 +166,12 @@ function writeOscMessage(address, args) {
                     time = osc.writeTimeTag({native: value});
                     [].forEach.call(time, function(byte) {
                         bufferView.setUint8(index, byte);
-                        index += 1; 
+                        index += 1;
                     });
             }
         }
     }
-    
+
     return arrayBuffer;
 }
 
@@ -216,12 +216,12 @@ describe('osc helper', () => {
         expect(bufferView.getUint8(24)).to.equal("s".charCodeAt());
         expect(bufferView.getUint8(25)).to.equal("e".charCodeAt());
         expect(bufferView.getUint8(26)).to.equal("t".charCodeAt());
-        expect(bufferView.getUint8(27)).to.equal(0); 
+        expect(bufferView.getUint8(27)).to.equal(0);
         expect(bufferView.getUint32(28)).to.equal(1);
         expect(bufferView.getFloat32(32)).to.equal(5);
         expect(bufferView.getFloat32(36)).to.equal(6);
         expect(bufferView.getFloat32(40)).to.equal(7);
         expect(bufferView.getFloat32(44)).to.equal(8);
         expect(bufferView.getFloat32(48)).to.equal(9);
-    }); 
+    });
 });
