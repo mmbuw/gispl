@@ -5,15 +5,15 @@ export default function count(params) {
 
     isValidCountFeature(params);
 
-    let countApi = {},
+    let _count = {},
         baseFeature = featureBase(params),
         limit = lowerUpperLimit(params.constraints);
 
-    countApi.type = function countType() {
+    _count.type = function countType() {
         return 'Count';
     };
 
-    countApi.load = function countLoad(inputState) {
+    _count.load = function countLoad(inputState) {
         if (!baseFeature.validInput(inputState)) {
             return false;
         }
@@ -32,7 +32,7 @@ export default function count(params) {
         return match;
     };
 
-    return countApi;
+    return _count;
 }
 
 function isValidCountFeature(countFeature) {

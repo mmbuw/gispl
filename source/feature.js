@@ -27,14 +27,14 @@ function isTuio2(input) {
 }
 
 export function featureBase(params) {
-    let featureApi = {},
+    let _feature = {},
         {filters} = params;
 
-    featureApi.validInput = function featureLoad(inputState = []) {
+    _feature.validInput = function featureLoad(inputState = []) {
         return !!inputState.length;
     };
 
-    featureApi.matchFiltersWith = function featureMatchFiltersWith(input) {
+    _feature.matchFiltersWith = function featureMatchFiltersWith(input) {
         //tuio v1 objects and cursors have not typeid
         //unknown typeId in v2 is 0
         let typeId = isTuio2(input) ? input.getTypeId() : 0,
@@ -45,16 +45,16 @@ export function featureBase(params) {
         return hasNoFilters || (typeIdKnown && !!typeIdMatchesFilters);
     };
 
-    return featureApi;
+    return _feature;
 }
 
 export function lowerUpperLimit(constraints = []) {
-    let limitApi = {};
+    let _limit = {};
 
-    limitApi.lower = constraints[0];
-    limitApi.upper = constraints[1];
+    _limit.lower = constraints[0];
+    _limit.upper = constraints[1];
 
-    return limitApi;
+    return _limit;
 }
 
 export let featureException = {

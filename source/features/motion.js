@@ -2,15 +2,15 @@ import {featureBase} from '../feature';
 import {vector} from '../vector';
 
 export default function motion(params) {
-    let motionApi = {},
+    let _motion = {},
         baseFeature = featureBase(params),
         {constraints} = params;
 
-    motionApi.type = function motionApi() {
+    _motion.type = function _motion() {
         return 'Motion';
     };
 
-    motionApi.load = function motionLoad(inputState) {
+    _motion.load = function motionLoad(inputState) {
         if (!baseFeature.validInput(inputState)) {
             return false;
         }
@@ -59,5 +59,5 @@ export default function motion(params) {
         return result.length() !== 0;
     };
 
-    return motionApi;
+    return _motion;
 }
