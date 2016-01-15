@@ -25,6 +25,14 @@ describe('dollar recognizer', () => {
         rectangleDrawnFromTopLeft.push(new Point(60,50));
         rectangleDrawnFromTopLeft.push(new Point(55,50));
 
+        $r.AddGesture('rectangle', [
+            new Point(0, 100),
+            new Point(0, 0),
+            new Point(100, 0),
+            new Point(100, 100),
+            new Point(0, 100)
+        ]);
+
         let result = $r.Recognize(rectangleDrawnFromTopLeft, true);
         expect(result.Name).to.equal('rectangle');
     });
@@ -37,6 +45,13 @@ describe('dollar recognizer', () => {
         triangleDrawnFromTopToLeft.push(new Point(0, 200));
         triangleDrawnFromTopToLeft.push(new Point(200, 200));
         triangleDrawnFromTopToLeft.push(new Point(90, 90));
+
+        $r.AddGesture('triangle', [
+            new Point(200, 200),
+            new Point(100, 100),
+            new Point(300, 100),
+            new Point(200, 200)
+        ]);
 
         let result = $r.Recognize(triangleDrawnFromTopToLeft, true);
 
