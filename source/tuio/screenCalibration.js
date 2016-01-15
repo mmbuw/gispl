@@ -1,6 +1,6 @@
 export default function screenCalibration(params = {}) {
 
-    let calibrationApi = {},
+    let _calibration = {},
         listenForInputEvent = true,
         {mouseEvent,
          pause: inputEventPause = 2000} = params;
@@ -16,10 +16,10 @@ export default function screenCalibration(params = {}) {
     function captureEvent(event) {
         if (listenForInputEvent) {
 
-            calibrationApi.mouseEvent(event);
+            _calibration.mouseEvent(event);
             listenForInputEvent = false;
 
-            setTimeout(function() {
+            setTimeout(function pauseBeforeAllowingRecalibration() {
                 listenForInputEvent = true;
             }, inputEventPause);
         }
@@ -28,12 +28,12 @@ export default function screenCalibration(params = {}) {
     // called before the object is returned
     function objectInit() {
         if (typeof mouseEvent !== 'undefined') {
-            calibrationApi.mouseEvent(mouseEvent);
+            _calibration.mouseEvent(mouseEvent);
         }
         document.addEventListener('mouseover', captureEvent);
     }
 
-    calibrationApi.mouseEvent = function calibrationMouseEvent(event = {}) {
+    _calibration.mouseEvent = function calibrationMouseEvent(event = {}) {
         if (typeof event.clientX === 'undefined' ||
                 typeof event.clientY === 'undefined' ||
                 typeof event.screenX === 'undefined' ||
@@ -46,14 +46,14 @@ export default function screenCalibration(params = {}) {
         return this;
     };
 
-    calibrationApi.viewportPosition = function calibrationViewportPosition() {
+    _calibration.viewportPosition = function calibrationViewportPosition() {
         let top = viewportPositionTop(),
             left = viewportPositionLeft();
 
         return {top, left};
     };
 
-    calibrationApi.screenToViewportCoordinates = function (coords = {}) {
+    _calibration.screenToViewportCoordinates = function (coords = {}) {
         let {screenX, screenY} = coords,
             x = screenX - viewportPositionLeft(),
             y = screenY - viewportPositionTop();
@@ -61,11 +61,11 @@ export default function screenCalibration(params = {}) {
         return {x, y};
     };
 
-    calibrationApi.isScreenUsable = function calibrationScreenUsable() {
+    _calibration.isScreenUsable = function calibrationScreenUsable() {
         return typeof mouseEvent !== 'undefined';
     };
 
     objectInit();
 
-    return calibrationApi;
+    return _calibration;
 }

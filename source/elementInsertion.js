@@ -1,18 +1,18 @@
 function assureSelectionIsArrayLike(selection = []) {
     return typeof selection.length === 'undefined' ?
-                                    [selection] :
-                                    selection;
+                                        [selection] :
+                                        selection;
 }
 
 export default function elementInsertion(object) {
     let elementCollection = new WeakSet(),
-        insertionApi = {};
+        _insertion = {};
 
     if (typeof object.length === 'undefined') {
         object.length = 0;
     }
 
-    insertionApi.append = function(selection) {
+    _insertion.append = function appendElementToCollection(selection) {
         if (typeof selection === 'string') {
             selection = document.querySelectorAll(selection);
         }
@@ -30,5 +30,5 @@ export default function elementInsertion(object) {
         }
     };
 
-    return insertionApi;
+    return _insertion;
 }

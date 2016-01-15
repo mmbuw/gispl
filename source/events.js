@@ -1,6 +1,6 @@
 let globalEventCache = {
     map: new WeakMap(),
-    getListeners: function(params = {}) {
+    getListeners: function getListenersFromCache(params = {}) {
         let {element, event} = params;
 
         let cachedEvents = this.map.get(element);
@@ -17,18 +17,18 @@ let globalEventCache = {
 
         return cachedListeners;
     },
-    callListeners: function(params = {}) {
+    callListeners: function callListenersFromCache(params = {}) {
         let {args} = params;
         this.getListeners(params)
             .forEach(listener => listener(...args));
     },
-    addListener: function(params = {}) {
+    addListener: function addListenersFromCache(params = {}) {
         let {listener} = params;
         if (typeof listener === 'function') {
             this.getListeners(params).push(listener);
         }
     },
-    removeListener: function(params = {}) {
+    removeListener: function removeListenersFromCache(params = {}) {
         let {listener} = params,
             listeners = this.getListeners(params);
 
@@ -37,7 +37,7 @@ let globalEventCache = {
             listeners.splice(indexOfListener, 1);
         }
     },
-    removeListeners: function(params = {}) {
+    removeListeners: function removeListenerFromCache(params = {}) {
         let {element, event, listener} = params;
 
         if (typeof listener !== 'undefined') {
@@ -50,7 +50,7 @@ let globalEventCache = {
             delete cachedEvents[event];
         }
     },
-    clear: function() {
+    clear: function clearGlobalEventCache() {
         this.map = new WeakMap();
     }
 };
