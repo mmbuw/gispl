@@ -1,5 +1,6 @@
 import motion from './features/motion';
 import count from './features/count';
+import path from './features/path';
 
 export function featureFactory(params = {}) {
 
@@ -10,6 +11,8 @@ export function featureFactory(params = {}) {
         return motion(params);
     case 'count':
         return count(params);
+    case 'path':
+        return path(params);
     default:
         throw new Error(`${featureException.NONEXISTING} ${type}`);
     }
