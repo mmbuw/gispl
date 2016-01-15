@@ -15,22 +15,33 @@ let blackSquare = document.getElementById('element'),
     isRed = false;
 
 $(document).ready(() => {
-    let gestureName = 'two-finger-drag',
+    let swipe = 'two-or-three-finger-to-right-swipe',
+        trianglePath = 'clockwise-square-path',
         host = 'ws://localhost:8080';
         
     gispl.addGesture({
-        name: gestureName,
+        name: swipe,
         features: [
             {type:"Motion", constraints: [[5, -1], [500, 1]]},
             {type:"Count", constraints: [2,3]}
         ]
     });
+        
+    gispl.addGesture({
+        name: trianglePath,
+        features: [
+            {type:"Path", constraints: [
+                [0, 0], [0, 100], [100, 100],[0,0]
+            ]},
+            {type:"Count", constraints: [2,3]}
+        ]
+    });
     
-    gispl(document).on(gestureName, () => {
+    gispl(document).on(swipe, () => {
         document.body.style.background = getRandomBlue();
     });
     
-    gispl(blackSquare).on(gestureName, () => {
+    gispl(blackSquare).on(trianglePath, () => {
         blackSquare.style.background = (isRed) ? 'black' : 'red';
         isRed = !isRed;
     });
