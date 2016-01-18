@@ -8,29 +8,29 @@ import nodeSearch from './tuio/nodeSearch';
 import tuioInput from './tuio/tuioInput';
 
 export default function gispl(selection) {
-    
+
     let gisplApi = {},
         selectionInsertion = elementInsertion(gisplApi);
-    
+
     domCollectionEvents(gisplApi);
-    
+
     //initial selection insertion as gispl[index]
     selectionInsertion.append(selection);
-    
+
     //iterate over the selection collection
     gisplApi.forEach = function gisplForEach(...args) {
         [].forEach.apply(this, args);
     };
-    
+
     //additional elements
     gisplApi.add = selectionInsertion.append;
-    
+
     //event method aliases
     gisplApi.trigger = gisplApi.emit;
-    
+
     return gisplApi;
 }
-    
+
 function handleInput(nodesMap) {
     nodesMap.forEach((inputState, node) => {
         userDefinedGestures.forEach(gesture => {
@@ -47,10 +47,10 @@ gispl.addGesture = function gisplAddGesture(gestureDefinition) {
     if (typeof gestureDefinition === 'string') {
         gestureDefinition = JSON.parse(gestureDefinition);
     }
-    
+
     let gesture = createGesture(gestureDefinition),
         {name} = gestureDefinition;
-    
+
     userDefinedGestures.set(name, gesture);
     return gispl;
 };
@@ -67,10 +67,10 @@ gispl.gesture = function gisplGesture(gestureName) {
 gispl.initTuio = function gisplInitTuio(params) {
     let {host,
             calibration} = params;
-    
+
     let tuioClient = new TuioClient({host}),
         findNodes = nodeSearch({calibration});
-    
+
     tuioInput({tuioClient, findNodes}).listen(handleInput);
 };
 
