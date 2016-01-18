@@ -1,32 +1,9 @@
 import {featureFactory} from '../../../source/feature';
 import {pathFeatureException} from '../../../source/features/path';
-import TuioPointer from 'tuio/src/TuioPointer';
+import {buildPointer} from '../../helpers/pointer';
 
 describe('feature', () => {
     describe('path', () => {
-
-        function buildPointer(params = {}) {
-            let {x:xp, y:yp,
-                    typeId} = params;
-
-            let pointer = new TuioPointer({xp, yp});
-
-            //not very clean
-            if (typeof typeId !== 'undefined') {
-                pointer.typeId = typeId;
-            }
-
-            return {
-                moveTo: function(params) {
-                    let {x:xp, y:yp} = params;
-                    pointer.update({xp, yp});
-                    return this;
-                },
-                finished: function() {
-                    return pointer;
-                }
-            };
-        }
 
         let type = 'path',
             constraints = [[0,0]];

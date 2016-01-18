@@ -1,35 +1,13 @@
 import {featureFactory} from '../../../source/feature';
-import TuioPointer from 'tuio/src/TuioPointer';
+import {buildPointer} from '../../helpers/pointer';
 import TuioCursor from 'tuio/src/TuioCursor';
+import TuioPointer from 'tuio/src/TuioPointer';
 
 describe('feature', () => {
     describe('motion', () => {
 
         let type = 'motion',
             motion;
-
-        function buildPointer(params = {}) {
-            let {x:xp, y:yp,
-                    typeId} = params;
-
-            let pointer = new TuioPointer({xp, yp});
-
-            //not very clean
-            if (typeof typeId !== 'undefined') {
-                pointer.typeId = typeId;
-            }
-
-            return {
-                moveTo: function(params) {
-                    let {x:xp, y:yp} = params;
-                    pointer.update({xp, yp});
-                    return this;
-                },
-                finished: function() {
-                    return pointer;
-                }
-            };
-        }
 
         beforeEach(() => {
             motion = featureFactory({type});
