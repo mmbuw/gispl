@@ -7,21 +7,13 @@ export function vector(params = {}) {
         throw new Error(`${vectorException.ILLEGAL_COORDINATES}. Instead using ${params}`);
     }
 
-    let xAccessor = Object.assign({}, vectorValuesConfig, {
-            get: function getX() {
-                return _x;
-            }
-        }),
-        yAccessor = Object.assign({}, vectorValuesConfig, {
-            get: function getY() {
-                return _y;
-            }
-        });
-
-
     Object.defineProperties(_vector, {
-        x: xAccessor,
-        y: yAccessor
+        x: gettableEnumerableProperty(function getX() {
+            return _x;
+        }),
+        y: gettableEnumerableProperty(function getY() {
+            return _y;
+        })
     });
 
     _vector.add = function vectorAdd(vector = {}) {
@@ -58,10 +50,15 @@ function validVector(x, y) {
                 typeof y === 'number');
 }
 
-let vectorValuesConfig = {
-    configurable: false,
-    enumerable: true
-};
+function gettableEnumerableProperty(get) {
+    let configurable = false,
+        enumerable = true;
+
+    return Object.assign({},
+                  {configurable, enumerable},
+                  {get}
+    );
+}
 
 export let vectorException = {
     ILLEGAL_COORDINATES: `Initializing a vector with incorrect coordinates`,
