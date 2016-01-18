@@ -8,7 +8,7 @@ export default function tuioInput(params = {}) {
 
     function onTuioRefresh() {
         let pointers = tuioClient.getTuioPointers(),
-            regions = new Map();
+            nodesWithInput = new Map();
 
         if (pointers.length === 0) {
             let cursors = tuioClient.getTuioCursors();
@@ -24,14 +24,14 @@ export default function tuioInput(params = {}) {
             findNodes
                 .fromPoint({screenX, screenY})
                 .forEach(node => {
-                    if (!regions.has(node)) {
-                        regions.set(node, []);
+                    if (!nodesWithInput.has(node)) {
+                        nodesWithInput.set(node, []);
                     }
-                    regions.get(node).push(pointer);
+                    nodesWithInput.get(node).push(pointer);
                 });
         });
 
-        inputApi.notify(regions);
+        inputApi.notify(nodesWithInput);
     }
 
     inputApi.listen = function inputListen(callback) {
