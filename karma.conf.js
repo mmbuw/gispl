@@ -2,7 +2,7 @@
 // Generated on Fri Dec 04 2015 13:55:48 GMT+0100 (CET)
 
 module.exports = function(config) {
-  
+
   var configuration = {
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -37,7 +37,7 @@ module.exports = function(config) {
     preprocessors: {
         'source/**/*.js': ['eslint']
     },
-      
+
     eslint: {
         stopOnError: false,
         stopOnWarning: false
@@ -79,7 +79,9 @@ module.exports = function(config) {
     // Concurrency level
     // how many browser should be started simultanous
     concurrency: Infinity,
-      
+
+    browserNoActivityTimeout: 30000,
+
     customLaunchers: {
         Chrome_travis_ci: {
             base: 'Chrome',
@@ -87,13 +89,13 @@ module.exports = function(config) {
         }
     }
   };
-    
+
   if (process.env.TRAVIS) {
       configuration.browsers = [
 //          'Chrome_travis_ci',
           'Firefox'
       ];
   }
-    
+
   config.set(configuration);
 }
