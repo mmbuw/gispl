@@ -8,10 +8,10 @@ export default function path(params) {
 
     let _path = {},
         baseFeature = featureBase(params),
-        $recognizer = new DollarRecognizer(),
+        {recognizer = new DollarRecognizer()} = params,
         constraints = dollarPointsFrom(params.constraints);
 
-    $recognizer.AddGesture('current', constraints);
+    recognizer.AddGesture('current', constraints);
 
     _path.type = function pathType() {
         return 'Path';
@@ -29,7 +29,7 @@ export default function path(params) {
                 return new Point(x, y);
             });
 
-            return $recognizer.Recognize($points).Score >= 0.8;
+            return recognizer.Recognize($points).Score >= 0.8;
         });
     };
 
