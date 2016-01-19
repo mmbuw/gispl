@@ -1,3 +1,4 @@
+import {vector} from './vector';
 import motion from './features/motion';
 import count from './features/count';
 import path from './features/path';
@@ -52,6 +53,22 @@ export function lowerUpperLimit(constraints = []) {
     _limit.upper = constraints[1];
 
     return _limit;
+}
+
+export function lowerUpperVectorLimit(constraints = []) {
+    // basicaly creates an object like
+    // object.lower.x, object.lower.y
+    // object.upper.x, object.upper.y
+    return lowerUpperLimit([
+        vector({
+            x: constraints[0][0],
+            y: constraints[0][1]
+        }),
+        vector({
+            x: constraints[1][0],
+            y: constraints[1][1]
+        })
+    ]);
 }
 
 export let featureException = {

@@ -1,10 +1,16 @@
-import {featureBase} from '../feature';
+import {featureBase,
+        lowerUpperVectorLimit} from '../feature';
 import {vector} from '../vector';
 
 export default function motion(params) {
     let _motion = {},
         baseFeature = featureBase(params),
-        {constraints} = params;
+        {constraints} = params,
+        limit = false;
+
+    if (typeof constraints !== 'undefined') {
+        limit = lowerUpperVectorLimit(constraints);
+    }
 
     _motion.type = function _motion() {
         return 'Motion';
@@ -43,13 +49,13 @@ export default function motion(params) {
             return false;
         }
 
-        if (typeof constraints !== 'undefined') {
+        if (limit) {
             result.withScalar(1/inputCount);
 
-            return result.x > constraints[0][0] &&
-                    result.y > constraints[0][1] &&
-                    result.x < constraints[1][0] &&
-                    result.y < constraints[1][1];
+            return result.x > limit.lower.x &&
+                    result.y > limit.lower.y &&
+                    result.x < limit.upper.x &&
+                    result.y < limit.upper.y;
         }
 
         return result.length() !== 0;
