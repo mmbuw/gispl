@@ -148,7 +148,11 @@ describe('nodeSearch', () => {
     });
 
     it('should return nothing when the screen is not calibrated', () => {
-
+        let findNodes = nodeSearch({
+           calibration: {
+               isScreenUsable: () => false
+           }
+        });
         let foundNodes = findNodes.fromPoint({screenX: 10, screenY: 10});
         expect(foundNodes.length).to.equal(0);
     });
