@@ -40,26 +40,6 @@ describe('tuioInput', () => {
         screenUsableStub.restore();
     });
 
-    it('should check for tuio pointers when pointers received', (asyncDone) => {
-
-        let tuioPointer = {
-                sessionId
-            },
-            tuioSpy = sinon.spy(tuioClient, 'getTuioPointers'),
-            input = tuioInput({tuioClient, findNodes});
-
-        setTimeout(() => {
-            sendPointerBundle(server, tuioPointer);
-            expect(tuioSpy.callCount).to.equal(1);
-
-            let pointers = tuioSpy.returnValues[0];
-            expect(pointers[0].getSessionId()).to.equal(sessionId);
-
-            tuioSpy.restore();
-            asyncDone();
-        }, 0);
-    });
-
     it('should allow callbacks to be registered and notified', () => {
         let input = tuioInput({tuioClient, findNodes}),
             spy = sinon.spy(),
@@ -137,7 +117,7 @@ describe('tuioInput', () => {
             expect(regions.has(document)).to.equal(true);
             //only one input object ->  tuioPointer
             expect(regions.get(document).length).to.equal(1);
-            expect(regions.get(document)[0].getSessionId()).to.equal(sessionId);
+            expect(regions.get(document)[0].identifier).to.equal(sessionId);
             asyncDone();
         });
     });
@@ -158,8 +138,8 @@ describe('tuioInput', () => {
             sendPointerBundle(server, tuioPointer1, tuioPointer2);
             let regions = spy.getCall(0).args[0];
             expect(regions.get(document).length).to.equal(2);
-            expect(regions.get(document)[0].getSessionId()).to.equal(sessionId);
-            expect(regions.get(document)[1].getSessionId()).to.equal(sessionId2);
+            expect(regions.get(document)[0].identifier).to.equal(sessionId);
+            expect(regions.get(document)[1].identifier).to.equal(sessionId2);
             asyncDone();
         });
     });
@@ -195,7 +175,7 @@ describe('tuioInput', () => {
             expect(regions.get(document).length).to.equal(2);
             //element only one
             expect(regions.get(element).length).to.equal(1);
-            expect(regions.get(element)[0].getSessionId()).to.equal(sessionId2);
+            expect(regions.get(element)[0].identifier).to.equal(sessionId2);
             asyncDone();
         });
     });

@@ -16,9 +16,7 @@ export default function motion(params) {
         }
 
         let result = vector(),
-            inputCount = 0,
-            screenWidth = window.screen.width,
-            screenHeight = window.screen.height;
+            inputCount = 0;
 
         inputState.forEach(inputObject => {
             let path = inputObject.path;
@@ -27,15 +25,13 @@ export default function motion(params) {
                 let lastPoint = path[path.length-1],
                     beforeLastPoint = path[path.length-2];
 
-                let x = lastPoint.getScreenX(screenWidth) -
-                            beforeLastPoint.getScreenX(screenWidth),
+                let x = lastPoint.screenX - beforeLastPoint.screenX,
                     // not a bug
                     // tuio coordinates are with top left origin
                     // so last - beforeLast, is actually (1-last) - (1-beforeLast)
                     // if we want a vector with bottom left origin
                     // which equals beforeLast - last
-                    y = beforeLastPoint.getScreenY(screenHeight) -
-                            lastPoint.getScreenY(screenHeight);
+                    y = beforeLastPoint.screenY - lastPoint.screenY;
 
                 result.add(vector({x, y}));
 

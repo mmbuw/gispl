@@ -1,6 +1,6 @@
 import {featureFactory} from '../../../source/feature';
 import {pathFeatureException} from '../../../source/features/path';
-import {buildPointer} from '../../helpers/pointer';
+import {buildInputFromPointer} from '../../helpers/pointer';
 
 describe('feature', () => {
     describe('path', () => {
@@ -42,7 +42,7 @@ describe('feature', () => {
                     constraints: drawRectangleFromTopLeftCounterClockwise
                 }),
                 // tuio is with origin top left
-                rectangleMovingPointersCounterClockwise = buildPointer({
+                rectangleMovingPointersCounterClockwise = buildInputFromPointer({
                     x: 0.5, y: 0.5
                 }).moveTo({
                     x: 0.5, y: 0.7
@@ -74,7 +74,7 @@ describe('feature', () => {
                     constraints: drawRectangleFromTopLeftCounterClockwise
                 }),
                 // tuio is with origin top left
-                rectangleMovingPointersClockwise = buildPointer({
+                rectangleMovingPointersClockwise = buildInputFromPointer({
                     x: 0.8, y: 0.45
                 }).moveTo({
                     x: 0.8, y: 0.7
@@ -106,7 +106,7 @@ describe('feature', () => {
                     constraints: drawRectangleFromTopLeftCounterClockwise
                 }),
                 //should match
-                rectangleMovingPointersCounterClockwise = buildPointer({
+                rectangleMovingPointersCounterClockwise = buildInputFromPointer({
                     x: 0.5, y: 0.5
                 }).moveTo({
                     x: 0.5, y: 0.7
@@ -118,7 +118,7 @@ describe('feature', () => {
                     x: 0.5, y: 0.5
                 }).finished(),
                 // should not match
-                rectangleMovingPointersClockwise = buildPointer({
+                rectangleMovingPointersClockwise = buildInputFromPointer({
                     x: 0.8, y: 0.45
                 }).moveTo({
                     x: 0.8, y: 0.7

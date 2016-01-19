@@ -1,7 +1,7 @@
 import {featureFactory} from '../../../source/feature';
-import {buildPointer} from '../../helpers/pointer';
+import {buildInputFromPointer} from '../../helpers/pointer';
 import TuioCursor from 'tuio/src/TuioCursor';
-import TuioPointer from 'tuio/src/TuioPointer';
+import {inputObjectFromTuio} from '../../../source/tuio/tuioInputObject';
 
 describe('feature', () => {
     describe('motion', () => {
@@ -20,20 +20,21 @@ describe('feature', () => {
         });
 
         it('should recognize motion of inputs with at least two known points', () => {
-            let movingPointer = buildPointer({x: 0.5, y: 0.5})
-                                    .moveTo({x: 0.6, y: 0.6})
-                                    .finished();
+            let movingPointer = buildInputFromPointer({
+                x: 0.5, y: 0.5
+            }).moveTo({x: 0.6, y: 0.6}).finished();
+
             let inputState = [movingPointer];
             expect(motion.load(inputState)).to.equal(true);
         });
 
         it('should not recognize motion of inputs with only one known point', () => {
-            let inputState = [new TuioPointer()];
+            let inputState = [buildInputFromPointer().finished()];
             expect(motion.load(inputState)).to.equal(false);
         });
 
         it('should not recognize motion of input that moved, but stopped', () => {
-            let stoppedPointer = buildPointer({x: 0.1, y: 0.1})
+            let stoppedPointer = buildInputFromPointer({x: 0.1, y: 0.1})
                                     .moveTo({x: 0.5, y: 0.5})
                                     .moveTo({x: 0.1, y: 0.1})
                                     .moveTo({x: 0.1, y: 0.1})
@@ -45,25 +46,30 @@ describe('feature', () => {
 
         it(`should recognize motion of several pointers,
                 at least one of which is moving`, () => {
-            let movingPointer = buildPointer({x: 0.5, y: 0.5})
+            let movingPointer = buildInputFromPointer({x: 0.5, y: 0.5})
                                     .moveTo({x: 0.6, y: 0.6})
                                     .finished();
-            let staticPointer = buildPointer({x: 0.1, y: 0.2})
+            let staticPointer = buildInputFromPointer({x: 0.1, y: 0.2})
                                     .finished();
 
-            let inputState = [movingPointer, staticPointer];
+            let inputState = [
+                movingPointer,
+                staticPointer
+            ];
 
             expect(motion.load(inputState)).to.equal(true);
         });
 
         it(`should not recognize motion of several pointers,
                     none of which is moving`, () => {
-            let staticPointer = buildPointer({x: 0.5, y: 0.6})
+            let staticPointer = buildInputFromPointer({x: 0.5, y: 0.6})
                                     .finished();
-            let staticPointer2 = buildPointer({x: 0.1, y: 0.2})
+            let staticPointer2 = buildInputFromPointer({x: 0.1, y: 0.2})
                                     .finished();
-            let inputState = [staticPointer, staticPointer2];
-
+            let inputState = [
+                staticPointer,
+                staticPointer2
+            ];
             expect(motion.load(inputState)).to.equal(false);
         });
 
@@ -74,10 +80,12 @@ describe('feature', () => {
                 filters = 0b10000, //5th bity
                 filteredMotion = featureFactory({type, filters});
 
-            let movingPointer = buildPointer({x: 0.1, y: 0.2, typeId: tuioRightIndexFinger})
-                                    .moveTo({x: 0.4, y: 0.1})
-                                    .finished(),
-                inputState = [movingPointer];
+            let movingPointer = buildInputFromPointer(
+                                    {x: 0.1, y: 0.2, typeId: tuioRightIndexFinger}
+                                ).moveTo({x: 0.4, y: 0.1}).finished(),
+                inputState = [
+                    movingPointer
+                ];
 
             expect(filteredMotion.load(inputState)).to.equal(false);
         });
@@ -87,11 +95,12 @@ describe('feature', () => {
                 filters = 0b10000, //5th bit set equals id 5
                 filteredMotion = featureFactory({type, filters});
 
-            let movingPointer = buildPointer({x: 0.1, y: 0.2,
-                                                typeId: tuioRightThumbFingerId})
-                                    .moveTo({x: 0.4, y: 0.1})
-                                    .finished(),
-                inputState = [movingPointer];
+            let movingPointer = buildInputFromPointer(
+                                    {x: 0.1, y: 0.2, typeId: tuioRightThumbFingerId}
+                                ).moveTo({x: 0.4, y: 0.1}).finished(),
+                inputState = [
+                    movingPointer
+                ];
 
             expect(filteredMotion.load(inputState)).to.equal(true);
         });
@@ -109,7 +118,9 @@ describe('feature', () => {
             yp += 0.2;
             movingCursor.update({xp, yp});
 
-            let inputState = [movingCursor];
+            let inputState = [
+                inputObjectFromTuio(movingCursor)
+            ];
 
             expect(filteredMotion.load(inputState)).to.equal(false);
         });
@@ -122,34 +133,48 @@ describe('feature', () => {
                     type, constraints: matchIfDiagonalTopRight
                 }),
                 // tuio origin is top left
-                movingPointer = buildPointer({x: 1, y: 1})
+                movingPointer = buildInputFromPointer({x: 1, y: 1})
                                     .moveTo({x: 0.5, y: 0.5});
 
-            let inputState = [movingPointer.finished()];
+            let inputState = [
+                movingPointer.finished()
+            ];
             expect(constrainedMotion.load(inputState)).to.equal(false);
 
             movingPointer.moveTo({x: 1, y: 1});
-            inputState = [movingPointer.finished()];
+            inputState = [
+                movingPointer.finished()
+            ];
             expect(constrainedMotion.load(inputState)).to.equal(false);
 
             movingPointer.moveTo({x: 0, y: 1});
-            inputState = [movingPointer.finished()];
+            inputState = [
+                movingPointer.finished()
+            ];
             expect(constrainedMotion.load(inputState)).to.equal(false);
 
             movingPointer.moveTo({x: 0, y: 1});
-            inputState = [movingPointer.finished()];
+            inputState = [
+                movingPointer.finished()
+            ];
             expect(constrainedMotion.load(inputState)).to.equal(false);
 
             movingPointer.moveTo({x: 0, y: 0});
-            inputState = [movingPointer.finished()];
+            inputState = [
+                movingPointer.finished()
+            ];
             expect(constrainedMotion.load(inputState)).to.equal(false);
 
             movingPointer.moveTo({x: 0.5, y: 0.5});
-            inputState = [movingPointer.finished()];
+            inputState = [
+                movingPointer.finished()
+            ];
             expect(constrainedMotion.load(inputState)).to.equal(false);
 
             movingPointer.moveTo({x: 1, y: 0});
-            inputState = [movingPointer.finished()];
+            inputState = [
+                movingPointer.finished()
+            ];
             expect(constrainedMotion.load(inputState)).to.equal(true);
         });
     });

@@ -1,3 +1,5 @@
+import {inputObjectFromTuio} from './tuioInputObject';
+
 export default function tuioInput(params = {}) {
     let {tuioClient,
             findNodes,
@@ -27,7 +29,8 @@ export default function tuioInput(params = {}) {
                     if (!nodesWithInput.has(node)) {
                         nodesWithInput.set(node, []);
                     }
-                    nodesWithInput.get(node).push(pointer);
+                    let inputObject = inputObjectFromTuio(pointer);
+                    nodesWithInput.get(node).push(inputObject);
                 });
         });
 

@@ -1,6 +1,7 @@
 import {featureFactory} from '../../../source/feature';
 import TuioPointer from 'tuio/src/TuioPointer';
 import {countFeatureException} from '../../../source/features/count';
+import {buildInputFromPointer} from '../../helpers/pointer';
 
 describe('feature', () => {
     describe('count', () => {
@@ -9,14 +10,9 @@ describe('feature', () => {
             constraints = [1,1];
 
         function buildInputState(params = {}) {
-            let {count = 1,
-                    typeId} = params,
-                tuioPointer = new TuioPointer(),
+            let {count = 1} = params,
+                tuioPointer = buildInputFromPointer(params).finished(),
                 inputState = [];
-
-            if (typeof typeId !== 'undefined') {
-                tuioPointer.typeId = typeId;
-            }
 
             for(let i = 0; i < count; i += 1) {
                 inputState.push(tuioPointer);
@@ -24,9 +20,6 @@ describe('feature', () => {
 
             return inputState;
         }
-
-        beforeEach(() => {
-        });
 
         it('should return false when passed no, empty, or invalid object', () => {
             let countFeature = featureFactory({type, constraints});

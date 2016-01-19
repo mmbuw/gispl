@@ -22,10 +22,6 @@ function typeIdToBitmask(typeId) {
     return 1<<(typeId-1);
 }
 
-function isTuio2(input) {
-    return typeof input.getTypeId === 'function';
-}
-
 export function featureBase(params) {
     let _feature = {},
         {filters} = params;
@@ -37,7 +33,7 @@ export function featureBase(params) {
     _feature.matchFiltersWith = function featureMatchFiltersWith(input) {
         //tuio v1 objects and cursors have not typeid
         //unknown typeId in v2 is 0
-        let typeId = isTuio2(input) ? input.getTypeId() : 0,
+        let typeId = input.type ? input.type : 0,
             typeIdKnown = typeId !== 0,
             typeIdMatchesFilters = filters & typeIdToBitmask(typeId),
             hasNoFilters = typeof filters === 'undefined';

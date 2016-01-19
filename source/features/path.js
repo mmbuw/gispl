@@ -22,11 +22,9 @@ export default function path(params) {
             return false;
         }
 
-        return inputState.every(input => {
-            let $points = input.path.map(point => {
-                let x = point.getScreenX(window.screen.width),
-                    y = point.getScreenY(window.screen.height);
-                return new Point(x, y);
+        return inputState.every(inputObject => {
+            let $points = inputObject.path.map(point => {
+                return new Point(point.screenX, point.screenY);
             });
 
             return recognizer.Recognize($points).Score >= 0.8;
