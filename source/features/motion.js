@@ -21,7 +21,7 @@ export default function motion(params) {
             return false;
         }
 
-        let result = vector(),
+        let directionVectorAllInputs = vector(),
             inputCount = 0;
 
         inputState.forEach(inputObject => {
@@ -39,7 +39,7 @@ export default function motion(params) {
                     // which equals beforeLast - last
                     y = beforeLastPoint.screenY - lastPoint.screenY;
 
-                result.add(vector({x, y}));
+                directionVectorAllInputs.add(vector({x, y}));
 
                 inputCount += 1;
             }
@@ -50,15 +50,15 @@ export default function motion(params) {
         }
 
         if (limit) {
-            result.withScalar(1/inputCount);
+            directionVectorAllInputs.scaleWith(1/inputCount);
 
-            return result.x > limit.lower.x &&
-                    result.y > limit.lower.y &&
-                    result.x < limit.upper.x &&
-                    result.y < limit.upper.y;
+            return directionVectorAllInputs.x > limit.lower.x &&
+                    directionVectorAllInputs.y > limit.lower.y &&
+                    directionVectorAllInputs.x < limit.upper.x &&
+                    directionVectorAllInputs.y < limit.upper.y;
         }
 
-        return result.length() !== 0;
+        return directionVectorAllInputs.length() !== 0;
     };
 
     return _motion;

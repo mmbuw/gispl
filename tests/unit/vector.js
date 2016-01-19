@@ -95,11 +95,11 @@ describe('vector', () => {
             y = 5,
             someVector = vector({x, y});
 
-        someVector.withScalar(multiplyTwo)
+        someVector.scaleWith(multiplyTwo)
         expect(someVector.x).to.equal(x*multiplyTwo);
         expect(someVector.y).to.equal(y*multiplyTwo);
 
-        someVector.withScalar(divideTwo);
+        someVector.scaleWith(divideTwo);
         expect(someVector.x).to.equal(x);
         expect(someVector.y).to.equal(y);
     });
@@ -108,11 +108,11 @@ describe('vector', () => {
         let nullVector = vector();
 
         expect(function() {
-            nullVector.withScalar();
+            nullVector.scaleWith();
         }).to.throw(Error, new RegExp(vectorException.ILLEGAL_SCALAR));
 
         expect(function() {
-            nullVector.withScalar('1');
+            nullVector.scaleWith('1');
         }).to.throw(Error, new RegExp(vectorException.ILLEGAL_SCALAR));
     });
 

@@ -27,7 +27,7 @@ export function vector(params = {}) {
         _y += y;
     };
 
-    _vector.withScalar = function vectorWithScalar(value) {
+    _vector.scaleWith = function vectorWithScalar(value) {
         if (typeof value !== 'number') {
             throw new Error(`${vectorException.ILLEGAL_SCALAR}. Instead using: ${value}`);
         }
