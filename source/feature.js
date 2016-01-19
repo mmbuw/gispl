@@ -18,10 +18,6 @@ export function featureFactory(params = {}) {
     }
 }
 
-function typeIdToBitmask(typeId) {
-    return 1<<(typeId-1);
-}
-
 export function featureBase(params) {
     let _feature = {},
         {filters} = params;
@@ -35,10 +31,15 @@ export function featureBase(params) {
         //unknown typeId in v2 is 0
         let typeId = input.type ? input.type : 0,
             typeIdKnown = typeId !== 0,
-            typeIdMatchesFilters = filters & typeIdToBitmask(typeId),
-            hasNoFilters = typeof filters === 'undefined';
+            hasNoFilters = typeof filters === 'undefined',
+            filtersMatch = false;
 
-        return hasNoFilters || (typeIdKnown && !!typeIdMatchesFilters);
+        if (typeIdKnown) {
+            let typeIdAsBitmask = 1<<(typeId-1);
+            filtersMatch = filters & typeIdAsBitmask;
+        }
+
+        return hasNoFilters || filtersMatch;
     };
 
     return _feature;
