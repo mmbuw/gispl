@@ -31,9 +31,9 @@ $(document).ready(() => {
         name: trianglePath,
         features: [
             {type:"Path", constraints: [
-                [0, 0], [0, 100], [100, 100],[0,0]
+                [0, 0], [0, 100], [100, 100], [0,0]
             ]},
-            {type:"Count", constraints: [2,3]}
+            {type:"Count", constraints: [1,3]}
         ]
     });
 
