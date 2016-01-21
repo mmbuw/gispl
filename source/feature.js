@@ -2,6 +2,9 @@ import {vector} from './vector';
 import motion from './features/motion';
 import count from './features/count';
 import path from './features/path';
+import {DollarRecognizer} from './libs/dollar';
+
+let singleAppRecognizer = new DollarRecognizer();
 
 export function featureFactory(params = {}) {
 
@@ -13,6 +16,7 @@ export function featureFactory(params = {}) {
     case 'count':
         return count(params);
     case 'path':
+        params.recognizer = singleAppRecognizer;
         return path(params);
     default:
         throw new Error(`${featureException.NONEXISTING} ${type}`);

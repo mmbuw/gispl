@@ -6,7 +6,7 @@ describe('feature', () => {
     describe('path', () => {
 
         let type = 'path',
-            constraints = [[0,0]];
+            constraints = [[0,0], [1, 1]];
 
         it('should construct', () => {
             let pathFeature = featureFactory({type, constraints});
@@ -25,6 +25,18 @@ describe('feature', () => {
             expect(function() {
                 featureFactory({type});
             }).to.throw(Error, new RegExp(pathFeatureException.NO_CONSTRAINTS));
+        });
+
+        it('should throw if constraints contain less than two points', () => {
+            expect(function() {
+                featureFactory({type, constraints: [[0, 0]]});
+            }).to.throw(Error, new RegExp(pathFeatureException.INVALID_CONSTRAINTS));
+        });
+
+        it('should throw if constraints contain less than two points', () => {
+            expect(function() {
+                featureFactory({type, constraints: [[0], [0, 0]]});
+            }).to.throw(Error, new RegExp(pathFeatureException.INVALID_CONSTRAINTS_POINT));
         });
 
         it(`should recognize if the point in inputState roughly match

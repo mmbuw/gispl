@@ -1,6 +1,5 @@
 import {featureBase} from '../feature';
-import {DollarRecognizer,
-            Point} from '../libs/dollar';
+import {Point} from '../libs/dollar';
 
 export default function path(params) {
 
@@ -8,7 +7,7 @@ export default function path(params) {
 
     let _path = {},
         baseFeature = featureBase(params),
-        {recognizer = new DollarRecognizer()} = params,
+        {recognizer} = params,
         constraints = dollarPointsFrom(params.constraints);
 
     recognizer.AddGesture('current', constraints);
@@ -34,11 +33,21 @@ export default function path(params) {
     return _path;
 }
 
-function isValidPathFeature(pathFeature) {
-    if (typeof pathFeature.constraints === 'undefined'
-            || ! pathFeature.constraints.length) {
+function isValidPathFeature(pathFeature = {}) {
+    let {constraints} = pathFeature;
+
+    if (typeof constraints === 'undefined'
+            || ! constraints.length) {
         throw new Error(pathFeatureException.NO_CONSTRAINTS);
     }
+    if (constraints.length < 2) {
+        throw new Error(pathFeatureException.INVALID_CONSTRAINTS);
+    }
+    constraints.forEach(point => {
+        if (point.length < 2) {
+            throw new Error(pathFeatureException.INVALID_CONSTRAINTS_POINT);
+        }
+    });
 }
 
 function dollarPointsFrom(constraints) {
@@ -52,5 +61,9 @@ function dollarPointsFrom(constraints) {
 
 export let pathFeatureException = {
     NO_CONSTRAINTS: `Attempting to add a path feature with no constraints;
-                        i.e. number of path points`
+                        i.e. number of path points`,
+    INVALID_CONSTRAINTS: `Attempting to add a path feature with invalid constraints;
+                            number of points less than two`,
+    INVALID_CONSTRAINTS_POINT: `Attempting to add a path point, but it does not contain
+                                    two coordinates x, y`
 };
