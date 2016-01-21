@@ -44,8 +44,6 @@ describe('dollar recognizer', () => {
         triangleDrawnFromTopToLeft.push(new Point(100, 100));
         triangleDrawnFromTopToLeft.push(new Point(0, 0));
         triangleDrawnFromTopToLeft.push(new Point(200, 0));
-        // rogue point
-        triangleDrawnFromTopToLeft.push(new Point(2000, 2000));
         triangleDrawnFromTopToLeft.push(new Point(90, 90));
 
         $r.AddGesture('triangle', [
