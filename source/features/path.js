@@ -8,9 +8,12 @@ export default function path(params) {
     let _path = {},
         baseFeature = featureBase(params),
         {recognizer} = params,
+        // name will be something lik
+        // "0,0,10,10" from [[0,0], [10,10]]
+        name = params.constraints.toString(),
         constraints = dollarPointsFrom(params.constraints);
 
-    recognizer.AddGesture('current', constraints);
+    recognizer.AddGesture(name, constraints);
 
     _path.type = function pathType() {
         return 'Path';
@@ -26,7 +29,12 @@ export default function path(params) {
                 return new Point(point.screenX, point.screenY);
             });
 
-            return recognizer.Recognize($points).Score >= 0.8;
+            let result = recognizer.Recognize($points, true);
+
+            return (result.Name == name &&
+                        // value is empirical
+                        // TODO allow it to be user defined
+                        result.Score > 2);
         });
     };
 
@@ -53,6 +61,8 @@ function isValidPathFeature(pathFeature = {}) {
 function dollarPointsFrom(constraints) {
     return constraints.map(constraintPoint => {
         let x = constraintPoint[0],
+            // constraints with bottom left origin
+            // tuio input with top left
             y = (1-constraintPoint[1]);
 
         return new Point(x, y);

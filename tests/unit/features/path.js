@@ -37,6 +37,11 @@ describe('feature', () => {
             expect(function() {
                 featureFactory({type, constraints: [[0], [0, 0]]});
             }).to.throw(Error, new RegExp(pathFeatureException.INVALID_CONSTRAINTS_POINT));
+            expect(function() {
+                featureFactory({type, constraints: [
+                    [0,0], [0, 0], [0]
+                ]});
+            }).to.throw(Error, new RegExp(pathFeatureException.INVALID_CONSTRAINTS_POINT));
         });
 
         it(`should recognize if the point in inputState roughly match
