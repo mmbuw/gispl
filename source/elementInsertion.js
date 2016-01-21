@@ -1,4 +1,7 @@
 function assureSelectionIsArrayLike(selection = []) {
+    if (selection === null) {
+        selection = [];
+    }
     return typeof selection.length === 'undefined' ?
                                         [selection] :
                                         selection;
@@ -21,7 +24,8 @@ export default function elementInsertion(object) {
             let elements = assureSelectionIsArrayLike(selection);
 
             [].forEach.call(elements, (element, index) => {
-                if (!elementCollection.has(element)) {
+                if (!elementCollection.has(element) &&
+                        element !== null) {
                     object[object.length] = elements[index];
                     object.length += 1;
                     elementCollection.add(element);

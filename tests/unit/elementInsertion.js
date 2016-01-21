@@ -111,4 +111,13 @@ describe('elementInsertion', () => {
         testGispl.add(document);
         expect(testGispl.length).to.equal(1);
     });
+
+    it('should not throw when passing null as element', () => {
+       expect(function() {
+           gispl(null);
+       }).to.not.throw();
+       expect(function() {
+           gispl([null]);
+       }).to.not.throw();
+    });
 });
