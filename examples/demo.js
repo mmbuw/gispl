@@ -18,7 +18,7 @@ $(document).ready(() => {
     let swipe = 'two-or-three-finger-to-right-swipe',
         trianglePath = 'clockwise-square-path',
         host = 'ws://localhost:8080';
-        
+
     gispl.addGesture({
         name: swipe,
         features: [
@@ -26,7 +26,7 @@ $(document).ready(() => {
             {type:"Count", constraints: [2,3]}
         ]
     });
-        
+
     gispl.addGesture({
         name: trianglePath,
         features: [
@@ -36,15 +36,15 @@ $(document).ready(() => {
             {type:"Count", constraints: [2,3]}
         ]
     });
-    
+
     gispl(document).on(swipe, () => {
         document.body.style.background = getRandomBlue();
     });
-    
+
     gispl(blackSquare).on(trianglePath, () => {
         blackSquare.style.background = (isRed) ? 'black' : 'red';
         isRed = !isRed;
     });
-    
+
     gispl.initTuio({host});
 });
