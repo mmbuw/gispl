@@ -31,10 +31,10 @@ export default function path(params) {
 
             let result = recognizer.Recognize($points, true);
 
-            return (result.Name == name &&
+            return (result.Name === name &&
                         // value is empirical
                         // TODO allow it to be user defined
-                        result.Score > 2);
+                        result.Score > 5);
         });
     };
 
