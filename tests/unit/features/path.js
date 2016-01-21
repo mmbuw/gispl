@@ -62,13 +62,13 @@ describe('feature', () => {
                 rectangleMovingPointersCounterClockwise = buildInputFromPointer({
                     x: 0.5, y: 0.5
                 }).moveTo({
-                    x: 0.5, y: 0.7
+                    x: 0.49, y: 0.78
                 }).moveTo({
-                    x: 0.8, y: 0.7
+                    x: 0.66, y: 0.81
                 }).moveTo({
-                    x: 0.8, y: 0.45
+                    x: 0.64, y: 0.52
                 }).moveTo({
-                    x: 0.5, y: 0.5
+                    x: 0.53, y: 0.51
                 }).finished();
 
             let inputState = [rectangleMovingPointersCounterClockwise];
