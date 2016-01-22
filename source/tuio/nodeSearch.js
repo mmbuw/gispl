@@ -27,10 +27,10 @@ export default function nodeSearch(params = {}) {
 
         if (typeof x !== 'undefined' &&
                 typeof y !== 'undefined') {
-            let foundFromPoint = elementChain(document.elementFromPoint(x, y));
-            while (foundFromPoint.exists()) {
-                nodes.push(foundFromPoint.currentNode());
-                foundFromPoint.moveToParentNode();
+            let elementFromPoint = elementChain(document.elementFromPoint(x, y));
+            while (elementFromPoint.exists()) {
+                nodes.push(elementFromPoint.currentNode());
+                elementFromPoint.moveToParentNode();
             }
         }
 
