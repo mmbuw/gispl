@@ -40,10 +40,11 @@ describe('gispl', () => {
         expect(spy.callCount).to.equal(1);
     });
 
-    it('should bind the this value in the event callback to the current element', (asyncDone) => {
+    it('should bind the >this< value in the event callback to the current element', (asyncDone) => {
         let element = $('<div></div>').appendTo('body');
         gispl(element).on('custom-event', function() {
             expect(this).to.equal(element[0]);
+            element.remove();
             asyncDone();
         });
         gispl(element).emit('custom-event');
