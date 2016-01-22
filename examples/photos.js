@@ -7,9 +7,8 @@ $(document).ready(() => {
     gispl.addGesture({
         name: anyMotion,
         features: [
-            {
-                type: "Motion"
-            }
+            {type: "Motion"},
+            {type: "Count", constraints: [2,3]}
         ]
     });
 
@@ -37,14 +36,16 @@ $(document).ready(() => {
 
     gispl(images$).on(anyMotion, function(inputState) {
         let this$ = $(this),
+            nodePosition = {
+                left: 200,
+                top: 200
+            },
             input = inputState[0],
             originX = window.screenLeft + window.outerWidth - window.innerWidth,
             originY = window.screenTop + window.outerHeight - window.innerHeight;
 
-        let left = input.screenX - originX,
-            top = input.screenY - originY;
-            
-            console.log(input.screenX, input.screenY);
+        let left = input.screenX - originX - nodePosition.left,
+            top = input.screenY - originY - nodePosition.top;
 
         this$.css({zIndex, left, top});
 
