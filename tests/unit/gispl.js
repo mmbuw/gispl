@@ -40,6 +40,15 @@ describe('gispl', () => {
         expect(spy.callCount).to.equal(1);
     });
 
+    it('should bind the this value in the event callback to the current element', (asyncDone) => {
+        let element = $('<div></div>').appendTo('body');
+        gispl(element).on('custom-event', function() {
+            expect(this).to.equal(element[0]);
+            asyncDone();
+        });
+        gispl(element).emit('custom-event');
+    });
+
     it('should accept gestures as javascript objects', () => {
         let gesture = {
             name: 'someGestureName',

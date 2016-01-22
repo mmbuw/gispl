@@ -18,9 +18,9 @@ let globalEventCache = {
         return cachedListeners;
     },
     callListeners: function callListenersFromCache(params = {}) {
-        let {args} = params;
+        let {args, element} = params;
         this.getListeners(params)
-            .forEach(listener => listener(...args));
+            .forEach(listener => listener.apply(element, args));
     },
     addListener: function addListenersFromCache(params = {}) {
         let {listener} = params;
