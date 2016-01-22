@@ -7,44 +7,18 @@
 //};
 
 export function inputObjectFromTuio(object) {
-    let params = {
-        identifier: object.getSessionId()
-    };
+    let identifier = object.getSessionId(),
+        {screenX, screenY} = pointParams(object),
+        path = object.path.map(point => pointParams(point)),
+        type;
 
     if (typeof object.getTypeId === 'function') {
-        params.type = object.getTypeId();
+        type = object.getTypeId();
     }
 
-    Object.assign(params, pointParams(object));
-
-    params.path = object.path.map(point => {
-        let params = pointParams(point);
-        return tuioInputObject(params);
-    });
-
-    return tuioInputObject(params);
-}
-
-function tuioInputObject(params = {}) {
-    let _inputObject = {},
-        propertiesToSet = {};
-
-    Object.keys(params).forEach(property => {
-        let value = params[property];
-        propertiesToSet[property] = immutableEnumberableProperty(value);
-    });
-
-    return Object.defineProperties(_inputObject, propertiesToSet);
-}
-
-function immutableEnumberableProperty(value) {
-    let writable = false,
-        configurable = false,
-        enumerable = true;
-
-    return Object.assign({},
-                         {writable, configurable, enumerable},
-                         {value});
+    return {
+        identifier, type, path, screenX, screenY
+    };
 }
 
 function pointParams(point) {

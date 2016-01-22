@@ -51,7 +51,7 @@ $(document).ready(() => {
 
         zIndex += 1;
     });
-    
+
     gispl.initTuio({
         host: 'ws://localhost:8080'
     });
