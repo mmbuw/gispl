@@ -111,9 +111,8 @@ describe('tuioInput', () => {
         setTimeout(() => {
             sendPointerBundle(server, tuioPointer);
             let regions = spy.getCall(0).args[0];
-            //document is the only node found
-            //check calibration stub, retunrns 0, 0
-            expect(regions.size).to.equal(1);
+            //document and HTML are the only nodes found
+            //check calibration stub, returns 0, 0
             expect(regions.has(document)).to.equal(true);
             //only one input object ->  tuioPointer
             expect(regions.get(document).length).to.equal(1);

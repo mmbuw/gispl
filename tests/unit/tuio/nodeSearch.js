@@ -124,23 +124,6 @@ describe('nodeSearch', () => {
         expect(foundNodes[0]).to.equal(element2);
     });
 
-    it('should ignore parent elements that do not actually contain the point', () => {
-
-        let parent = helper.appendElement();
-        helper.appendElement({
-                parent: parent,
-                position: 'absolute',
-                left: 100,
-                top: 100
-            });
-        let x = 105, y = 105;
-        let foundNodes = findNodes.fromPoint({x, y});
-        // body has height of parent element, should not be in
-        let expectedNodes = ['div', '#document'];
-
-        helper.assertNodesExpectation(foundNodes, expectedNodes);
-    });
-
     it('should return nothing when not supplying coordinates to the find method', () => {
 
         let foundNodes = findNodes.fromPoint();

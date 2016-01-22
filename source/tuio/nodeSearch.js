@@ -29,10 +29,7 @@ export default function nodeSearch(params = {}) {
                 typeof y !== 'undefined') {
             let foundFromPoint = elementChain(document.elementFromPoint(x, y));
             while (foundFromPoint.exists()) {
-                if (foundFromPoint.isRoot() ||
-                        foundFromPoint.containsPoint({x, y})) {
-                    nodes.push(foundFromPoint.currentNode());
-                }
+                nodes.push(foundFromPoint.currentNode());
                 foundFromPoint.moveToParentNode();
             }
         }
