@@ -100,14 +100,14 @@ describe('nodeSearch', () => {
     it('should treat right and bottom dom element boundary as point non inclusive', () => {
 
         let x = 20, y = 15;
-        helper.appendElement({
+        let element = helper.appendElement({
             width: x,
             height: y
         });
-        let foundNodes = findNodes.fromPoint({x, y});
+        let foundNodes = findNodes.fromPoint({x, y}),
+            foundOnTop = foundNodes.shift();
 
-        expect(foundNodes.length).to.equal(1);
-        expect(helper.tagName(foundNodes[0])).to.equal('#document');
+        expect(foundOnTop).to.not.equal(element);
     });
 
     it('should ignore elements that are overlapped by other elements', () => {
