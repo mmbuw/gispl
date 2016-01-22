@@ -24,6 +24,8 @@ export default function gispl(selection) {
     };
 
     //additional elements
+    // the registered callbacks up to this point
+    // won't be applied to the new elements
     gisplApi.add = selectionInsertion.append;
 
     //event method aliases
@@ -38,7 +40,7 @@ function handleInput(nodesMap) {
             // if gesture recognized
             if (gesture.load(inputState)) {
                 let event = gesture.name();
-                events.emit(node, event);
+                events.emit(node, event, inputState);
             }
         });
     });

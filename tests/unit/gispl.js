@@ -136,7 +136,7 @@ describe('gispl', () => {
         expect(gispl.gesture('someGestureName').definition()).to.deep.equal(gesture);
     });
 
-    it('should recognize a simple motion gesture', (assyncDone) => {
+    it('should recognize a simple motion gesture', (asyncDone) => {
         let spy = sinon.spy(),
             motionName = 'motion',
             sessionId = 10,
@@ -181,7 +181,62 @@ describe('gispl', () => {
             expect(spy.callCount).to.equal(1);
 
             server.close();
-            assyncDone();
+            asyncDone();
+        }, 0);
+    });
+
+    it('should pass the inputstate array as parameter to the callback', (asyncDone) => {
+        let spy = sinon.spy(),
+            motionName = 'motion',
+            sessionId = 10,
+            xPos = 0,
+            yPos = 0,
+            frameId = 1,
+            host = 'test-socket-url';
+
+        gispl.addGesture({
+            name: motionName,
+            features: [
+                {type:"Motion"}
+            ]
+        });
+        gispl(document).on(motionName, spy);
+        window.WebSocket = WebMocket;
+
+        let calibration = {
+            screenToViewportCoordinates: function() {
+                return {
+                    x: 0,
+                    y: 0
+                };
+            },
+            isScreenUsable: function() {
+                return true;
+            }
+        };
+        gispl.initTuio({host, calibration});
+
+        let server = new MocketServer(host);
+
+        setTimeout(() => {
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            //move pointer
+            xPos += 0.5;
+            yPos += 0.5;
+            frameId += 1;
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+
+            let callbackArgs = spy.lastCall.args;
+            expect(callbackArgs.length).to.equal(1);
+
+            let inputState = callbackArgs[0];
+            expect(inputState.length).to.equal(1);
+
+            let pointer = inputState[0];
+            expect(pointer.identifier).to.equal(sessionId);
+
+            server.close();
+            asyncDone();
         }, 0);
     });
 
