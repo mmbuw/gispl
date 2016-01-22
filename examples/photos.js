@@ -38,14 +38,20 @@ $(document).ready(() => {
     gispl(images$).on(anyMotion, function(inputState) {
         let this$ = $(this),
             input = inputState[0],
-            originX = window.screenLeft,
-            originY = window.screenTop + window.outerWidth - window.innerWidth;
+            originX = window.screenLeft + window.outerWidth - window.innerWidth,
+            originY = window.screenTop + window.outerHeight - window.innerHeight;
 
         let left = input.screenX - originX,
             top = input.screenY - originY;
+            
+            console.log(input.screenX, input.screenY);
 
-        $this.css({zIndex, left, top});
+        this$.css({zIndex, left, top});
 
         zIndex += 1;
+    });
+    
+    gispl.initTuio({
+        host: 'ws://localhost:8080'
     });
 });
