@@ -8,7 +8,7 @@ $(document).ready(() => {
         name: anyMotion,
         features: [
             {type: "Motion"},
-            {type: "Count", constraints: [2,3]}
+            {type: "Count", constraints: [1,3]}
         ]
     });
 
@@ -32,20 +32,25 @@ $(document).ready(() => {
         });
     });
 
-    let zIndex = 1;
+    let zIndex = 1,
+        currentIdentifier = 0,
+        inImagePositionX, inImagePositionY;
 
     gispl(images$).on(anyMotion, function(inputState) {
         let this$ = $(this),
-            nodePosition = {
-                left: 200,
-                top: 200
-            },
             input = inputState[0],
             originX = window.screenLeft + window.outerWidth - window.innerWidth,
             originY = window.screenTop + window.outerHeight - window.innerHeight;
+        
+        if (input.identifier !== currentIdentifier) {
+            let nodePosition = this.getBoundingClientRect();
+            inImagePositionX = input.screenX - originX - nodePosition.left;
+            inImagePositionY = input.screenY - originY - nodePosition.top;
+            currentIdentifier = input.identifier;
+        }
 
-        let left = input.screenX - originX - nodePosition.left,
-            top = input.screenY - originY - nodePosition.top;
+        let left = input.screenX - originX - inImagePositionX,
+            top = input.screenY - originY - inImagePositionY;
 
         this$.css({zIndex, left, top});
 
