@@ -5,7 +5,8 @@ export let userDefinedGestures = new Map();
 export function createGesture(definition) {
     let gestureApi = {},
         features = [],
-        flags = [];
+        flags = [],
+        matchedInputIds = [];
 
     isValidGesture(definition);
 
@@ -21,6 +22,19 @@ export function createGesture(definition) {
         flags.push(...definitionFlags);
     }
 
+    function extractIdentifiersFrom(inputState = []) {
+        return inputState.map(inputObject => inputObject.identifier);
+    }
+
+    function inputEquals(first, second) {
+        let equalLength = first.length === second.length,
+            secondContainsAllOfFirst = first.every(item => {
+                return second.indexOf(item) !== -1;
+            });
+
+        return equalLength && secondContainsAllOfFirst;
+    }
+
     gestureApi.definition = function gestureDefinition() {
         return definition;
     };
@@ -34,7 +48,24 @@ export function createGesture(definition) {
     };
 
     gestureApi.load = function gestureLoad(inputState) {
-        return features.every(feature => feature.load(inputState));
+        let match = false,
+            // boils down to
+            // gestures with oneshot flags should be triggered once
+            // until the identifiers change (e.g. tuio session ids)
+            currentInputIds = extractIdentifiersFrom(inputState),
+            changedInputIds = !inputEquals(currentInputIds, matchedInputIds);
+
+        let hasOneshotFlag = flags.indexOf('oneshot') !== -1,
+            oneshotFlagFulfilled = hasOneshotFlag && !changedInputIds;
+
+        if (!oneshotFlagFulfilled) {
+            match = features.every(feature => feature.load(inputState));
+            if (match && hasOneshotFlag) {
+                matchedInputIds = currentInputIds;
+            }
+        }
+
+        return match;
     };
 
     gestureApi.flags = function gestureFlags() {

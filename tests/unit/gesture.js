@@ -1,5 +1,6 @@
 import {createGesture, gestureException} from '../../source/gesture';
 import $ from 'jquery';
+import {buildInputFromPointer} from '../helpers/pointer';
 
 describe('gesture', () => {
 
@@ -121,5 +122,65 @@ describe('gesture', () => {
                 invalidFlagsGestureDefinition = addFlagsToGesture(flags);
             createGesture(invalidFlagsGestureDefinition);
         }).to.throw(Error, new RegExp(gestureException.INVALID_FLAGS));
+    });
+
+    it('should only be triggered once for the same inputstate with oneshot flag', () => {
+        let sessionId = 10,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            oneshotGestureDefinition = addFlagsToGesture('oneshot'),
+            oneshotMotionGesture = createGesture(oneshotGestureDefinition);
+
+        let inputState = [movingPointerInput.finished()];
+        expect(oneshotMotionGesture.load(inputState)).to.equal(true);
+
+        movingPointerInput.moveTo({x: 0.4, y: 0.4});
+        inputState = [movingPointerInput.finished()];
+        expect(oneshotMotionGesture.load(inputState)).to.equal(false);
+    });
+
+    it('should trigger the gesture again despite oneshot if the inputState changes', () => {
+        let sessionId = 10,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            oneshotGestureDefinition = addFlagsToGesture('oneshot'),
+            oneshotMotionGesture = createGesture(oneshotGestureDefinition);
+
+        let inputState = [movingPointerInput.finished()];
+        expect(oneshotMotionGesture.load(inputState)).to.equal(true);
+
+        sessionId += 1;
+        let newMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5});
+
+        inputState = [newMovingPointerInput.finished()];
+        expect(oneshotMotionGesture.load(inputState)).to.equal(true);
+
+        newMovingPointerInput.moveTo({x: 0.4, y: 0.4});
+        inputState = [newMovingPointerInput.finished()];
+        expect(oneshotMotionGesture.load(inputState)).to.equal(false);
+    });
+
+    it(`should not trigger oneshot gestures if the inputstate changes, but
+        the gesture conditions not satisifed`, () => {
+        // more of a check that nothing has gone wrong after oneshot was implemented
+        let sessionId = 10,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            oneshotGestureDefinition = addFlagsToGesture('oneshot'),
+            oneshotMotionGesture = createGesture(oneshotGestureDefinition);
+
+        let inputState = [movingPointerInput.finished()];
+        expect(oneshotMotionGesture.load(inputState)).to.equal(true);
+
+        sessionId += 1;
+        let staticPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId});
+
+        inputState = [staticPointerInput.finished()];
+        expect(oneshotMotionGesture.load(inputState)).to.equal(false);
+
+        staticPointerInput.moveTo({x: 0.4, y: 0.4});
+        inputState = [staticPointerInput.finished()];
+        expect(oneshotMotionGesture.load(inputState)).to.equal(true);
     });
 });
