@@ -1,6 +1,6 @@
 let globalEventCache = {
     map: new WeakMap(),
-    getListeners: function getListenersFromCache(params = {}) {
+    getListeners(params = {}) {
         let {element, event} = params;
 
         let cachedEvents = this.map.get(element);
@@ -17,18 +17,18 @@ let globalEventCache = {
 
         return cachedListeners;
     },
-    callListeners: function callListenersFromCache(params = {}) {
+    callListeners(params = {}) {
         let {args, element} = params;
         this.getListeners(params)
             .forEach(listener => listener.apply(element, args));
     },
-    addListener: function addListenersFromCache(params = {}) {
+    addListener(params = {}) {
         let {listener} = params;
         if (typeof listener === 'function') {
             this.getListeners(params).push(listener);
         }
     },
-    removeListener: function removeListenersFromCache(params = {}) {
+    removeListener(params = {}) {
         let {listener} = params,
             listeners = this.getListeners(params);
 
@@ -37,7 +37,7 @@ let globalEventCache = {
             listeners.splice(indexOfListener, 1);
         }
     },
-    removeListeners: function removeListenerFromCache(params = {}) {
+    removeListeners(params = {}) {
         let {element, event, listener} = params;
 
         if (typeof listener !== 'undefined') {
@@ -50,29 +50,29 @@ let globalEventCache = {
             delete cachedEvents[event];
         }
     },
-    clear: function clearGlobalEventCache() {
+    clear() {
         this.map = new WeakMap();
     }
 };
 
 export let events = {
-    emit: function eventEmit(element, event, ...args) {
+    emit(element, event, ...args) {
         globalEventCache.callListeners({element,
                                             event,
                                             args});
     },
-    on: function eventOn(element, event, listener) {
+    on(element, event, listener) {
         globalEventCache.addListener({element,
                                         event,
                                         listener});
 
     },
-    off: function eventOff(element, event, listener) {
+    off(element, event, listener) {
         globalEventCache.removeListeners({element,
                                             event,
                                             listener});
     },
-    clearGlobalEventsCache: function eventClearGlobalCache() {
+    clearGlobalEventsCache() {
         globalEventCache.clear();
     }
 };
