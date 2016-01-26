@@ -4,7 +4,7 @@ import count from './features/count';
 import path from './features/path';
 import {DollarRecognizer} from './libs/dollar';
 
-let singleAppRecognizer = new DollarRecognizer();
+let singleRecognizerInstance = new DollarRecognizer();
 
 export function featureFactory(params = {}) {
 
@@ -16,7 +16,7 @@ export function featureFactory(params = {}) {
     case 'count':
         return count(params);
     case 'path':
-        params.recognizer = singleAppRecognizer;
+        params.recognizer = singleRecognizerInstance;
         return path(params);
     default:
         throw new Error(`${featureException.NONEXISTING} ${type}`);
