@@ -29,7 +29,9 @@ export default function tuioInput(params = {}) {
                     if (!nodesWithInput.has(node)) {
                         nodesWithInput.set(node, []);
                     }
-                    let inputObject = inputObjectFromTuio(pointer);
+                    let inputObject = inputObjectFromTuio({
+                        tuioComponent: pointer
+                    });
                     nodesWithInput.get(node).push(inputObject);
                 });
         });

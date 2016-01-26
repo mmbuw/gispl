@@ -119,7 +119,9 @@ describe('feature', () => {
             movingCursor.update({xp, yp});
 
             let inputState = [
-                inputObjectFromTuio(movingCursor)
+                inputObjectFromTuio({
+                    tuioComponent: movingCursor
+                })
             ];
 
             expect(filteredMotion.load(inputState)).to.equal(false);

@@ -7,7 +7,9 @@ describe('tuioInputObject', () => {
     it('should have a session identifier', () => {
         let sessionId = 10,
             pointer = buildPointer({sessionId}).finished(),
-            input = inputObjectFromTuio(pointer);
+            input = inputObjectFromTuio({
+                tuioComponent: pointer
+            });
 
         expect(input.identifier).to.equal(sessionId);
     });
@@ -15,7 +17,9 @@ describe('tuioInputObject', () => {
     it('should have a type identifier', () => {
         let typeId = 5,
             pointer = buildPointer({typeId}).finished(),
-            input = inputObjectFromTuio(pointer);
+            input = inputObjectFromTuio({
+                tuioComponent: pointer
+            });
 
         expect(input.type).to.equal(typeId);
     });
@@ -24,7 +28,9 @@ describe('tuioInputObject', () => {
         let x = 0.5,
             y = 0.5,
             pointer = buildPointer({x, y}).finished(),
-            input = inputObjectFromTuio(pointer);
+            input = inputObjectFromTuio({
+                tuioComponent: pointer
+            });
 
         expect(input.screenX).to.equal(x*window.screen.width);
         expect(input.screenY).to.equal(y*window.screen.height);
@@ -43,7 +49,10 @@ describe('tuioInputObject', () => {
                     y: clientY
                 })
             },
-            input = inputObjectFromTuio(pointer, calibration);
+            input = inputObjectFromTuio({
+                tuioComponent: pointer,
+                calibration
+            });
 
         expect(input.clientX).to.equal(100);
         expect(input.clientY).to.equal(100);
@@ -66,7 +75,9 @@ describe('tuioInputObject', () => {
                     y: clientY
                 })
             },
-            inputWithHistory = inputObjectFromTuio(movingPointer, calibration);
+            inputWithHistory = inputObjectFromTuio({
+                tuioComponent: movingPointer,
+                calibration});
 
         expect(inputWithHistory.path.length).to.deep.equal(path.length);
         expect(inputWithHistory.path[0].screenX).to.equal(path[0].screenX);

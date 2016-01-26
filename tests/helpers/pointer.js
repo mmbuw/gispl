@@ -40,7 +40,9 @@ export function buildInputFromPointer(params) {
             return this;
         },
         finished: function() {
-            return inputObjectFromTuio(pointerBuilder.finished());
+            return inputObjectFromTuio({
+                tuioComponent: pointerBuilder.finished()
+            });
         }
     }
 }

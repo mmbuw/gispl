@@ -6,15 +6,19 @@
 //    path: undefined
 //};
 
-export function inputObjectFromTuio(object, calibration) {
-    let identifier = object.getSessionId(),
+export function inputObjectFromTuio(params) {
+    let {tuioComponent, calibration} = params;
+
+    let identifier = tuioComponent.getSessionId(),
         {screenX, screenY,
-            clientX, clientY} = pointParams(object, calibration),
-        path = object.path.map(point => pointParams(point, calibration)),
+            clientX, clientY} = pointParams(tuioComponent, calibration),
+        path = tuioComponent.path.map(point => {
+            return pointParams(point, calibration);
+        }),
         type;
 
-    if (typeof object.getTypeId === 'function') {
-        type = object.getTypeId();
+    if (typeof tuioComponent.getTypeId === 'function') {
+        type = tuioComponent.getTypeId();
     }
 
     return {
