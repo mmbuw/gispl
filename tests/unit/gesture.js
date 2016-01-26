@@ -1,9 +1,15 @@
-import {createGesture} from '../../source/gesture';
+import {createGesture, gestureException} from '../../source/gesture';
 import $ from 'jquery';
 
 describe('gesture', () => {
 
     let gestureDefinition;
+
+    function addFlagsToGesture(flags) {
+        return $.extend(
+            {}, gestureDefinition, {flags: flags}
+        );
+    }
 
     beforeEach(() => {
         gestureDefinition = {
@@ -76,5 +82,44 @@ describe('gesture', () => {
 
         let mockState;
         expect(gesture.load(mockState)).to.equal(false);
+    });
+
+    it('should allow a flag on a gesture', () => {
+        let flag = 'oneshot',
+            flaggedGestureDefinition = addFlagsToGesture(flag);
+
+        let gesture = createGesture(flaggedGestureDefinition);
+        expect(gesture.flags().length).to.equal(1);
+        expect(gesture.flags()[0]).to.equal(flag);
+    });
+
+    it('should allow multiple flags on a gesture', () => {
+        let flags = ['oneshot', 'bubble'],
+            multipleFlagGestureDefinition = addFlagsToGesture(flags);
+
+        let gesture = createGesture(multipleFlagGestureDefinition);
+        expect(gesture.flags().length).to.equal(2);
+        expect(gesture.flags()).to.deep.equal(flags);
+    });
+
+    it('should throw when using flags other than oneshot, bubble, sticky', () => {
+        expect(function() {
+            let misspelledOneShot = 'oneshor';
+            let invalidFlagsGestureDefinition = addFlagsToGesture(misspelledOneShot);
+            createGesture(invalidFlagsGestureDefinition);
+        }).to.throw(Error, new RegExp(gestureException.INVALID_FLAG));
+
+        expect(function() {
+            let numericalFlag = 1;
+            let invalidFlagsGestureDefinition = addFlagsToGesture(numericalFlag);
+            createGesture(invalidFlagsGestureDefinition);
+        }).to.throw(Error, new RegExp(gestureException.INVALID_FLAG));
+
+        expect(function() {
+            let misspelledOneShot = 'oneshor',
+                flags = ['bubble', misspelledOneShot],
+                invalidFlagsGestureDefinition = addFlagsToGesture(flags);
+            createGesture(invalidFlagsGestureDefinition);
+        }).to.throw(Error, new RegExp(gestureException.INVALID_FLAG));
     });
 });

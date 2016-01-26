@@ -4,13 +4,22 @@ export let userDefinedGestures = new Map();
 
 export function createGesture(definition) {
     let gestureApi = {},
-        features = [];
+        features = [],
+        flags = [];
 
     isValidGesture(definition);
 
     definition.features.forEach(feature => {
         features.push(featureFactory(feature));
     });
+
+    let definitionFlags = definition.flags;
+    if (typeof definitionFlags === 'string') {
+        definitionFlags = [definitionFlags];
+    }
+    if (Array.isArray(definitionFlags)) {
+        flags.push(...definitionFlags);
+    }
 
     gestureApi.definition = function gestureDefinition() {
         return definition;
@@ -28,6 +37,10 @@ export function createGesture(definition) {
         return features.every(feature => feature.load(inputState));
     };
 
+    gestureApi.flags = function gestureFlags() {
+        return flags;
+    };
+
     return gestureApi;
 }
 
@@ -36,9 +49,19 @@ export let gestureException = {
                         passing a gesture`,
     NO_NAME: 'Attempting to define a gesture without name',
     NO_FEATURES: 'Attempting to define a gestures without features',
-    DUPLICATE: 'Attempting to define a gesture that already exists'
+    DUPLICATE: 'Attempting to define a gesture that already exists',
+    INVALID_FLAG: 'Attempting to define a gesture with an invalid flag'
 };
 
+let gestureFlags = {
+    ONESHOT: 'oneshot',
+    STICKY: 'sticky',
+    BUBBLE: 'bubble'
+};
+
+let gestureFlagNames = Object.keys(gestureFlags).map(key => {
+    return gestureFlags[key];
+});
 
 function isValidGesture(definition) {
     if (typeof definition === 'undefined' ||
@@ -46,7 +69,7 @@ function isValidGesture(definition) {
         throw new Error(gestureException.EMPTY);
     }
 
-    let {name, features} = definition;
+    let {name, features, flags} = definition;
 
     if (typeof name === 'undefined') {
         throw new Error(gestureException.NO_NAME);
@@ -58,5 +81,22 @@ function isValidGesture(definition) {
     }
     if (userDefinedGestures.has(name)) {
         throw new Error(gestureException.DUPLICATE);
+    }
+    if (typeof flags !== 'undefined') {
+        let flagIsValid = false;
+        if (typeof flags === 'string') {
+            flagIsValid = gestureFlagNames.some(flagName => {
+                return flagName === flags;
+            });
+        }
+        else if (Array.isArray(flags)) {
+            flagIsValid = flags.every(flagName => {
+                return gestureFlagNames.indexOf(flagName) !== -1;
+            });
+        }
+        if (!flagIsValid) {
+            throw new Error(`${gestureException.INVALID_FLAG}.
+                Expecting some of: ${gestureFlagNames}; received: ${flags}`);
+        }
     }
 }
