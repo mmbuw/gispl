@@ -50,7 +50,7 @@ export let gestureException = {
     NO_NAME: 'Attempting to define a gesture without name',
     NO_FEATURES: 'Attempting to define a gestures without features',
     DUPLICATE: 'Attempting to define a gesture that already exists',
-    INVALID_FLAG: 'Attempting to define a gesture with an invalid flag'
+    INVALID_FLAGS: 'Attempting to define a gesture with an invalid flag'
 };
 
 let gestureFlags = {
@@ -95,7 +95,7 @@ function isValidGesture(definition) {
             });
         }
         if (!flagIsValid) {
-            throw new Error(`${gestureException.INVALID_FLAG}.
+            throw new Error(`${gestureException.INVALID_FLAGS}.
                 Expecting some of: ${gestureFlagNames}; received: ${flags}`);
         }
     }

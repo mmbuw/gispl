@@ -107,19 +107,19 @@ describe('gesture', () => {
             let misspelledOneShot = 'oneshor';
             let invalidFlagsGestureDefinition = addFlagsToGesture(misspelledOneShot);
             createGesture(invalidFlagsGestureDefinition);
-        }).to.throw(Error, new RegExp(gestureException.INVALID_FLAG));
+        }).to.throw(Error, new RegExp(gestureException.INVALID_FLAGS));
 
         expect(function() {
             let numericalFlag = 1;
             let invalidFlagsGestureDefinition = addFlagsToGesture(numericalFlag);
             createGesture(invalidFlagsGestureDefinition);
-        }).to.throw(Error, new RegExp(gestureException.INVALID_FLAG));
+        }).to.throw(Error, new RegExp(gestureException.INVALID_FLAGS));
 
         expect(function() {
             let misspelledOneShot = 'oneshor',
                 flags = ['bubble', misspelledOneShot],
                 invalidFlagsGestureDefinition = addFlagsToGesture(flags);
             createGesture(invalidFlagsGestureDefinition);
-        }).to.throw(Error, new RegExp(gestureException.INVALID_FLAG));
+        }).to.throw(Error, new RegExp(gestureException.INVALID_FLAGS));
     });
 });
