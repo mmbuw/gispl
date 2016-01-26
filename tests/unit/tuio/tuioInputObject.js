@@ -12,7 +12,7 @@ describe('tuioInputObject', () => {
         expect(input.identifier).to.equal(sessionId);
     });
 
-    it('should have an immutable type identifier', () => {
+    it('should have a type identifier', () => {
         let typeId = 5,
             pointer = buildPointer({typeId}).finished(),
             input = inputObjectFromTuio(pointer);
@@ -20,7 +20,7 @@ describe('tuioInputObject', () => {
         expect(input.type).to.equal(typeId);
     });
 
-    it('should have immutable screen position information', () => {
+    it('should have screen position information', () => {
         let x = 0.5,
             y = 0.5,
             pointer = buildPointer({x, y}).finished(),
@@ -28,6 +28,25 @@ describe('tuioInputObject', () => {
 
         expect(input.screenX).to.equal(x*window.screen.width);
         expect(input.screenY).to.equal(y*window.screen.height);
+    });
+
+    it('should have position information related to the browser', () => {
+        let x = 0.5,
+            y = 0.5,
+            clientX = 100,
+            clientY = 100,
+            browserPositionOnScreen = {x: 100, y: 100},
+            pointer = buildPointer({x, y}).finished(),
+            calibration = {
+                screenToViewportCoordinates: () => ({
+                    x: clientX,
+                    y: clientY
+                })
+            },
+            input = inputObjectFromTuio(pointer, calibration);
+
+        expect(input.clientX).to.equal(100);
+        expect(input.clientY).to.equal(100);
     });
 
     it('should have a path property of all the previous points', () => {
@@ -39,13 +58,25 @@ describe('tuioInputObject', () => {
                 {screenX: 0, screenY: 0},
                 {screenX: 0.5*window.screen.width, screenY: 0.5*window.screen.height}
             ],
-            inputWithHistory = inputObjectFromTuio(movingPointer);
+            clientX = 100,
+            clientY = 100,
+            calibration = {
+                screenToViewportCoordinates: () => ({
+                    x: clientX,
+                    y: clientY
+                })
+            },
+            inputWithHistory = inputObjectFromTuio(movingPointer, calibration);
 
-        expect(inputWithHistory.path).to.deep.equal(path);
+        expect(inputWithHistory.path.length).to.deep.equal(path.length);
+        expect(inputWithHistory.path[0].screenX).to.equal(path[0].screenX);
+        expect(inputWithHistory.path[0].screenY).to.equal(path[0].screenY);
+        expect(inputWithHistory.path[0].clientX).to.equal(clientX);
+        expect(inputWithHistory.path[0].clientY).to.equal(clientY);
+        expect(inputWithHistory.path[1].screenX).to.equal(path[1].screenX);
+        expect(inputWithHistory.path[1].screenY).to.equal(path[1].screenY);
+        expect(inputWithHistory.path[1].clientX).to.equal(clientX);
+        expect(inputWithHistory.path[1].clientY).to.equal(clientY);
     });
 
-    it('should have read-only values as enumerable properties', () => {
-        let pointer = buildPointer({x: 0, y: 0, typeId: 1, sessionId: 2}).finished();
-        expect(Object.keys(inputObjectFromTuio(pointer)).length).to.equal(5);
-    });
 });
