@@ -39,18 +39,18 @@ $(document).ready(() => {
     gispl(images$).on(anyMotion, function(inputState) {
         let this$ = $(this),
             input = inputState[0],
-            originX = window.screenLeft + window.outerWidth - window.innerWidth,
-            originY = window.screenTop + window.outerHeight - window.innerHeight;
+            {clientX,
+                clientY} = input;
         
         if (input.identifier !== currentIdentifier) {
             let nodePosition = this.getBoundingClientRect();
-            inImagePositionX = input.screenX - originX - nodePosition.left;
-            inImagePositionY = input.screenY - originY - nodePosition.top;
+            inImagePositionX = clientX - nodePosition.left;
+            inImagePositionY = clientY - nodePosition.top;
             currentIdentifier = input.identifier;
         }
 
-        let left = input.screenX - originX - inImagePositionX,
-            top = input.screenY - originY - inImagePositionY;
+        let left = clientX - inImagePositionX,
+            top = clientY - inImagePositionY;
 
         this$.css({zIndex, left, top});
 
