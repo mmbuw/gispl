@@ -2,8 +2,7 @@ import screenCalibration from './screenCalibration';
 
 export default function nodeSearch(params = {}) {
 
-    let searchApi = {},
-        {calibration = screenCalibration()} = params;
+    let {calibration = screenCalibration()} = params;
 
     function coordinatesFromParams(params = {}) {
         let {x, y, screenX, screenY} = params;
@@ -21,65 +20,62 @@ export default function nodeSearch(params = {}) {
         return {x, y};
     }
 
-    searchApi.fromPoint = function nodeSearchFromPoint(params = {}) {
-        let nodes = [],
-            {x, y} = coordinatesFromParams(params);
+    return {
+        fromPoint(params = {}) {
+            let nodes = [],
+                {x, y} = coordinatesFromParams(params);
 
-        if (typeof x !== 'undefined' &&
-                typeof y !== 'undefined') {
-            let elementFromPoint = elementChain(document.elementFromPoint(x, y));
-            while (elementFromPoint.exists()) {
-                nodes.push(elementFromPoint.currentNode());
-                elementFromPoint.moveToParentNode();
+            if (typeof x !== 'undefined' &&
+                    typeof y !== 'undefined') {
+                let elementFromPoint = elementChain(document.elementFromPoint(x, y));
+                while (elementFromPoint.exists()) {
+                    nodes.push(elementFromPoint.currentNode());
+                    elementFromPoint.moveToParentNode();
+                }
             }
+
+            return nodes;
         }
-
-        return nodes;
     };
-
-    searchApi.find = searchApi.fromPoint;
-
-    return searchApi;
 }
 
 
 function elementChain(topNode) {
-    let elementApi = {};
-
     let node = topNode;
 
-    elementApi.currentNode = function elementCurrentNode() {
-        return node;
-    };
+    return {
+        currentNode() {
+            return node;
+        },
 
-    elementApi.exists = function elementExists() {
-        return node !== null;
-    };
+        exists() {
+            return node !== null;
+        },
 
-    elementApi.moveToParentNode = function elementParentNode() {
-        node = node.parentNode;
-        return this;
-    };
+        moveToParentNode() {
+            node = node.parentNode;
+            return this;
+        },
 
-    elementApi.containsPoint = function elementContainsPoint(point) {
+        //this is unused atm
+        containsPoint(point) {
 
-        if (!this.exists()) {
-            return false;
+            if (!this.exists()) {
+                return false;
+            }
+
+            let {x, y} = point;
+
+            let elementGeometry = node.getBoundingClientRect();
+
+            return (elementGeometry.left <= x &&
+                        x < elementGeometry.right &&
+                        elementGeometry.top <= y &&
+                        y < elementGeometry.bottom);
+        },
+        // this too
+        isRoot() {
+            return node === document;
         }
-
-        let {x, y} = point;
-
-        let elementGeometry = node.getBoundingClientRect();
-
-        return (elementGeometry.left <= x &&
-                    x < elementGeometry.right &&
-                    elementGeometry.top <= y &&
-                    y < elementGeometry.bottom);
     };
-
-    elementApi.isRoot = function elementIsRoot() {
-        return node === document;
-    };
-
-    return elementApi;
 }
