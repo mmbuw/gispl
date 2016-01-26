@@ -69,7 +69,7 @@ function isValidGesture(definition) {
         throw new Error(gestureException.EMPTY);
     }
 
-    let {name, features, flags} = definition;
+    let {name, features, flags:definitionFlags} = definition;
 
     if (typeof name === 'undefined') {
         throw new Error(gestureException.NO_NAME);
@@ -82,21 +82,21 @@ function isValidGesture(definition) {
     if (userDefinedGestures.has(name)) {
         throw new Error(gestureException.DUPLICATE);
     }
-    if (typeof flags !== 'undefined') {
+    if (typeof definitionFlags !== 'undefined') {
         let flagIsValid = false;
-        if (typeof flags === 'string') {
+        if (typeof definitionFlags === 'string') {
             flagIsValid = gestureFlagNames.some(flagName => {
-                return flagName === flags;
+                return flagName === definitionFlags;
             });
         }
-        else if (Array.isArray(flags)) {
-            flagIsValid = flags.every(flagName => {
+        else if (Array.isArray(definitionFlags)) {
+            flagIsValid = definitionFlags.every(flagName => {
                 return gestureFlagNames.indexOf(flagName) !== -1;
             });
         }
         if (!flagIsValid) {
             throw new Error(`${gestureException.INVALID_FLAGS}.
-                Expecting some of: ${gestureFlagNames}; received: ${flags}`);
+                Expecting some of: ${gestureFlagNames}; received: ${definitionFlags}`);
         }
     }
 }
