@@ -3,8 +3,7 @@ import {featureFactory} from './feature';
 export let userDefinedGestures = new Map();
 
 export function createGesture(definition) {
-    let gestureApi = {},
-        features = [],
+    let features = [],
         flags = [],
         matchedInputIds = [];
 
@@ -35,44 +34,44 @@ export function createGesture(definition) {
         return equalLength && secondContainsAllOfFirst;
     }
 
-    gestureApi.definition = function gestureDefinition() {
-        return definition;
-    };
+    return {
+        definition() {
+            return definition;
+        },
 
-    gestureApi.name = function gestureName() {
-        return definition.name;
-    };
+        name() {
+            return definition.name;
+        },
 
-    gestureApi.features = function gestureFeatures() {
-        return features;
-    };
+        features() {
+            return features;
+        },
 
-    gestureApi.load = function gestureLoad(inputState) {
-        let match = false,
-            // boils down to
-            // gestures with oneshot flags should be triggered once
-            // until the identifiers change (e.g. tuio session ids)
-            currentInputIds = extractIdentifiersFrom(inputState),
-            changedInputIds = !inputEquals(currentInputIds, matchedInputIds);
+        load(inputState) {
+            let match = false,
+                // boils down to
+                // gestures with oneshot flags should be triggered once
+                // until the identifiers change (e.g. tuio session ids)
+                currentInputIds = extractIdentifiersFrom(inputState),
+                alreadyMatchedInput = inputEquals(currentInputIds, matchedInputIds);
 
-        let hasOneshotFlag = flags.indexOf('oneshot') !== -1,
-            oneshotFlagFulfilled = hasOneshotFlag && !changedInputIds;
+            let hasOneshotFlag = flags.indexOf('oneshot') !== -1,
+                oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;
 
-        if (!oneshotFlagFulfilled) {
-            match = features.every(feature => feature.load(inputState));
-            if (match && hasOneshotFlag) {
-                matchedInputIds = currentInputIds;
+            if (!oneshotFlagFulfilled) {
+                match = features.every(feature => feature.load(inputState));
+                if (match) {
+                    matchedInputIds = currentInputIds;
+                }
             }
+
+            return match;
+        },
+
+        flags() {
+            return flags;
         }
-
-        return match;
     };
-
-    gestureApi.flags = function gestureFlags() {
-        return flags;
-    };
-
-    return gestureApi;
 }
 
 export let gestureException = {
