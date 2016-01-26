@@ -33,24 +33,28 @@ $(document).ready(() => {
     });
 
     let zIndex = 1,
-        currentIdentifier = 0,
+        currentIdentifiers = [],
+        inImagePositions = {},
         inImagePositionX, inImagePositionY;
 
     gispl(images$).on(anyMotion, function(inputState) {
         let this$ = $(this),
             input = inputState[0],
-            {clientX,
-                clientY} = input;
+            {identifier,
+                clientX,
+                clientY} = input,
+            unknownIdentifier = currentIdentifiers.indexOf(identifier) === -1;
         
-        if (input.identifier !== currentIdentifier) {
+        if (unknownIdentifier) {
             let nodePosition = this.getBoundingClientRect();
-            inImagePositionX = clientX - nodePosition.left;
-            inImagePositionY = clientY - nodePosition.top;
-            currentIdentifier = input.identifier;
+            inImagePositions[identifier] = {};
+            inImagePositions[identifier].x = clientX - nodePosition.left;
+            inImagePositions[identifier].y = clientY - nodePosition.top;
+            currentIdentifiers.push(identifier);
         }
 
-        let left = clientX - inImagePositionX,
-            top = clientY - inImagePositionY;
+        let left = clientX - inImagePositions[identifier].x,
+            top = clientY - inImagePositions[identifier].y;
 
         this$.css({zIndex, left, top});
 
