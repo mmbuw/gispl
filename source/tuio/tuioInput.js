@@ -6,7 +6,6 @@ export default function tuioInput(params = {}) {
             calibration,
             screenWidth = window.screen.width,
             screenHeight = window.screen.height} = params,
-        inputApi = {},
         listeners = [];
 
     function onTuioRefresh() {
@@ -38,42 +37,46 @@ export default function tuioInput(params = {}) {
                 });
         });
 
-        inputApi.notify(nodesWithInput);
+        notify(nodesWithInput);
     }
 
-    inputApi.listen = function inputListen(callback) {
-        if (typeof callback !== 'function') {
-            throw new Error(`Attempting to register a listener that
-                                is not a function`);
-        }
-        listeners.push(callback);
-    };
+    function enable() {
+        tuioClient.on('refresh', onTuioRefresh);
+    }
 
-    inputApi.notify = function inputNotify(...args) {
+    function notify(...args) {
         listeners.forEach(callback => {
             callback(...args);
         });
-    };
-
-    inputApi.mute = function inputMute(callback) {
-        let callbackIndex = listeners.indexOf(callback);
-        if (callbackIndex !== -1) {
-            listeners.splice(callbackIndex, 1);
-        }
-    };
-
-    // doesn't remove the listener
-    inputApi.disable = function inputDisable() {
-        tuioClient.off('refresh', onTuioRefresh);
-    };
-
-    inputApi.enable = function inputEnable() {
-        tuioClient.on('refresh', onTuioRefresh);
-    };
+    }
 
     // listen to tuio/websocket
     tuioClient.connect();
-    inputApi.enable();
+    enable();
 
-    return inputApi;
+    return {
+        listen(callback) {
+            if (typeof callback !== 'function') {
+                throw new Error(`Attempting to register a listener that
+                                    is not a function`);
+            }
+            listeners.push(callback);
+        },
+
+        notify,
+
+        mute(callback) {
+            let callbackIndex = listeners.indexOf(callback);
+            if (callbackIndex !== -1) {
+                listeners.splice(callbackIndex, 1);
+            }
+        },
+
+        enable,
+
+        // doesn't remove the listener
+        disable() {
+            tuioClient.off('refresh', onTuioRefresh);
+        }
+    };
 }
