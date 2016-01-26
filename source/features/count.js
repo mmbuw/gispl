@@ -5,34 +5,34 @@ export default function count(params) {
 
     isValidCountFeature(params);
 
-    let _count = {},
-        baseFeature = featureBase(params),
+    let baseFeature = featureBase(params),
         limit = lowerUpperLimit(params.constraints);
 
-    _count.type = function countType() {
-        return 'Count';
-    };
 
-    _count.load = function countLoad(inputState) {
-        if (!baseFeature.validInput(inputState)) {
-            return false;
-        }
+    return {
+        type() {
+            return 'Count';
+        },
 
-        let count = 0;
-        inputState.forEach(inputObject => {
-            if (baseFeature.matchFiltersWith(inputObject)) {
-                count += 1;
+        load(inputState) {
+            if (!baseFeature.validInput(inputState)) {
+                return false;
             }
-        });
-        let match = count >= limit.lower;
-        if (typeof limit.upper !== 'undefined') {
-            match = match && (count <= limit.upper);
+
+            let count = 0;
+            inputState.forEach(inputObject => {
+                if (baseFeature.matchFiltersWith(inputObject)) {
+                    count += 1;
+                }
+            });
+            let match = count >= limit.lower;
+            if (typeof limit.upper !== 'undefined') {
+                match = match && (count <= limit.upper);
+            }
+
+            return match;
         }
-
-        return match;
     };
-
-    return _count;
 }
 
 function isValidCountFeature(countFeature) {
