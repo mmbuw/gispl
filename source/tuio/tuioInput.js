@@ -3,6 +3,7 @@ import {inputObjectFromTuio} from './tuioInputObject';
 export default function tuioInput(params = {}) {
     let {tuioClient,
             findNodes,
+            calibration,
             screenWidth = window.screen.width,
             screenHeight = window.screen.height} = params,
         inputApi = {},
@@ -30,7 +31,8 @@ export default function tuioInput(params = {}) {
                         nodesWithInput.set(node, []);
                     }
                     let inputObject = inputObjectFromTuio({
-                        tuioComponent: pointer
+                        tuioComponent: pointer,
+                        calibration
                     });
                     nodesWithInput.get(node).push(inputObject);
                 });
