@@ -1,7 +1,6 @@
 export default function screenCalibration(params = {}) {
 
-    let _calibration = {},
-        listenForInputEvent = true,
+    let listenForInputEvent = true,
         {mouseEvent,
          pause: inputEventPause = 2000} = params;
 
@@ -16,7 +15,7 @@ export default function screenCalibration(params = {}) {
     function captureEvent(event) {
         if (listenForInputEvent) {
 
-            _calibration.mouseEvent(event);
+            calibrationMouseEvent(event);
             listenForInputEvent = false;
 
             setTimeout(function pauseBeforeAllowingRecalibration() {
@@ -25,15 +24,7 @@ export default function screenCalibration(params = {}) {
         }
     }
 
-    // called before the object is returned
-    function objectInit() {
-        if (typeof mouseEvent !== 'undefined') {
-            _calibration.mouseEvent(mouseEvent);
-        }
-        document.addEventListener('mouseover', captureEvent);
-    }
-
-    _calibration.mouseEvent = function calibrationMouseEvent(event = {}) {
+    function calibrationMouseEvent(event = {}) {
         if (typeof event.clientX === 'undefined' ||
                 typeof event.clientY === 'undefined' ||
                 typeof event.screenX === 'undefined' ||
@@ -44,28 +35,34 @@ export default function screenCalibration(params = {}) {
         mouseEvent = event;
 
         return this;
+    }
+
+    // called before the object is returned
+    if (typeof mouseEvent !== 'undefined') {
+        calibrationMouseEvent(mouseEvent);
+    }
+    document.addEventListener('mouseover', captureEvent);
+
+    return {
+        mouseEvent: calibrationMouseEvent,
+
+        viewportPosition() {
+            let top = viewportPositionTop(),
+                left = viewportPositionLeft();
+
+            return {top, left};
+        },
+
+        screenToViewportCoordinates(coords = {}) {
+            let {screenX, screenY} = coords,
+                x = screenX - viewportPositionLeft(),
+                y = screenY - viewportPositionTop();
+
+            return {x, y};
+        },
+
+        isScreenUsable() {
+            return typeof mouseEvent !== 'undefined';
+        }
     };
-
-    _calibration.viewportPosition = function calibrationViewportPosition() {
-        let top = viewportPositionTop(),
-            left = viewportPositionLeft();
-
-        return {top, left};
-    };
-
-    _calibration.screenToViewportCoordinates = function (coords = {}) {
-        let {screenX, screenY} = coords,
-            x = screenX - viewportPositionLeft(),
-            y = screenY - viewportPositionTop();
-
-        return {x, y};
-    };
-
-    _calibration.isScreenUsable = function calibrationScreenUsable() {
-        return typeof mouseEvent !== 'undefined';
-    };
-
-    objectInit();
-
-    return _calibration;
 }
