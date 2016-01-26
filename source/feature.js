@@ -24,39 +24,36 @@ export function featureFactory(params = {}) {
 }
 
 export function featureBase(params) {
-    let _feature = {},
-        {filters} = params;
+    let {filters} = params;
 
-    _feature.validInput = function featureLoad(inputState = []) {
-        return !!inputState.length;
-    };
+    return {
+        validInput(inputState = []) {
+            return !!inputState.length;
+        },
 
-    _feature.matchFiltersWith = function featureMatchFiltersWith(input) {
-        //tuio v1 objects and cursors have not typeid
-        //unknown typeId in v2 is 0
-        let typeId = input.type ? input.type : 0,
-            typeIdKnown = typeId !== 0,
-            hasNoFilters = typeof filters === 'undefined',
-            filtersMatch = false;
+        matchFiltersWith(input) {
+            //tuio v1 objects and cursors have not typeid
+            //unknown typeId in v2 is 0
+            let typeId = input.type ? input.type : 0,
+                typeIdKnown = typeId !== 0,
+                hasNoFilters = typeof filters === 'undefined',
+                filtersMatch = false;
 
-        if (typeIdKnown) {
-            let typeIdAsBitmask = 1<<(typeId-1);
-            filtersMatch = filters & typeIdAsBitmask;
+            if (typeIdKnown) {
+                let typeIdAsBitmask = 1<<(typeId-1);
+                filtersMatch = filters & typeIdAsBitmask;
+            }
+
+            return hasNoFilters || filtersMatch;
         }
-
-        return hasNoFilters || filtersMatch;
     };
-
-    return _feature;
 }
 
 export function lowerUpperLimit(constraints = []) {
-    let _limit = {};
+    let lower = constraints[0],
+        upper = constraints[1];
 
-    _limit.lower = constraints[0];
-    _limit.upper = constraints[1];
-
-    return _limit;
+    return {lower, upper};
 }
 
 export function lowerUpperVectorLimit(constraints = []) {
