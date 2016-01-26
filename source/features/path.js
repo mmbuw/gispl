@@ -5,8 +5,7 @@ export default function path(params) {
 
     isValidPathFeature(params);
 
-    let _path = {},
-        baseFeature = featureBase(params),
+    let baseFeature = featureBase(params),
         {recognizer} = params,
         // name will be something lik
         // "0,0,10,10" from [[0,0], [10,10]]
@@ -15,30 +14,30 @@ export default function path(params) {
 
     recognizer.AddGesture(name, constraints);
 
-    _path.type = function pathType() {
-        return 'Path';
-    };
+    return {
+        type() {
+            return 'Path';
+        },
 
-    _path.load = function pathLoad(inputState) {
-        if (!baseFeature.validInput(inputState)) {
-            return false;
-        }
+        load(inputState) {
+            if (!baseFeature.validInput(inputState)) {
+                return false;
+            }
 
-        return inputState.every(inputObject => {
-            let $points = inputObject.path.map(point => {
-                return new Point(point.screenX, point.screenY);
+            return inputState.every(inputObject => {
+                let $points = inputObject.path.map(point => {
+                    return new Point(point.screenX, point.screenY);
+                });
+
+                let result = recognizer.Recognize($points, true);
+
+                return (result.Name === name &&
+                            // value is empirical
+                            // TODO allow it to be user defined
+                            result.Score > 5);
             });
-
-            let result = recognizer.Recognize($points, true);
-
-            return (result.Name === name &&
-                        // value is empirical
-                        // TODO allow it to be user defined
-                        result.Score > 5);
-        });
+        }
     };
-
-    return _path;
 }
 
 function isValidPathFeature(pathFeature = {}) {
