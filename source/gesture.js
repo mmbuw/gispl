@@ -61,28 +61,33 @@ export function createGesture(definition) {
         load(inputState = {}) {
             let {inputObjects,
                     node} = inputState,
-                match = false;
+                everyFeatureMatches = false;
 
             if (validInput(inputObjects)) {
                 // boils down to
                 // gestures with oneshot flags should be triggered once
                 // until the identifiers change (e.g. tuio session ids)
                 let currentInputIds = extractIdentifiersFrom(inputObjects),
-                    alreadyMatchedInput = inputEquals(currentInputIds, matchedInputIds);
+                    alreadyMatchedInput = inputEquals(currentInputIds,
+                                                        matchedInputIds);
 
                 let oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;
 
                 if (!oneshotFlagFulfilled) {
-                    match = features.every(feature => feature.load(inputState));
-                    if (match) {
-                        // for sticky gestures
-                        // only the first known node from the same inputState
-                        // should be recognized
-                        if (hasStickyFlag &&
-                                (nodesToEmitOn.length === 0 ||
-                                !alreadyMatchedInput)) {
-                            nodesToEmitOn = [node];
+                    everyFeatureMatches = features.every(
+                            feature => feature.load(inputState));
+                    if (everyFeatureMatches) {
+                        if (hasStickyFlag) {
+                            // add current node to nodes to emit on
+                            // only if the same input hasn't already matched a gesture on a node
+                            // if it has
+                            // the old node is 'sticky' until the inputObjects change
+                            if (nodesToEmitOn.length === 0 ||
+                                    !alreadyMatchedInput) {
+                                nodesToEmitOn = [node];
+                            }
                         }
+                        // save just the current node
                         else if (hasNoFlags) {
                             nodesToEmitOn = [node];
                         }
@@ -95,7 +100,7 @@ export function createGesture(definition) {
                 }
             }
 
-            return match;
+            return everyFeatureMatches;
         },
 
         emitOn() {
