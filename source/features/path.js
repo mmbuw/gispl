@@ -19,11 +19,8 @@ export default function path(params) {
             return 'Path';
         },
 
-        load(inputState = {}) {
+        load(inputState) {
             let {inputObjects} = inputState;
-            if (!baseFeature.validInput(inputObjects)) {
-                return false;
-            }
 
             return inputObjects.every(inputObject => {
                 let $points = inputObject.path.map(point => {

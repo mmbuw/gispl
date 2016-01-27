@@ -13,12 +13,6 @@ describe('feature', () => {
             motion = featureFactory({type});
         });
 
-        it('should return false when passed no, empty, or invalid object', () => {
-            expect(motion.load()).to.equal(false);
-            expect(motion.load([])).to.equal(false);
-            expect(motion.load({})).to.equal(false);
-        });
-
         it('should recognize motion of inputs with at least two known points', () => {
             let movingPointer = buildInputFromPointer({
                 x: 0.5, y: 0.5

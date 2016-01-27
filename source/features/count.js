@@ -14,11 +14,8 @@ export default function count(params) {
             return 'Count';
         },
 
-        load(inputState = {}) {
+        load(inputState) {
             let {inputObjects} = inputState;
-            if (!baseFeature.validInput(inputObjects)) {
-                return false;
-            }
 
             let count = 0;
             inputObjects.forEach(inputObject => {

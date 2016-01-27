@@ -25,7 +25,9 @@ export function createGesture(definition) {
         hasStickyFlag = flags.indexOf(gestureFlags.STICKY) !== -1;
 
     function extractIdentifiersFrom(inputObjects = []) {
-        return inputObjects.map(inputObject => inputObject.identifier);
+        return inputObjects
+                    .filter(inputObject => !!inputObject)
+                    .map(inputObject => inputObject.identifier);
     }
 
     function inputEquals(first, second) {
@@ -35,6 +37,10 @@ export function createGesture(definition) {
             });
 
         return equalLength && secondContainsAllOfFirst;
+    }
+
+    function validInput(inputObjects = []) {
+        return !!inputObjects.length;
     }
 
     return {
@@ -52,19 +58,22 @@ export function createGesture(definition) {
 
         load(inputState = {}) {
             let {inputObjects} = inputState,
-                match = false,
+                match = false;
+
+            if (validInput(inputObjects)) {
                 // boils down to
                 // gestures with oneshot flags should be triggered once
                 // until the identifiers change (e.g. tuio session ids)
-                currentInputIds = extractIdentifiersFrom(inputObjects),
-                alreadyMatchedInput = inputEquals(currentInputIds, matchedInputIds);
+                let currentInputIds = extractIdentifiersFrom(inputObjects),
+                    alreadyMatchedInput = inputEquals(currentInputIds, matchedInputIds);
 
-            let oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;
+                let oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;
 
-            if (!oneshotFlagFulfilled) {
-                match = features.every(feature => feature.load(inputState));
-                if (match) {
-                    matchedInputIds = currentInputIds;
+                if (!oneshotFlagFulfilled) {
+                    match = features.every(feature => feature.load(inputState));
+                    if (match) {
+                        matchedInputIds = currentInputIds;
+                    }
                 }
             }
 

@@ -50,12 +50,21 @@ describe('gesture', () => {
             });
         expect(mockedFeatures.length).to.equal(3);
 
-        let mockState;
+        let mockState = {
+            inputObjects: [null]
+        };
         gesture.load(mockState);
 
         mockedFeatures.every(mockedFeature => {
             mockedFeature.verify();
         });
+    });
+
+    it('should return false when passed no, empty, or invalid inputState', () => {
+        let gesture = createGesture(gestureDefinition);
+        expect(gesture.load()).to.equal(false);
+        expect(gesture.load([])).to.equal(false);
+        expect(gesture.load({})).to.equal(false);
     });
 
     it('should validate gesture if the features match', () => {
@@ -67,7 +76,9 @@ describe('gesture', () => {
             return sinon.stub(feature, 'load').returns(true);
         });
 
-        let mockState;
+        let mockState = {
+            inputObjects: [null]
+        };
         expect(gesture.load(mockState)).to.equal(true);
     });
 

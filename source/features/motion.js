@@ -16,11 +16,8 @@ export default function motion(params) {
             return 'Motion';
         },
 
-        load(inputState = {}) {
+        load(inputState) {
             let {inputObjects} = inputState;
-            if (!baseFeature.validInput(inputObjects)) {
-                return false;
-            }
 
             let directionVectorAllInputs = vector(),
                 inputCount = 0;

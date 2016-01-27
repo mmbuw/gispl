@@ -14,13 +14,6 @@ describe('feature', () => {
             expect(pathFeature.type()).to.equal('Path');
         });
 
-        it('should return false when passed no, empty, or invalid object', () => {
-            let pathFeature = featureFactory({type, constraints});
-            expect(pathFeature.load()).to.equal(false);
-            expect(pathFeature.load([])).to.equal(false);
-            expect(pathFeature.load({})).to.equal(false);
-        });
-
         it('should throw if missing constraints', () => {
             expect(function() {
                 featureFactory({type});
