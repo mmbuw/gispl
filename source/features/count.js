@@ -14,13 +14,14 @@ export default function count(params) {
             return 'Count';
         },
 
-        load(inputState) {
-            if (!baseFeature.validInput(inputState)) {
+        load(inputState = {}) {
+            let {inputObjects} = inputState;
+            if (!baseFeature.validInput(inputObjects)) {
                 return false;
             }
 
             let count = 0;
-            inputState.forEach(inputObject => {
+            inputObjects.forEach(inputObject => {
                 if (baseFeature.matchFiltersWith(inputObject)) {
                     count += 1;
                 }

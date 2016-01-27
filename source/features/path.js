@@ -19,12 +19,13 @@ export default function path(params) {
             return 'Path';
         },
 
-        load(inputState) {
-            if (!baseFeature.validInput(inputState)) {
+        load(inputState = {}) {
+            let {inputObjects} = inputState;
+            if (!baseFeature.validInput(inputObjects)) {
                 return false;
             }
 
-            return inputState.every(inputObject => {
+            return inputObjects.every(inputObject => {
                 let $points = inputObject.path.map(point => {
                     return new Point(point.screenX, point.screenY);
                 });

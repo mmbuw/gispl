@@ -24,8 +24,8 @@ export function createGesture(definition) {
     let hasOneshotFlag = flags.indexOf(gestureFlags.ONESHOT) !== -1,
         hasStickyFlag = flags.indexOf(gestureFlags.STICKY) !== -1;
 
-    function extractIdentifiersFrom(inputState = []) {
-        return inputState.map(inputObject => inputObject.identifier);
+    function extractIdentifiersFrom(inputObjects = []) {
+        return inputObjects.map(inputObject => inputObject.identifier);
     }
 
     function inputEquals(first, second) {
@@ -50,12 +50,13 @@ export function createGesture(definition) {
             return features;
         },
 
-        load(inputState) {
-            let match = false,
+        load(inputState = {}) {
+            let {inputObjects} = inputState,
+                match = false,
                 // boils down to
                 // gestures with oneshot flags should be triggered once
                 // until the identifiers change (e.g. tuio session ids)
-                currentInputIds = extractIdentifiersFrom(inputState),
+                currentInputIds = extractIdentifiersFrom(inputObjects),
                 alreadyMatchedInput = inputEquals(currentInputIds, matchedInputIds);
 
             let oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;

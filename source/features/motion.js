@@ -16,15 +16,16 @@ export default function motion(params) {
             return 'Motion';
         },
 
-        load(inputState) {
-            if (!baseFeature.validInput(inputState)) {
+        load(inputState = {}) {
+            let {inputObjects} = inputState;
+            if (!baseFeature.validInput(inputObjects)) {
                 return false;
             }
 
             let directionVectorAllInputs = vector(),
                 inputCount = 0;
 
-            inputState.forEach(inputObject => {
+            inputObjects.forEach(inputObject => {
                 let path = inputObject.path;
                 if (path.length > 1
                         && baseFeature.matchFiltersWith(inputObject)) {

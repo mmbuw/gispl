@@ -44,7 +44,7 @@ describe('feature', () => {
             }).to.throw(Error, new RegExp(pathFeatureException.INVALID_CONSTRAINTS_POINT));
         });
 
-        it(`should recognize if the point in inputState roughly match
+        it(`should recognize if the point in inputObjects roughly match
                 the points in constraints`, () => {
             // origin is bottom left
             let drawRectangleFromTopLeftCounterClockwise = [
@@ -71,12 +71,12 @@ describe('feature', () => {
                     x: 0.53, y: 0.51
                 }).finished();
 
-            let inputState = [rectangleMovingPointersCounterClockwise];
+            let inputObjects = [rectangleMovingPointersCounterClockwise];
 
-            expect(rectanglePath.load(inputState)).to.equal(true);
+            expect(rectanglePath.load({inputObjects})).to.equal(true);
         });
 
-        it(`should recognize if the point in inputState does not match
+        it(`should recognize if the point in inputObjects does not match
                 the points in constraints`, () => {
             // origin is bottom left
             let drawRectangleFromTopLeftCounterClockwise = [
@@ -103,12 +103,12 @@ describe('feature', () => {
                     x: 0.8, y: 0.45
                 }).finished();
 
-            let inputState = [rectangleMovingPointersClockwise];
+            let inputObjects = [rectangleMovingPointersClockwise];
 
-            expect(rectanglePath.load(inputState)).to.equal(false);
+            expect(rectanglePath.load({inputObjects})).to.equal(false);
         });
 
-        it(`should recognize if the points in inputState do not match
+        it(`should recognize if the points in inputObjects do not match
                 the points in constraints`, () => {
             // origin is bottom left
             let drawRectangleFromTopLeftCounterClockwise = [
@@ -147,12 +147,12 @@ describe('feature', () => {
                     x: 0.8, y: 0.45
                 }).finished();
 
-            let inputState = [
+            let inputObjects = [
                 rectangleMovingPointersCounterClockwise,
                 rectangleMovingPointersClockwise
             ];
 
-            expect(rectanglePath.load(inputState)).to.equal(false);
+            expect(rectanglePath.load({inputObjects})).to.equal(false);
         });
     });
 });

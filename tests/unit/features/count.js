@@ -12,13 +12,13 @@ describe('feature', () => {
         function buildInputState(params = {}) {
             let {count = 1} = params,
                 tuioPointer = buildInputFromPointer(params).finished(),
-                inputState = [];
+                inputObjects = [];
 
             for(let i = 0; i < count; i += 1) {
-                inputState.push(tuioPointer);
+                inputObjects.push(tuioPointer);
             }
 
-            return inputState;
+            return {inputObjects};
         }
 
         it('should return false when passed no, empty, or invalid object', () => {
