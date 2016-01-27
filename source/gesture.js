@@ -5,7 +5,8 @@ export let userDefinedGestures = new Map();
 export function createGesture(definition) {
     let features = [],
         flags = [],
-        matchedInputIds = [];
+        matchedInputIds = [],
+        nodesToEmitOn = [];
 
     isValidGesture(definition);
 
@@ -22,7 +23,8 @@ export function createGesture(definition) {
     }
 
     let hasOneshotFlag = flags.indexOf(gestureFlags.ONESHOT) !== -1,
-        hasStickyFlag = flags.indexOf(gestureFlags.STICKY) !== -1;
+        hasStickyFlag = flags.indexOf(gestureFlags.STICKY) !== -1,
+        hasNoFlags = flags.length === 0;
 
     function extractIdentifiersFrom(inputObjects = []) {
         return inputObjects
@@ -57,7 +59,8 @@ export function createGesture(definition) {
         },
 
         load(inputState = {}) {
-            let {inputObjects} = inputState,
+            let {inputObjects,
+                    node} = inputState,
                 match = false;
 
             if (validInput(inputObjects)) {
@@ -72,12 +75,31 @@ export function createGesture(definition) {
                 if (!oneshotFlagFulfilled) {
                     match = features.every(feature => feature.load(inputState));
                     if (match) {
+                        // for sticky gestures
+                        // only the first known node from the same inputState
+                        // should be recognized
+                        if (hasStickyFlag &&
+                                (nodesToEmitOn.length === 0 ||
+                                !alreadyMatchedInput)) {
+                            nodesToEmitOn = [node];
+                        }
+                        else if (hasNoFlags) {
+                            nodesToEmitOn = [node];
+                        }
+                        // save currentInputIds for future reference
                         matchedInputIds = currentInputIds;
+                    }
+                    else {
+                        nodesToEmitOn = [];
                     }
                 }
             }
 
             return match;
+        },
+
+        emitOn() {
+            return nodesToEmitOn;
         },
 
         flags() {

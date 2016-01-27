@@ -197,5 +197,82 @@ describe('gesture', () => {
 
     it(`should trigger events in the first recognized element only, when
             assigned a sticky flag`, () => {
+        let sessionId = 10,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            stickyGestureDefinition = addFlagsToGesture('sticky'),
+            stickyMotionGesture = createGesture(stickyGestureDefinition);
+
+        let firstNodeToMatch = 'sticky-node',
+            inputObjects = [movingPointerInput.finished()];
+        // this is normal and already tested
+        stickyMotionGesture.load({node: firstNodeToMatch, inputObjects});
+        // gesture now return nodes to trigger events on
+        // needed for cases such as sticky
+        let emitOnNodes = stickyMotionGesture.emitOn();
+        expect(emitOnNodes[0]).to.equal(firstNodeToMatch);
+
+        let differentNode = 'new-node';
+        movingPointerInput.moveTo({x: 0.7, y: 0.7});
+        inputObjects = [movingPointerInput.finished()];
+        // load and recognize with a different node
+        stickyMotionGesture.load({node: differentNode, inputObjects});
+        emitOnNodes = stickyMotionGesture.emitOn();
+        // emit on the old node regardless
+        expect(emitOnNodes[0]).to.equal(firstNodeToMatch);
+    });
+
+    it(`should allow new sticky nodes with new inputObjects`, () => {
+        let sessionId = 10,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            stickyGestureDefinition = addFlagsToGesture('sticky'),
+            stickyMotionGesture = createGesture(stickyGestureDefinition);
+
+        let firstNodeToMatch = 'sticky-node',
+            inputObjects = [movingPointerInput.finished()];
+        // this is normal and already tested
+        stickyMotionGesture.load({node: firstNodeToMatch, inputObjects});
+        // gesture now return nodes to trigger events on
+        // needed for cases such as sticky
+        let emitOnNodes = stickyMotionGesture.emitOn();
+        expect(emitOnNodes[0]).to.equal(firstNodeToMatch);
+
+        sessionId += 1;
+        let differentNode = 'new-node',
+            newMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            newInputObjects = [newMovingPointerInput.finished()];
+        // load and recognize with a different node
+        stickyMotionGesture.load({
+            node: differentNode,
+            inputObjects: newInputObjects
+        });
+        emitOnNodes = stickyMotionGesture.emitOn();
+        // emit on the new node because input has changed
+        expect(emitOnNodes[0]).to.equal(differentNode);
+    });
+
+    it(`should not trigger sticky gestures if the inputObjects changes, but
+        the gesture conditions not satisifed`, () => {
+        let sessionId = 10,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            stickyGestureDefinition = addFlagsToGesture('sticky'),
+            stickyMotionGesture = createGesture(stickyGestureDefinition);
+
+        let firstNodeToMatch = 'first-node',
+            inputObjects = [movingPointerInput.finished()];
+        stickyMotionGesture.load({node: firstNodeToMatch, inputObjects});
+
+        sessionId += 1;
+        let secondNodeToMatch = 'second-node',
+            staticPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId});
+
+        inputObjects = [staticPointerInput.finished()];
+        stickyMotionGesture.load({node: secondNodeToMatch, inputObjects});
+        // new inputobjects mean the first node is no longer sticky
+        // but staticPointer doesn't match a motion gesture
+        expect(stickyMotionGesture.emitOn().length).to.equal(0);
     });
 });
