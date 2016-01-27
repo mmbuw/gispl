@@ -6,7 +6,8 @@ export default function tuioInput(params = {}) {
             calibration,
             screenWidth = window.screen.width,
             screenHeight = window.screen.height} = params,
-        listeners = [];
+        listeners = [],
+        enabled = false;
 
     function onTuioRefresh() {
         let pointers = tuioClient.getTuioPointers(),
@@ -41,7 +42,10 @@ export default function tuioInput(params = {}) {
     }
 
     function enable() {
-        tuioClient.on('refresh', onTuioRefresh);
+        if (!enabled) {
+            tuioClient.on('refresh', onTuioRefresh);
+            enabled = true;
+        }
     }
 
     function notify(...args) {
@@ -51,8 +55,8 @@ export default function tuioInput(params = {}) {
     }
 
     // listen to tuio/websocket
-    tuioClient.connect();
     enable();
+    tuioClient.connect();
 
     return {
         listen(callback) {
@@ -74,9 +78,14 @@ export default function tuioInput(params = {}) {
 
         enable,
 
-        // doesn't remove the listener
+        // doesn't remove the callback registered with 'listen'
+        // use mute for that
+        // this removes the listener from tuioclient
         disable() {
-            tuioClient.off('refresh', onTuioRefresh);
+            if (enabled) {
+                tuioClient.off('refresh', onTuioRefresh);
+                enabled = false;
+            }
         }
     };
 }

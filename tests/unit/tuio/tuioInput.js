@@ -232,4 +232,27 @@ describe('tuioInput', () => {
         });
     });
 
+    it('should not enable twice, e.g. if already enabled', () => {
+        let spy = sinon.spy(tuioClient, 'on');
+
+        let input = tuioInput({tuioClient, findNodes});
+        input.enable();
+
+        expect(spy.callCount).to.equal(1);
+
+        spy.restore();
+    });
+
+    it('should not disable twice, e.g. if already disabled', () => {
+        let spy = sinon.spy(tuioClient, 'off');
+
+        let input = tuioInput({tuioClient, findNodes});
+        input.disable();
+        input.disable();
+
+        expect(spy.callCount).to.equal(1);
+
+        spy.restore();
+    });
+
 });
