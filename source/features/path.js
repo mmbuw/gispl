@@ -34,7 +34,7 @@ export default function path(params) {
                 return (result.Name === name &&
                             // value is empirical
                             // TODO allow it to be user defined
-                            result.Score > 5);
+                            result.Score > 1.9);
             });
         }
     };
