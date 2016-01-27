@@ -21,6 +21,9 @@ export function createGesture(definition) {
         flags.push(...definitionFlags);
     }
 
+    let hasOneshotFlag = flags.indexOf(gestureFlags.ONESHOT) !== -1,
+        hasStickyFlag = flags.indexOf(gestureFlags.STICKY) !== -1;
+
     function extractIdentifiersFrom(inputState = []) {
         return inputState.map(inputObject => inputObject.identifier);
     }
@@ -55,8 +58,7 @@ export function createGesture(definition) {
                 currentInputIds = extractIdentifiersFrom(inputState),
                 alreadyMatchedInput = inputEquals(currentInputIds, matchedInputIds);
 
-            let hasOneshotFlag = flags.indexOf('oneshot') !== -1,
-                oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;
+            let oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;
 
             if (!oneshotFlagFulfilled) {
                 match = features.every(feature => feature.load(inputState));
