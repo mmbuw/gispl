@@ -147,5 +147,41 @@ describe('feature', () => {
 
             expect(rectanglePath.load({inputObjects})).to.equal(false);
         });
+
+        it(`should not recognize the feature if the input does not match
+                the defined filter`, () => {
+            // origin is bottom left
+            let drawRectangleFromTopLeftCounterClockwise = [
+                [0, 100],
+                [0, 0],
+                [100, 0],
+                [100, 100],
+                [0, 100]
+            ],
+                tuioRightThumbFinger = 0b10000,
+                tuioRightIndexFinger = 0b1,
+                filteredPath = featureFactory({
+                    type,
+                    constraints: drawRectangleFromTopLeftCounterClockwise,
+                    filters: tuioRightThumbFinger
+                }),
+                // tuio is with origin top left
+                rectangleMovingPointersCounterClockwise = buildInputFromPointer({
+                    x: 0.5, y: 0.5,
+                    typeId: tuioRightIndexFinger
+                }).moveTo({
+                    x: 0.49, y: 0.78
+                }).moveTo({
+                    x: 0.66, y: 0.81
+                }).moveTo({
+                    x: 0.64, y: 0.52
+                }).moveTo({
+                    x: 0.53, y: 0.51
+                }).finished();
+
+            let inputObjects = [rectangleMovingPointersCounterClockwise];
+
+            expect(filteredPath.load({inputObjects})).to.equal(false);
+        });
     });
 });

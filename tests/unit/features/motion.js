@@ -71,7 +71,7 @@ describe('feature', () => {
                 the defined filter`, () => {
             let tuioRightThumbFinger = 5,
                 tuioRightIndexFinger = 1,
-                filters = 0b10000, //5th bity
+                filters = 0b10000, //5th bit
                 filteredMotion = featureFactory({type, filters});
 
             let movingPointer = buildInputFromPointer(
