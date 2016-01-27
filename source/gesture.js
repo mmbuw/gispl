@@ -76,27 +76,36 @@ export function createGesture(definition) {
                 if (!oneshotFlagFulfilled) {
                     everyFeatureMatches = features.every(
                             feature => feature.load(inputState));
-                    if (everyFeatureMatches) {
-                        if (hasStickyFlag) {
-                            // add current node to nodes to emit on
-                            // only if the same input hasn't already matched a gesture on a node
-                            // if it has
-                            // the old node is 'sticky' until the inputObjects change
-                            if (nodesToEmitOn.length === 0 ||
-                                    !alreadyMatchedInput) {
-                                nodesToEmitOn = [node];
-                            }
+                }
+                if (everyFeatureMatches) {
+                    if (hasOneshotFlag) {
+                        if (alreadyMatchedInput) {
+                            nodesToEmitOn = [];
+                            everyFeatureMatches = false;
                         }
-                        // save just the current node
-                        else if (hasNoFlags) {
+                        else {
                             nodesToEmitOn = [node];
                         }
-                        // save currentInputIds for future reference
-                        matchedInputIds = currentInputIds;
                     }
-                    else {
-                        nodesToEmitOn = [];
+                    else if (hasStickyFlag) {
+                        // add current node to nodes to emit on
+                        // only if the same input hasn't already matched a gesture on a node
+                        // if it has
+                        // the old node is 'sticky' until the inputObjects change
+                        if (nodesToEmitOn.length === 0 ||
+                                !alreadyMatchedInput) {
+                            nodesToEmitOn = [node];
+                        }
                     }
+                    // save just the current node
+                    else if (hasNoFlags) {
+                        nodesToEmitOn = [node];
+                    }
+                    // save currentInputIds for future reference
+                    matchedInputIds = currentInputIds;
+                }
+                else {
+                    nodesToEmitOn = [];
                 }
             }
 

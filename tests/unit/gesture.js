@@ -4,7 +4,8 @@ import {buildInputFromPointer} from '../helpers/pointer';
 
 describe('gesture', () => {
 
-    let gestureDefinition;
+    let gestureDefinition,
+        node = 'test-dom-node-does-not-matter-if-it-is-a-string';
 
     function addFlagsToGesture(flags) {
         return $.extend(
@@ -143,11 +144,13 @@ describe('gesture', () => {
             oneshotMotionGesture = createGesture(oneshotGestureDefinition);
 
         let inputObjects = [movingPointerInput.finished()];
-        expect(oneshotMotionGesture.load({inputObjects})).to.equal(true);
+        expect(oneshotMotionGesture.load({node, inputObjects})).to.equal(true);
+        expect(oneshotMotionGesture.emitOn()).to.deep.equal([node]);
 
         movingPointerInput.moveTo({x: 0.4, y: 0.4});
         inputObjects = [movingPointerInput.finished()];
         expect(oneshotMotionGesture.load({inputObjects})).to.equal(false);
+        expect(oneshotMotionGesture.emitOn()).to.deep.equal([]);
     });
 
     it('should trigger the gesture again despite oneshot if the inputObjects changes', () => {
@@ -158,18 +161,21 @@ describe('gesture', () => {
             oneshotMotionGesture = createGesture(oneshotGestureDefinition);
 
         let inputObjects = [movingPointerInput.finished()];
-        expect(oneshotMotionGesture.load({inputObjects})).to.equal(true);
+        expect(oneshotMotionGesture.load({node, inputObjects})).to.equal(true);
+        expect(oneshotMotionGesture.emitOn()).to.deep.equal([node]);
 
         sessionId += 1;
         let newMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
                                         .moveTo({x: 0.5, y: 0.5});
 
         inputObjects = [newMovingPointerInput.finished()];
-        expect(oneshotMotionGesture.load({inputObjects})).to.equal(true);
+        expect(oneshotMotionGesture.load({node, inputObjects})).to.equal(true);
+        expect(oneshotMotionGesture.emitOn()).to.deep.equal([node]);
 
         newMovingPointerInput.moveTo({x: 0.4, y: 0.4});
         inputObjects = [newMovingPointerInput.finished()];
         expect(oneshotMotionGesture.load({inputObjects})).to.equal(false);
+        expect(oneshotMotionGesture.emitOn()).to.deep.equal([]);
     });
 
     it(`should not trigger oneshot gestures if the inputObjects changes, but
@@ -182,17 +188,20 @@ describe('gesture', () => {
             oneshotMotionGesture = createGesture(oneshotGestureDefinition);
 
         let inputObjects = [movingPointerInput.finished()];
-        expect(oneshotMotionGesture.load({inputObjects})).to.equal(true);
+        expect(oneshotMotionGesture.load({node, inputObjects})).to.equal(true);
+        expect(oneshotMotionGesture.emitOn()).to.deep.equal([node]);
 
         sessionId += 1;
         let staticPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId});
 
         inputObjects = [staticPointerInput.finished()];
         expect(oneshotMotionGesture.load({inputObjects})).to.equal(false);
+        expect(oneshotMotionGesture.emitOn()).to.deep.equal([]);
 
         staticPointerInput.moveTo({x: 0.4, y: 0.4});
         inputObjects = [staticPointerInput.finished()];
-        expect(oneshotMotionGesture.load({inputObjects})).to.equal(true);
+        expect(oneshotMotionGesture.load({node, inputObjects})).to.equal(true);
+        expect(oneshotMotionGesture.emitOn()).to.deep.equal([node]);
     });
 
     it(`should trigger events in the first recognized element only, when
