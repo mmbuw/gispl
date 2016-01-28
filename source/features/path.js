@@ -20,21 +20,25 @@ export default function path(params) {
         },
 
         load(inputState) {
-            if (!baseFeature.validInput(inputState)) {
-                return false;
-            }
+            let {inputObjects} = inputState;
 
-            return inputState.every(inputObject => {
-                let $points = inputObject.path.map(point => {
-                    return new Point(point.screenX, point.screenY);
-                });
+            return inputObjects.every(inputObject => {
+                let match = false;
 
-                let result = recognizer.Recognize($points, true);
+                if (baseFeature.matchFiltersWith(inputObject)) {
+                    let $points = inputObject.path.map(point => {
+                        return new Point(point.screenX, point.screenY);
+                    });
 
-                return (result.Name === name &&
-                            // value is empirical
-                            // TODO allow it to be user defined
-                            result.Score > 5);
+                    let result = recognizer.Recognize($points, true);
+
+                    match = (result.Name === name &&
+                                // value is empirical
+                                // TODO allow it to be user defined
+                                result.Score > 1.9);
+                }
+
+                return match;
             });
         }
     };

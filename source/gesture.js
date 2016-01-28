@@ -5,7 +5,8 @@ export let userDefinedGestures = new Map();
 export function createGesture(definition) {
     let features = [],
         flags = [],
-        matchedInputIds = [];
+        matchedInputIds = [],
+        nodesToEmitOn = [];
 
     isValidGesture(definition);
 
@@ -21,17 +22,27 @@ export function createGesture(definition) {
         flags.push(...definitionFlags);
     }
 
-    function extractIdentifiersFrom(inputState = []) {
-        return inputState.map(inputObject => inputObject.identifier);
+    let hasOneshotFlag = flags.indexOf(gestureFlags.ONESHOT) !== -1,
+        hasStickyFlag = flags.indexOf(gestureFlags.STICKY) !== -1,
+        hasNoFlags = flags.length === 0;
+
+    function extractIdentifiersFrom(inputObjects = []) {
+        return inputObjects
+                    .filter(inputObject => !!inputObject)
+                    .map(inputObject => inputObject.identifier);
     }
 
-    function inputEquals(first, second) {
+    function compareInput(first, second) {
         let equalLength = first.length === second.length,
             secondContainsAllOfFirst = first.every(item => {
                 return second.indexOf(item) !== -1;
             });
 
         return equalLength && secondContainsAllOfFirst;
+    }
+
+    function validInput(inputObjects = []) {
+        return !!inputObjects.length;
     }
 
     return {
@@ -47,25 +58,51 @@ export function createGesture(definition) {
             return features;
         },
 
-        load(inputState) {
-            let match = false,
+        load(inputState = {}) {
+            let {inputObjects,
+                    node} = inputState;
+
+            if (validInput(inputObjects)) {
                 // boils down to
                 // gestures with oneshot flags should be triggered once
                 // until the identifiers change (e.g. tuio session ids)
-                currentInputIds = extractIdentifiersFrom(inputState),
-                alreadyMatchedInput = inputEquals(currentInputIds, matchedInputIds);
+                let currentInputIds = extractIdentifiersFrom(inputObjects),
+                    alreadyMatchedInput = compareInput(currentInputIds,
+                                                        matchedInputIds),
+                    everyFeatureMatches = false,
+                    oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;
 
-            let hasOneshotFlag = flags.indexOf('oneshot') !== -1,
-                oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;
-
-            if (!oneshotFlagFulfilled) {
-                match = features.every(feature => feature.load(inputState));
-                if (match) {
+                if (!oneshotFlagFulfilled) {
+                    everyFeatureMatches = features.every(
+                            feature => feature.load(inputState));
+                }
+                if (everyFeatureMatches) {
+                    if (hasOneshotFlag) {
+                        nodesToEmitOn = [node];
+                    }
+                    else if (hasStickyFlag) {
+                        // add current node to nodes to emit on
+                        // only if the same input hasn't already matched a gesture on a node
+                        // if it has
+                        // the old node is 'sticky' until the inputObjects change
+                        if (nodesToEmitOn.length === 0 ||
+                                !alreadyMatchedInput) {
+                            nodesToEmitOn = [node];
+                        }
+                    }
+                    // save just the current node
+                    else if (hasNoFlags) {
+                        nodesToEmitOn = [node];
+                    }
+                    // save currentInputIds for future reference
                     matchedInputIds = currentInputIds;
+                }
+                else {
+                    nodesToEmitOn = [];
                 }
             }
 
-            return match;
+            return nodesToEmitOn;
         },
 
         flags() {

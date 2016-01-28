@@ -14,13 +14,6 @@ describe('feature', () => {
             expect(pathFeature.type()).to.equal('Path');
         });
 
-        it('should return false when passed no, empty, or invalid object', () => {
-            let pathFeature = featureFactory({type, constraints});
-            expect(pathFeature.load()).to.equal(false);
-            expect(pathFeature.load([])).to.equal(false);
-            expect(pathFeature.load({})).to.equal(false);
-        });
-
         it('should throw if missing constraints', () => {
             expect(function() {
                 featureFactory({type});
@@ -44,7 +37,7 @@ describe('feature', () => {
             }).to.throw(Error, new RegExp(pathFeatureException.INVALID_CONSTRAINTS_POINT));
         });
 
-        it(`should recognize if the point in inputState roughly match
+        it(`should recognize if the point in inputObjects roughly match
                 the points in constraints`, () => {
             // origin is bottom left
             let drawRectangleFromTopLeftCounterClockwise = [
@@ -71,12 +64,12 @@ describe('feature', () => {
                     x: 0.53, y: 0.51
                 }).finished();
 
-            let inputState = [rectangleMovingPointersCounterClockwise];
+            let inputObjects = [rectangleMovingPointersCounterClockwise];
 
-            expect(rectanglePath.load(inputState)).to.equal(true);
+            expect(rectanglePath.load({inputObjects})).to.equal(true);
         });
 
-        it(`should recognize if the point in inputState does not match
+        it(`should recognize if the point in inputObjects does not match
                 the points in constraints`, () => {
             // origin is bottom left
             let drawRectangleFromTopLeftCounterClockwise = [
@@ -103,12 +96,12 @@ describe('feature', () => {
                     x: 0.8, y: 0.45
                 }).finished();
 
-            let inputState = [rectangleMovingPointersClockwise];
+            let inputObjects = [rectangleMovingPointersClockwise];
 
-            expect(rectanglePath.load(inputState)).to.equal(false);
+            expect(rectanglePath.load({inputObjects})).to.equal(false);
         });
 
-        it(`should recognize if the points in inputState do not match
+        it(`should recognize if the points in inputObjects do not match
                 the points in constraints`, () => {
             // origin is bottom left
             let drawRectangleFromTopLeftCounterClockwise = [
@@ -147,12 +140,48 @@ describe('feature', () => {
                     x: 0.8, y: 0.45
                 }).finished();
 
-            let inputState = [
+            let inputObjects = [
                 rectangleMovingPointersCounterClockwise,
                 rectangleMovingPointersClockwise
             ];
 
-            expect(rectanglePath.load(inputState)).to.equal(false);
+            expect(rectanglePath.load({inputObjects})).to.equal(false);
+        });
+
+        it(`should not recognize the feature if the input does not match
+                the defined filter`, () => {
+            // origin is bottom left
+            let drawRectangleFromTopLeftCounterClockwise = [
+                [0, 100],
+                [0, 0],
+                [100, 0],
+                [100, 100],
+                [0, 100]
+            ],
+                tuioRightThumbFinger = 0b10000,
+                tuioRightIndexFinger = 0b1,
+                filteredPath = featureFactory({
+                    type,
+                    constraints: drawRectangleFromTopLeftCounterClockwise,
+                    filters: tuioRightThumbFinger
+                }),
+                // tuio is with origin top left
+                rectangleMovingPointersCounterClockwise = buildInputFromPointer({
+                    x: 0.5, y: 0.5,
+                    typeId: tuioRightIndexFinger
+                }).moveTo({
+                    x: 0.49, y: 0.78
+                }).moveTo({
+                    x: 0.66, y: 0.81
+                }).moveTo({
+                    x: 0.64, y: 0.52
+                }).moveTo({
+                    x: 0.53, y: 0.51
+                }).finished();
+
+            let inputObjects = [rectangleMovingPointersCounterClockwise];
+
+            expect(filteredPath.load({inputObjects})).to.equal(false);
         });
     });
 });

@@ -35,13 +35,16 @@ export default function gispl(selection) {
 }
 
 function handleInput(nodesMap) {
-    nodesMap.forEach((inputState, node) => {
+
+    nodesMap.forEach((inputObjects, node) => {
         userDefinedGestures.forEach(gesture => {
-            // if gesture recognized
-            if (gesture.load(inputState)) {
-                let event = gesture.name();
-                events.emit(node, event, inputState);
-            }
+
+            let nodesToEmitOn = gesture.load({inputObjects, node}),
+                eventName = gesture.name();
+
+            nodesToEmitOn.forEach(nodeToEmitOn => {
+                events.emit(nodeToEmitOn, eventName, inputObjects);
+            });
         });
     });
 }

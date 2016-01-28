@@ -17,14 +17,12 @@ export default function motion(params) {
         },
 
         load(inputState) {
-            if (!baseFeature.validInput(inputState)) {
-                return false;
-            }
+            let {inputObjects} = inputState;
 
             let directionVectorAllInputs = vector(),
                 inputCount = 0;
 
-            inputState.forEach(inputObject => {
+            inputObjects.forEach(inputObject => {
                 let path = inputObject.path;
                 if (path.length > 1
                         && baseFeature.matchFiltersWith(inputObject)) {

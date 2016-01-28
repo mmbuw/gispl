@@ -27,10 +27,6 @@ export function featureBase(params) {
     let {filters} = params;
 
     return {
-        validInput(inputState = []) {
-            return !!inputState.length;
-        },
-
         matchFiltersWith(input) {
             //tuio v1 objects and cursors have not typeid
             //unknown typeId in v2 is 0

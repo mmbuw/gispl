@@ -15,12 +15,10 @@ export default function count(params) {
         },
 
         load(inputState) {
-            if (!baseFeature.validInput(inputState)) {
-                return false;
-            }
+            let {inputObjects} = inputState;
 
             let count = 0;
-            inputState.forEach(inputObject => {
+            inputObjects.forEach(inputObject => {
                 if (baseFeature.matchFiltersWith(inputObject)) {
                     count += 1;
                 }

@@ -12,21 +12,14 @@ describe('feature', () => {
         function buildInputState(params = {}) {
             let {count = 1} = params,
                 tuioPointer = buildInputFromPointer(params).finished(),
-                inputState = [];
+                inputObjects = [];
 
             for(let i = 0; i < count; i += 1) {
-                inputState.push(tuioPointer);
+                inputObjects.push(tuioPointer);
             }
 
-            return inputState;
+            return {inputObjects};
         }
-
-        it('should return false when passed no, empty, or invalid object', () => {
-            let countFeature = featureFactory({type, constraints});
-            expect(countFeature.load()).to.equal(false);
-            expect(countFeature.load([])).to.equal(false);
-            expect(countFeature.load({})).to.equal(false);
-        });
 
         it(`should recognize the feature if the number of items in the inputState
                 has at least the number of defined constraints`, () => {
@@ -114,9 +107,9 @@ describe('feature', () => {
                     filters: tuioRightThumbFinger
                 });
 
-            expect(filteredCount.load(filteredCount.load(buildInputState({
+            expect(filteredCount.load(buildInputState({
                 count
-            })))).to.equal(false);
+            }))).to.equal(false);
         });
 
         it('should allow multiple filters to be set as bitmask', () => {
