@@ -38,11 +38,13 @@ function handleInput(nodesMap) {
 
     nodesMap.forEach((inputObjects, node) => {
         userDefinedGestures.forEach(gesture => {
-            // if gesture recognized
-            if (gesture.load({inputObjects, node})) {
-                let event = gesture.name();
-                events.emit(node, event, inputObjects);
-            }
+
+            let nodesToEmitOn = gesture.load({inputObjects, node}),
+                eventName = gesture.name();
+
+            nodesToEmitOn.forEach(nodeToEmitOn => {
+                events.emit(nodeToEmitOn, eventName, inputObjects);
+            });
         });
     });
 }

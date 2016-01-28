@@ -60,8 +60,7 @@ export function createGesture(definition) {
 
         load(inputState = {}) {
             let {inputObjects,
-                    node} = inputState,
-                everyFeatureMatches = false;
+                    node} = inputState;
 
             if (validInput(inputObjects)) {
                 // boils down to
@@ -69,9 +68,9 @@ export function createGesture(definition) {
                 // until the identifiers change (e.g. tuio session ids)
                 let currentInputIds = extractIdentifiersFrom(inputObjects),
                     alreadyMatchedInput = compareInput(currentInputIds,
-                                                        matchedInputIds);
-
-                let oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;
+                                                        matchedInputIds),
+                    everyFeatureMatches = false,
+                    oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;
 
                 if (!oneshotFlagFulfilled) {
                     everyFeatureMatches = features.every(
@@ -103,7 +102,7 @@ export function createGesture(definition) {
                 }
             }
 
-            return everyFeatureMatches;
+            return nodesToEmitOn;
         },
 
         emitOn() {
