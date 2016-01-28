@@ -2,13 +2,27 @@ import gispl from '../source/gispl';
 import $ from 'jquery';
 
 $(document).ready(() => {
-    let anyMotion = 'any-motion';
+    let anyMotion = 'any-motion',
+        triangle = 'triangle';
 
     gispl.addGesture({
         name: anyMotion,
         features: [
             {type: "Motion"},
             {type: "Count", constraints: [2,3]}
+        ]
+    });
+    
+    gispl.addGesture({
+        name: triangle,
+        flags: 'oneshot',
+        features: [
+            {
+                type: "Path",
+                constraints: [
+                    [0, 100], [0,0], [100, 100], [0, 100]
+                ]
+            }
         ]
     });
 
@@ -59,6 +73,14 @@ $(document).ready(() => {
         this$.css({zIndex, left, top});
 
         zIndex += 1;
+    });
+    
+    gispl(images$).on(triangle, function(inputState) {
+        let image$ = $(this);
+        
+        image$.fadeOut(function() {
+            image$.remove();
+        });
     });
 
     gispl.initTuio({
