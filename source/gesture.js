@@ -105,10 +105,6 @@ export function createGesture(definition) {
             return nodesToEmitOn;
         },
 
-        emitOn() {
-            return nodesToEmitOn;
-        },
-
         flags() {
             return flags;
         }
