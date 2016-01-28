@@ -66,8 +66,11 @@ describe('gesture', () => {
     it('should return false when passed no, empty, or invalid inputState', () => {
         let gesture = createGesture(gestureDefinition);
         expect(gesture.load()).to.equal(false);
+        expect(gesture.emitOn()).to.deep.equal([]);
         expect(gesture.load([])).to.equal(false);
+        expect(gesture.emitOn()).to.deep.equal([]);
         expect(gesture.load({})).to.equal(false);
+        expect(gesture.emitOn()).to.deep.equal([]);
     });
 
     it('should validate gesture if the features match', () => {
@@ -80,6 +83,7 @@ describe('gesture', () => {
         });
 
         expect(gesture.load(mockState)).to.equal(true);
+        expect(gesture.emitOn()).to.deep.equal(nodesToEmitOn);
     });
 
     it('should not validate gesture if at least one feature does not match', () => {
@@ -93,6 +97,7 @@ describe('gesture', () => {
         });
 
         expect(gesture.load(mockState)).to.equal(false);
+        expect(gesture.emitOn()).to.deep.equal([]);
     });
 
     it('should allow a flag on a gesture', () => {
