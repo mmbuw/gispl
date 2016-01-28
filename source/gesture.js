@@ -32,7 +32,7 @@ export function createGesture(definition) {
                     .map(inputObject => inputObject.identifier);
     }
 
-    function inputEquals(first, second) {
+    function compareInput(first, second) {
         let equalLength = first.length === second.length,
             secondContainsAllOfFirst = first.every(item => {
                 return second.indexOf(item) !== -1;
@@ -68,7 +68,7 @@ export function createGesture(definition) {
                 // gestures with oneshot flags should be triggered once
                 // until the identifiers change (e.g. tuio session ids)
                 let currentInputIds = extractIdentifiersFrom(inputObjects),
-                    alreadyMatchedInput = inputEquals(currentInputIds,
+                    alreadyMatchedInput = compareInput(currentInputIds,
                                                         matchedInputIds);
 
                 let oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;
@@ -79,13 +79,7 @@ export function createGesture(definition) {
                 }
                 if (everyFeatureMatches) {
                     if (hasOneshotFlag) {
-                        if (alreadyMatchedInput) {
-                            nodesToEmitOn = [];
-                            everyFeatureMatches = false;
-                        }
-                        else {
-                            nodesToEmitOn = [node];
-                        }
+                        nodesToEmitOn = [node];
                     }
                     else if (hasStickyFlag) {
                         // add current node to nodes to emit on
