@@ -46,9 +46,7 @@ describe('nodeSearch', () => {
         };
 
     beforeEach(function() {
-        findNodes = nodeSearch({
-            bubble: true
-        });
+        findNodes = nodeSearch();
         $('body').css({
             padding: 0,
             margin: 0
@@ -136,8 +134,7 @@ describe('nodeSearch', () => {
         let findNodes = nodeSearch({
            calibration: {
                isScreenUsable: () => false
-           },
-           bubble: true
+           }
         });
         let foundNodes = findNodes.fromPoint({screenX: 10, screenY: 10});
         expect(foundNodes.length).to.equal(0);
@@ -159,8 +156,7 @@ describe('nodeSearch', () => {
             clientX, clientY, screenX, screenY
         });
         let findNodes = nodeSearch({
-            calibration: mockCalibration,
-            bubble: true
+            calibration: mockCalibration
         });
         let element = helper.appendElement({
             width: 100,
@@ -172,19 +168,6 @@ describe('nodeSearch', () => {
         let foundNodes = findNodes.fromPoint({screenX, screenY});
 
         expect(foundNodes[0]).to.equal(element);
-    });
-    
-    it(`should always find at least the html and document node,
-            if bubble set to false and no layout elements found`, () => {
-        
-        let findNodes = nodeSearch({
-            bubble: false
-        });
-        
-        let foundNodes = findNodes.fromPoint({x: 0, y: 0});
-        expect(foundNodes.length).to.equal(2);
-        expect(foundNodes[0]).to.equal($('html')[0]);
-        expect(foundNodes[1]).to.equal(document);
     });
 
 });

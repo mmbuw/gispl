@@ -111,7 +111,7 @@ describe('tuioInput', () => {
         setTimeout(() => {
             sendPointerBundle(server, tuioPointer);
             let regions = spy.getCall(0).args[0];
-            //document is the only node found
+            //document and HTML are the only nodes found
             //check calibration stub, returns 0, 0
             expect(regions.has(document)).to.equal(true);
             //only one input object ->  tuioPointer
@@ -155,26 +155,14 @@ describe('tuioInput', () => {
 
         coordinatesStub.restore();
         coordinatesStub = sinon.stub(calibration, 'screenToViewportCoordinates');
+        coordinatesStub.onCall(0).returns({x:0, y:0});
 
-        let elementOne = $(`<div style="
-                            position: absolute;
-                            top: 0; left: 0;
+        let element = $(`<div style="
                             width: 10px;
-                            height: 10px;"></div>`).appendTo('body')[0];
-        //ensure first search finds elementOne
-        coordinatesStub.onCall(0).returns({x:5, y:5});
-
-        let elementTwo = $(`<div style="
-                            position: absolute;
-                            top: 10px; left: 0;
-                            width: 10px;
-                            height: 10px;"></div>`).appendTo('body')[0];
-        //ensure second search finds elementTwo
-        //elementTwo stacks below elementOne
-        coordinatesStub.onCall(1).returns({x:5, y:15});
-        
-        expect(document.elementFromPoint(5,5)).to.equal(elementOne);
-        expect(document.elementFromPoint(5,15)).to.equal(elementTwo);
+                            height: 10px;
+                            margin-left: 95px;"></div>`).appendTo('body')[0];
+        //ensure second search finds the appended element
+        coordinatesStub.onCall(1).returns({x:100, y:0});
 
         let input = tuioInput({tuioClient, findNodes});
         input.listen(spy);
@@ -182,15 +170,11 @@ describe('tuioInput', () => {
         setTimeout(() => {
             sendPointerBundle(server, tuioPointer1, tuioPointer2);
             let regions = spy.getCall(0).args[0];
-            //elementOne contains the first point
-            expect(regions.get(elementOne).length).to.equal(1);
-            expect(regions.get(elementOne)[0].identifier).to.equal(sessionId);
-            //elementTwo contains the second point
-            expect(regions.get(elementTwo).length).to.equal(1);
-            expect(regions.get(elementTwo)[0].identifier).to.equal(sessionId2);
-            //cleanup
-            $(elementOne).remove();
-            $(elementTwo).remove();
+            //document contains both pointers
+            expect(regions.get(document).length).to.equal(2);
+            //element only one
+            expect(regions.get(element).length).to.equal(1);
+            expect(regions.get(element)[0].identifier).to.equal(sessionId2);
             asyncDone();
         });
     });
