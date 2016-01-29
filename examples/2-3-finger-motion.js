@@ -97,10 +97,11 @@ $(document).ready(() => {
         });
     });
     
-    let originalLeft, originalTop;
+    let originalPositions = {};
     
     gispl(images$).on(stickyMotion, function(inputState) {
         let this$ = $(this),
+            imageKey = this$.attr('src'),
             input = inputState[0],
             {identifier,
                 clientX,
@@ -108,20 +109,23 @@ $(document).ready(() => {
             unknownIdentifier = currentIdentifiers.indexOf(identifier) === -1;
         
         if (unknownIdentifier) {
-            let nodePosition = this.getBoundingClientRect();
+            let nodePosition = this.getBoundingClientRect(),
+                left = nodePosition.left,
+                top = nodePosition.top;
             inImagePositions[identifier] = {};
-            inImagePositions[identifier].x = clientX - nodePosition.left;
-            inImagePositions[identifier].y = clientY - nodePosition.top;
+            inImagePositions[identifier].x = clientX - left;
+            inImagePositions[identifier].y = clientY - top;
+            
+            originalPositions[imageKey] = {left, top}
+            
             currentIdentifiers.push(identifier);
         }
 
         let left = clientX - inImagePositions[identifier].x,
             top = clientY - inImagePositions[identifier].y;
         
-        if (!originalLeft) {    
-            originalLeft = left;
-            originalTop = top;
-        }
+        let originalLeft = originalPositions[imageKey].left,
+            originalTop = originalPositions[imageKey].top;
 
         this$.css({zIndex,
             left: originalLeft - (left - originalLeft),
