@@ -169,5 +169,19 @@ describe('nodeSearch', () => {
 
         expect(foundNodes[0]).to.equal(element);
     });
+    
+    it('should not find any elements if no element found and not bubbling', () => {
+        let findNodes = nodeSearch({bubble: false});
+        expect(findNodes.fromPoint({x: 10, y: 10})).to.deep.equal([]);
+    });
+    
+    it('should find just one element if bubbling disabled', () => {
+       let element = helper.appendElement({width: 10, height: 10}),
+           findNodes = nodeSearch({bubble: false});
+           
+        let foundNodes = findNodes.fromPoint({x: 5, y: 5});
+        expect(foundNodes.length).to.equal(1);
+        expect(foundNodes[0]).to.equal(element);
+    });
 
 });

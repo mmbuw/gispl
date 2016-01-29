@@ -72,12 +72,14 @@ gispl.gesture = function gisplGesture(gestureName) {
 
 gispl.initTuio = function gisplInitTuio(params) {
     let {host,
+            bubble,
             calibration = screenCalibration()} = params;
 
     let tuioClient = new TuioClient({host}),
-        findNodes = nodeSearch({calibration});
+        findNodes = nodeSearch({calibration, bubble});
 
-    tuioInput({tuioClient, findNodes,
+    tuioInput({tuioClient,
+                findNodes,
                 calibration}).listen(handleInput);
 };
 
