@@ -149,7 +149,7 @@ describe('gesture', () => {
         expect(oneshotMotionGesture.load({inputObjects})).to.deep.equal([]);
     });
 
-    it('should trigger the gesture again despite oneshot if the inputObjects changes', () => {
+    it('should trigger the gesture again despite oneshot if the inputObjects change', () => {
         let sessionId = 10,
             movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
                                         .moveTo({x: 0.5, y: 0.5}),
@@ -171,7 +171,7 @@ describe('gesture', () => {
         expect(oneshotMotionGesture.load({inputObjects})).to.deep.equal([]);
     });
 
-    it(`should not trigger oneshot gestures if the inputObjects changes, but
+    it(`should not trigger oneshot gestures if the inputObjects change, but
         the gesture conditions not satisifed`, () => {
         // more of a check that nothing has gone wrong after oneshot was implemented
         let sessionId = 10,
@@ -255,7 +255,7 @@ describe('gesture', () => {
         ).to.deep.equal([differentNode]);
     });
 
-    it(`should not trigger sticky gestures if the inputObjects changes, but
+    it(`should not trigger sticky gestures if the inputObjects change, but
         the gesture conditions not satisifed`, () => {
         let sessionId = 10,
             movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
