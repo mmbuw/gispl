@@ -66,6 +66,18 @@ describe('feature', () => {
             ];
             expect(motion.load({inputObjects})).to.equal(false);
         });
+        
+        it('should recognize motion, even if the relative movement is very small', () => {
+            let movingPointer = buildInputFromPointer({x: 0.5, y: 0.5})
+                                    .moveTo({x: 0.5001, y: 0.5001})
+                                    .finished();
+
+            let inputObjects = [
+                movingPointer
+            ];
+
+            expect(motion.load({inputObjects})).to.equal(true);
+        });
 
         it(`should not recognize the feature if the input does not match
                 the defined filter`, () => {

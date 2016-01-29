@@ -29,14 +29,15 @@ export default function motion(params) {
                     let lastPoint = path[path.length-1],
                         beforeLastPoint = path[path.length-2];
 
-                    let x = lastPoint.screenX - beforeLastPoint.screenX,
+                    // use relative position because for very small movements
+                    // different relative position will translate to the same screen pixel
+                    let x = lastPoint.relativeScreenX - beforeLastPoint.relativeScreenX,
                         // not a bug
                         // tuio coordinates are with top left origin
                         // so last - beforeLast, is actually (1-last) - (1-beforeLast)
                         // if we want a vector with bottom left origin
                         // which equals beforeLast - last
-                        y = beforeLastPoint.screenY - lastPoint.screenY;
-
+                        y = beforeLastPoint.relativeScreenY - lastPoint.relativeScreenY;
                     directionVectorAllInputs.add(vector({x, y}));
 
                     inputCount += 1;
@@ -48,7 +49,12 @@ export default function motion(params) {
             }
 
             if (limit) {
-                directionVectorAllInputs.scaleWith(1/inputCount);
+                let screen = window.screen;
+                // normalize the resulting vector with inputCount
+                // (take the average motion of all input points)
+                // and blow it up from relative screen coordinates to actual screen size
+                directionVectorAllInputs.scaleX(screen.width/inputCount);
+                directionVectorAllInputs.scaleY(screen.height/inputCount);
 
                 return directionVectorAllInputs.x > limit.lower.x &&
                         directionVectorAllInputs.y > limit.lower.y &&
