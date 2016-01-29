@@ -279,4 +279,103 @@ describe('gesture', () => {
             })
         ).to.deep.equal([]);
     });
+    
+    it(`should trigger events in all crossed nodes,
+            when assigned the bubble flag`, () => {
+        let sessionId = 10,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                    .moveTo({x: 0.5, y: 0.5}),
+            bubbleGestureDefinition = addFlagsToGesture('bubble'),
+            bubbleMotionGesture = createGesture(bubbleGestureDefinition);
+        
+        let firstNodeToAdd = 'first-node',
+            inputObjects = [movingPointerInput.finished()];
+        expect(
+            bubbleMotionGesture.load({
+                inputObjects,
+                node: firstNodeToAdd
+            })
+        ).to.deep.equal([firstNodeToAdd]);
+        
+        let secondNodeToAdd = 'second-node';
+        expect(
+            bubbleMotionGesture.load({
+                inputObjects,
+                node: secondNodeToAdd
+            })
+        ).to.deep.equal([firstNodeToAdd, secondNodeToAdd]);
+    });
+
+    it(`should reset the known nodes when bubble flag set,
+            and input changes`, () => {
+        let sessionId = 10,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            bubbleGestureDefinition = addFlagsToGesture('bubble'),
+            bubbleMotionGesture = createGesture(bubbleGestureDefinition);
+        
+        let firstNodeToAdd = 'first-node',
+            secondNodeToAdd = 'second-node',
+            inputObjects = [movingPointerInput.finished()];
+            
+        bubbleMotionGesture.load({
+            inputObjects,
+            node: firstNodeToAdd
+        });
+        bubbleMotionGesture.load({
+            inputObjects,
+            node: secondNodeToAdd
+        });
+        
+        sessionId += 1;
+        let thirdNodeToAdd = 'third-node',
+            fourthNodeToAdd = 'fourth-node',
+            newMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            newInputObjects = [newMovingPointerInput.finished()];
+        bubbleMotionGesture.load({
+            node: thirdNodeToAdd,
+            inputObjects: newInputObjects
+        })
+        expect(
+            bubbleMotionGesture.load({
+                node: fourthNodeToAdd,
+                inputObjects: newInputObjects
+            })
+        ).to.deep.equal([thirdNodeToAdd, fourthNodeToAdd]);
+    });
+    
+    it(`should not trigger gestures when bubble flag set,
+            but gesture condition not satisfied`, () => {
+        let sessionId = 10,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            bubbleGestureDefinition = addFlagsToGesture('bubble'),
+            bubbleMotionGesture = createGesture(bubbleGestureDefinition);
+            
+        let firstNodeToAdd = 'first-node',
+            secondNodeToAdd = 'second-node',
+            inputObjects = [movingPointerInput.finished()];
+            
+        bubbleMotionGesture.load({
+            inputObjects,
+            node: firstNodeToAdd
+        });
+        bubbleMotionGesture.load({
+            inputObjects,
+            node: secondNodeToAdd
+        });
+
+        sessionId += 1;
+        let thirdNodeToAdd = 'third-node',
+            staticPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId});
+
+        inputObjects = [staticPointerInput.finished()];
+        expect(
+            bubbleMotionGesture.load({
+                node: thirdNodeToAdd,
+                inputObjects
+            })
+        ).to.deep.equal([]);
+    });
 });

@@ -2,6 +2,12 @@ import {featureFactory} from './feature';
 
 export let userDefinedGestures = new Map();
 
+let gestureFlags = {
+    ONESHOT: 'oneshot',
+    STICKY: 'sticky',
+    BUBBLE: 'bubble'
+};
+
 export function createGesture(definition) {
     let features = [],
         flags = [],
@@ -24,6 +30,7 @@ export function createGesture(definition) {
 
     let hasOneshotFlag = flags.indexOf(gestureFlags.ONESHOT) !== -1,
         hasStickyFlag = flags.indexOf(gestureFlags.STICKY) !== -1,
+        hasBubbleFlag = flags.indexOf(gestureFlags.BUBBLE) !== -1,
         hasNoFlags = flags.length === 0;
 
     function extractIdentifiersFrom(inputObjects = []) {
@@ -72,6 +79,8 @@ export function createGesture(definition) {
                     everyFeatureMatches = false,
                     oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;
 
+                // the gesture should not match if it is oneshot
+                // and already triggered
                 if (!oneshotFlagFulfilled) {
                     everyFeatureMatches = features.every(
                             feature => feature.load(inputState));
@@ -79,6 +88,14 @@ export function createGesture(definition) {
                 if (everyFeatureMatches) {
                     if (hasOneshotFlag) {
                         nodesToEmitOn = [node];
+                    }
+                    else if (hasBubbleFlag) {
+                        if (alreadyMatchedInput) {
+                            nodesToEmitOn.push(node);   
+                        }
+                        else {
+                            nodesToEmitOn = [node];
+                        }
                     }
                     else if (hasStickyFlag) {
                         // add current node to nodes to emit on
@@ -118,12 +135,6 @@ export let gestureException = {
     NO_FEATURES: 'Attempting to define a gestures without features',
     DUPLICATE: 'Attempting to define a gesture that already exists',
     INVALID_FLAGS: 'Attempting to define a gesture with an invalid flag'
-};
-
-let gestureFlags = {
-    ONESHOT: 'oneshot',
-    STICKY: 'sticky',
-    BUBBLE: 'bubble'
 };
 
 let gestureFlagNames = Object.keys(gestureFlags).map(key => {
