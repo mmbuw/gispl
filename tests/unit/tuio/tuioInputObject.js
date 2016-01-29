@@ -52,7 +52,6 @@ describe('tuioInputObject', () => {
             y = 0.5,
             clientX = 100,
             clientY = 100,
-            browserPositionOnScreen = {x: 100, y: 100},
             pointer = buildPointer({x, y}).finished(),
             calibration = {
                 screenToViewportCoordinates: () => ({
