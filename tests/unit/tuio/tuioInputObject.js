@@ -1,5 +1,4 @@
-import {tuioInputObject,
-        inputObjectFromTuio} from '../../../source/tuio/tuioInputObject';
+import {inputObjectFromTuio} from '../../../source/tuio/tuioInputObject';
 import {buildPointer} from '../../helpers/pointer';
 
 describe('tuioInputObject', () => {
@@ -34,6 +33,18 @@ describe('tuioInputObject', () => {
 
         expect(input.screenX).to.equal(x*window.screen.width);
         expect(input.screenY).to.equal(y*window.screen.height);
+    });
+    
+    it('should have relative (original) position information', () => {
+        let x = Math.random(),
+            y = Math.random(),
+            pointer = buildPointer({x, y}).finished(),
+            input = inputObjectFromTuio({
+                tuioComponent: pointer
+            });
+        
+        expect(input.relativeScreenX).to.equal(x);
+        expect(input.relativeScreenY).to.equal(y);
     });
 
     it('should have position information related to the browser', () => {
