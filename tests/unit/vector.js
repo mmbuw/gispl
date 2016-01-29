@@ -103,6 +103,19 @@ describe('vector', () => {
         expect(someVector.x).to.equal(x);
         expect(someVector.y).to.equal(y);
     });
+    
+    it('should support scaling individual components', () => {
+        let multiplyThree = 3,
+            x = 5,
+            y = 5,
+            someVector = vector({x, y});
+
+        someVector.scaleX(multiplyThree)
+        expect(someVector.x).to.equal(x*multiplyThree);
+
+        someVector.scaleY(multiplyThree)
+        expect(someVector.y).to.equal(y*multiplyThree);
+    });
 
     it('should throw when trying to multiply with a non-number as scalar', () => {
         let nullVector = vector();

@@ -28,11 +28,17 @@ export function vector(params = {}) {
     };
 
     _vector.scaleWith = function vectorWithScalar(value) {
-        if (typeof value !== 'number') {
-            throw new Error(`${vectorException.ILLEGAL_SCALAR}. Instead using: ${value}`);
-        }
-
+        _vector.scaleX(value);
+        _vector.scaleY(value);
+    };
+    
+    _vector.scaleX = function vectorScaleX(value) {
+        validScalar(value);
         _x *= value;
+    };
+    
+    _vector.scaleY = function vectorScaleY(value) {
+        validScalar(value);
         _y *= value;
     };
 
@@ -48,6 +54,12 @@ export function vector(params = {}) {
 function validVector(x, y) {
     return (typeof x === 'number' &&
                 typeof y === 'number');
+}
+
+function validScalar(value) {
+    if (typeof value !== 'number') {
+        throw new Error(`${vectorException.ILLEGAL_SCALAR}. Instead using: ${value}`);
+    }
 }
 
 function gettableEnumerableProperty(get) {
