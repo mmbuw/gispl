@@ -3,13 +3,23 @@ import $ from 'jquery';
 
 $(document).ready(() => {
     let anyMotion = 'any-motion',
-        triangle = 'triangle';
+        triangle = 'triangle',
+        stickyMotion = 'sticky-motion';
 
     gispl.addGesture({
         name: anyMotion,
         features: [
             {type: "Motion"},
             {type: "Count", constraints: [2,3]}
+        ]
+    });
+    
+    gispl.addGesture({
+        name: stickyMotion,
+        flags: 'sticky',
+        features: [
+            {type: "Motion"},
+            {type: "Count", constraints: [1,1]}
         ]
     });
     
@@ -85,6 +95,40 @@ $(document).ready(() => {
         image$.fadeOut(function() {
             image$.remove();
         });
+    });
+    
+    let originalLeft, originalTop;
+    
+    gispl(images$).on(stickyMotion, function(inputState) {
+        let this$ = $(this),
+            input = inputState[0],
+            {identifier,
+                clientX,
+                clientY} = input,
+            unknownIdentifier = currentIdentifiers.indexOf(identifier) === -1;
+        
+        if (unknownIdentifier) {
+            let nodePosition = this.getBoundingClientRect();
+            inImagePositions[identifier] = {};
+            inImagePositions[identifier].x = clientX - nodePosition.left;
+            inImagePositions[identifier].y = clientY - nodePosition.top;
+            currentIdentifiers.push(identifier);
+        }
+
+        let left = clientX - inImagePositions[identifier].x,
+            top = clientY - inImagePositions[identifier].y;
+        
+        if (!originalLeft) {    
+            originalLeft = left;
+            originalTop = top;
+        }
+
+        this$.css({zIndex,
+            left: originalLeft - (left - originalLeft),
+            top: originalTop - (top - originalTop)
+        });
+
+        zIndex += 1;
     });
 
     gispl.initTuio({
