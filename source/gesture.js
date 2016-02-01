@@ -87,11 +87,11 @@ export function createGesture(definition) {
                             feature => feature.load(inputState));
                 }
                 if (hasBubbleFlag) {
-                    if (alreadyMatchedInput) {
-                        bubbleNodesToEmitOn.push(node);
+                    if (!alreadyMatchedInput) {
+                        bubbleNodesToEmitOn = [];
                     }
-                    else {
-                        bubbleNodesToEmitOn = [node];
+                    if (bubbleNodesToEmitOn.indexOf(node) === -1) {
+                        bubbleNodesToEmitOn.push(node);
                     }
                     // save currentInputIds for future reference
                     matchedInputIds = currentInputIds;

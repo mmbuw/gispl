@@ -422,4 +422,25 @@ describe('gesture', () => {
             })
         ).to.deep.equal([]);
     });
+    
+    it(`should store all the nodes encountered when bubble flag set, 
+            but not multiple times`, () => {
+        let movingPointerInput = buildInputFromPointer({x: 0, y: 0})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            bubbleGestureDefinition = addFlagsToGesture('bubble'),
+            bubbleMotionGesture = createGesture(bubbleGestureDefinition);
+            
+        let onlyNodeToAdd = 'only-node';
+        bubbleMotionGesture.load({
+            inputObjects: [movingPointerInput.finished()],
+            node: onlyNodeToAdd
+        });
+        
+        expect(
+            bubbleMotionGesture.load({
+                inputObjects: [movingPointerInput.finished()],
+                node: onlyNodeToAdd
+            })
+        ).to.deep.equal([onlyNodeToAdd]);
+    });
 });
