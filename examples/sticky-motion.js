@@ -22,23 +22,6 @@ $(document).ready(() => {
             {type: "Count", constraints: [1,1]}
         ]
     });
-    
-    gispl.addGesture({
-        name: triangle,
-        flags: 'oneshot',
-        features: [
-            {
-                type: "Path",
-                constraints: [
-                    [0, 100], [0,0], [100, 100], [0, 100]
-                ]
-            },
-            {
-                type: "Count",
-                constraints: [1, 1]
-            }
-        ]
-    });
 
     let images$ = $('img'),
         offsets = $.map($.makeArray(images$), (element, index) => {
@@ -62,8 +45,7 @@ $(document).ready(() => {
 
     let zIndex = 1,
         currentIdentifiers = [],
-        inImagePositions = {},
-        inImagePositionX, inImagePositionY;
+        inImagePositions = {};
 
     gispl(images$).on(anyMotion, function(inputState) {
         let this$ = $(this),
@@ -87,14 +69,6 @@ $(document).ready(() => {
         this$.css({zIndex, left, top});
 
         zIndex += 1;
-    });
-    
-    gispl(images$).on(triangle, function(inputState) {
-        let image$ = $(this);
-        
-        image$.fadeOut(function() {
-            image$.remove();
-        });
     });
     
     let originalPositions = {};
