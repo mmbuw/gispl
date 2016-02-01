@@ -3,8 +3,8 @@ import $ from 'jquery';
 
 $(document).ready(() => {
     let triangle = 'triangle',
-        twoPointTriangle,
-        rectangle;
+        twoTouchTriangle = 'two-touch-triangle',
+        rectangle = 'rectangle';
     
     gispl.addGesture({
         name: triangle,
@@ -24,7 +24,7 @@ $(document).ready(() => {
     });
     
     gispl.addGesture({
-        name: twoPointTriangle,
+        name: twoTouchTriangle,
         flags: 'oneshot',
         features: [
             {
@@ -85,7 +85,7 @@ $(document).ready(() => {
         });
     });
     
-    gispl(images$).on(twoPointTriangle, function(inputState) {
+    gispl(images$).on(twoTouchTriangle, function(inputState) {
         let image$ = $('img'),
             offset = image.offset();
 
@@ -98,7 +98,7 @@ $(document).ready(() => {
                 }).fadeIn();
     });
     
-    gispl(document).on(rectangle, function(inputState) {
+    gispl(images$).on(rectangle, function(inputState) {
         images$.fadeOut(() => {
             images$.remove();
         });
