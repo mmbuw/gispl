@@ -4,7 +4,7 @@ import $ from 'jquery';
 $(document).ready(() => {
     let triangle = 'triangle',
         twoTouchTriangle = 'two-touch-triangle',
-        rectangle = 'rectangle';
+        cross = 'rectangle';
     
     gispl.addGesture({
         name: triangle,
@@ -41,13 +41,13 @@ $(document).ready(() => {
     });
     
     gispl.addGesture({
-        name: rectangle,
+        name: cross,
         flags: 'oneshot',
         features: [
             {
                 type: "Path",
                 constraints: [
-                    [0, 100], [0,0], [100, 0], [100, 100], [0, 100]
+                    [0, 100], [100,0], [0, 0], [100, 100]
                 ]
             },
             {
@@ -77,28 +77,32 @@ $(document).ready(() => {
         });
     });
     
-    gispl(images$).on(triangle, function(inputState) {
+    function onTriangle(inputState) {
         let image$ = $(this);
         
         image$.fadeOut(() => {
             image$.remove();
         });
-    });
+    }
+    gispl(images$).on(triangle, onTriangle);
     
-    gispl(images$).on(twoTouchTriangle, function(inputState) {
-        let image$ = $('img'),
-            offset = image.offset();
+    function onTwoTouchTriangle(inputState) {
+        let image$ = $(this),
+            offset = image$.offset();
 
-            $('<img style="display: none" src=' + image$.attr('src') + '/>')
+        let newImage$ = $('<img style="display: none" src=' + image$.attr('src') + '/>')
                 .appendTo('body')
                 .css({
                     position: 'absolute',
                     left: offset.left + image$.width(),
                     top: offset.top
                 }).fadeIn();
-    });
+                console.log(newImage$);
+        gispl(newImage$).on(triangle, onTriangle);
+    }
+    gispl(images$).on(twoTouchTriangle, onTwoTouchTriangle);
     
-    gispl(images$).on(rectangle, function(inputState) {
+    gispl('html').on(cross, function(inputState) {
         images$.fadeOut(() => {
             images$.remove();
         });
