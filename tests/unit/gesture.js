@@ -187,7 +187,7 @@ describe('gesture', () => {
         let staticPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId});
 
         inputObjects = [staticPointerInput.finished()];
-        expect(oneshotMotionGesture.load({inputObjects})).to.deep.equal([]);
+        expect(oneshotMotionGesture.load({node, inputObjects})).to.deep.equal([]);
 
         staticPointerInput.moveTo({x: 0.4, y: 0.4});
         inputObjects = [staticPointerInput.finished()];
@@ -304,6 +304,50 @@ describe('gesture', () => {
                 node: secondNodeToAdd
             })
         ).to.deep.equal([firstNodeToAdd, secondNodeToAdd]);
+    });
+    
+    it(`should trigger events in all crossed nodes with the bubble flag,
+            even if event on that node was not recognized`, () => {
+        let sessionId = 10,
+            staticPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                    .moveTo({x: 0, y: 0}),
+            bubbleGestureDefinition = addFlagsToGesture('bubble'),
+            bubbleMotionGesture = createGesture(bubbleGestureDefinition);
+        
+        let firstNodeToAdd = 'first-node';
+        expect(
+            bubbleMotionGesture.load({
+                inputObjects: [staticPointerInput.finished()],
+                node: firstNodeToAdd
+            })
+        ).to.deep.equal([]);
+        
+        let secondNodeToAdd = 'second-node',
+            movingPointerInput = staticPointerInput
+                                    .moveTo({x: 0.5, y: 0.5});
+        expect(
+            bubbleMotionGesture.load({
+                inputObjects: [movingPointerInput.finished()],
+                node: secondNodeToAdd
+            })
+        ).to.deep.equal([firstNodeToAdd, secondNodeToAdd]);
+    });
+    
+    it(`should trigger events in all crossed nodes with the bubble flag,
+            even if there is just one node`, () => {
+        let movingPointerInput = buildInputFromPointer({x: 0, y: 0})
+                                    .moveTo({x: 0.5, y: 0.5})
+                                    .finished(),
+            bubbleGestureDefinition = addFlagsToGesture('bubble'),
+            bubbleMotionGesture = createGesture(bubbleGestureDefinition);
+        
+        let onlyNodeToAdd = 'only-node';
+        expect(
+            bubbleMotionGesture.load({
+                inputObjects: [movingPointerInput],
+                node: onlyNodeToAdd
+            })
+        ).to.deep.equal([onlyNodeToAdd]);
     });
 
     it(`should reset the known nodes when bubble flag set,

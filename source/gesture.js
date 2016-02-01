@@ -12,6 +12,7 @@ export function createGesture(definition) {
     let features = [],
         flags = [],
         matchedInputIds = [],
+        bubbleNodesToEmitOn = [],
         nodesToEmitOn = [];
 
     isValidGesture(definition);
@@ -85,17 +86,22 @@ export function createGesture(definition) {
                     everyFeatureMatches = features.every(
                             feature => feature.load(inputState));
                 }
+                if (hasBubbleFlag) {
+                    if (alreadyMatchedInput) {
+                        bubbleNodesToEmitOn.push(node);
+                    }
+                    else {
+                        bubbleNodesToEmitOn = [node];
+                    }
+                    // save currentInputIds for future reference
+                    matchedInputIds = currentInputIds;
+                }
                 if (everyFeatureMatches) {
                     if (hasOneshotFlag) {
                         nodesToEmitOn = [node];
                     }
                     else if (hasBubbleFlag) {
-                        if (alreadyMatchedInput) {
-                            nodesToEmitOn.push(node);   
-                        }
-                        else {
-                            nodesToEmitOn = [node];
-                        }
+                        nodesToEmitOn = bubbleNodesToEmitOn;
                     }
                     else if (hasStickyFlag) {
                         // add current node to nodes to emit on
