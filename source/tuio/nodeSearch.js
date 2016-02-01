@@ -36,7 +36,8 @@ export default function nodeSearch(params = {}) {
                         elementPath.moveToParentNode();
                     }
                 }
-                else if (foundElement.nodeName !== 'HTML') {
+                else if (foundElement !== null &&
+                            foundElement.nodeName !== 'HTML') {
                     nodes.push(foundElement);
                 }
             }

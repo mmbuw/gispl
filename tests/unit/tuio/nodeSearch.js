@@ -183,5 +183,13 @@ describe('nodeSearch', () => {
         expect(foundNodes.length).to.equal(1);
         expect(foundNodes[0]).to.equal(element);
     });
-
+    
+    it(`should find not elements if searching outside of viewport
+            and bubbling disabled`, () => {
+        let findNodes = nodeSearch({bubble: false});
+        // calibration will transform screenX to something like this
+        // if screenX outside of browser
+        let foundNodes = findNodes.fromPoint({x: -100, y: 0});
+        expect(foundNodes.length).to.equal(0); 
+    });
 });
