@@ -12,6 +12,7 @@ export function createGesture(definition) {
     let features = [],
         flags = [],
         matchedInputIds = [],
+        knownInputIds = [],
         bubbleNodesToEmitOn = [],
         nodesToEmitOn = [];
 
@@ -77,9 +78,12 @@ export function createGesture(definition) {
                 let currentInputIds = extractIdentifiersFrom(inputObjects),
                     alreadyMatchedInput = compareInput(currentInputIds,
                                                         matchedInputIds),
+                    matchesPreviousInput = compareInput(currentInputIds,
+                                                        knownInputIds),
                     everyFeatureMatches = false,
                     oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;
 
+                knownInputIds = currentInputIds;
                 // the gesture should not match if it is oneshot
                 // and already triggered
                 if (!oneshotFlagFulfilled) {
@@ -87,21 +91,19 @@ export function createGesture(definition) {
                             feature => feature.load(inputState));
                 }
                 if (hasBubbleFlag) {
-                    if (!alreadyMatchedInput) {
-                        bubbleNodesToEmitOn = [];
+                    if (!matchesPreviousInput) {
+                        bubbleNodesToEmitOn = [node];
                     }
                     if (bubbleNodesToEmitOn.indexOf(node) === -1) {
                         bubbleNodesToEmitOn.push(node);
                     }
-                    // save currentInputIds for future reference
-                    matchedInputIds = currentInputIds;
                 }
                 if (everyFeatureMatches) {
-                    if (hasOneshotFlag) {
-                        nodesToEmitOn = [node];
-                    }
-                    else if (hasBubbleFlag) {
+                    if (hasBubbleFlag) {
                         nodesToEmitOn = bubbleNodesToEmitOn;
+                    }
+                    else if (hasOneshotFlag) {
+                        nodesToEmitOn = [node];
                     }
                     else if (hasStickyFlag) {
                         // add current node to nodes to emit on

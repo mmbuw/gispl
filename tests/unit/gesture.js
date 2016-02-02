@@ -1,10 +1,12 @@
 import {createGesture, gestureException} from '../../source/gesture';
+import {clearUserDefinedPaths} from '../../source/feature';
 import $ from 'jquery';
 import {buildInputFromPointer} from '../helpers/pointer';
 
 describe('gesture', () => {
 
-    let gestureDefinition,
+    let motionGestureDefinition,
+        trianglePathGestureDefinition,
         node = 'test-dom-node-does-not-matter-if-it-is-a-string',
         nodesToEmitOn = [node],
         mockState = {
@@ -12,43 +14,56 @@ describe('gesture', () => {
             inputObjects: [null] //should contain e.g. tuio pointers but it doesn't matter
         };
 
-    function addFlagsToGesture(flags) {
+    function addFlagsToGesture(flags, gesture = motionGestureDefinition) {
         return $.extend(
-            {}, gestureDefinition, {flags: flags}
+            {}, gesture, {flags}
         );
     }
 
     beforeEach(() => {
-        gestureDefinition = {
-            name: 'someGestureName',
+        clearUserDefinedPaths();
+        motionGestureDefinition = {
+            name: 'motion-gesture',
             features: [
                 {type: 'Motion'}
             ]
         };
+        trianglePathGestureDefinition = {
+            name: 'triangle-path-gesture',
+            features: [
+                {
+                    type: 'Path',
+                    constraints: [
+                        [0, 100], [0,0], [100, 101], [0, 100]
+                    ]
+                },
+                
+            ]
+        }
     });
 
     it('should save the gesture definition and make it retrievable', () => {
-        let gesture = createGesture(gestureDefinition);
-        expect(gesture.definition()).to.deep.equal(gestureDefinition);
+        let gesture = createGesture(motionGestureDefinition);
+        expect(gesture.definition()).to.deep.equal(motionGestureDefinition);
     });
 
     it('should instantiate features from gesture definition', () => {
-        let gesture = createGesture(gestureDefinition);
+        let gesture = createGesture(motionGestureDefinition);
         expect(gesture.features().length).to.equal(1);
         expect(gesture.features()[0].type()).to.equal('Motion');
 
         //add more features
-        gestureDefinition.features.push(gestureDefinition.features[0]);
+        motionGestureDefinition.features.push(motionGestureDefinition.features[0]);
 
-        gesture = createGesture(gestureDefinition);
+        gesture = createGesture(motionGestureDefinition);
         expect(gesture.features().length).to.equal(2);
     });
 
     it('should validate gesture by checking all of its features', () => {
-        gestureDefinition.features.push(gestureDefinition.features[0]);
-        gestureDefinition.features.push(gestureDefinition.features[0]);
+        motionGestureDefinition.features.push(motionGestureDefinition.features[0]);
+        motionGestureDefinition.features.push(motionGestureDefinition.features[0]);
 
-        let gesture = createGesture(gestureDefinition),
+        let gesture = createGesture(motionGestureDefinition),
             mockedFeatures = gesture.features()
                                         .map(feature => {
                 return sinon.mock(feature)
@@ -64,16 +79,16 @@ describe('gesture', () => {
     });
 
     it('should return false when passed no, empty, or invalid inputState', () => {
-        let gesture = createGesture(gestureDefinition);
+        let gesture = createGesture(motionGestureDefinition);
         expect(gesture.load()).to.deep.equal([]);
         expect(gesture.load([])).to.deep.equal([]);
         expect(gesture.load({})).to.deep.equal([]);
     });
 
     it('should validate gesture if the features match', () => {
-        gestureDefinition.features.push(gestureDefinition.features[0]);
+        motionGestureDefinition.features.push(motionGestureDefinition.features[0]);
 
-        let gesture = createGesture(gestureDefinition);
+        let gesture = createGesture(motionGestureDefinition);
 
         gesture.features().forEach((feature, index) => {
             return sinon.stub(feature, 'load').returns(true);
@@ -83,9 +98,9 @@ describe('gesture', () => {
     });
 
     it('should not validate gesture if at least one feature does not match', () => {
-        gestureDefinition.features.push(gestureDefinition.features[0]);
+        motionGestureDefinition.features.push(motionGestureDefinition.features[0]);
 
-        let gesture = createGesture(gestureDefinition),
+        let gesture = createGesture(motionGestureDefinition),
             returnValues = [true, false];
 
         gesture.features().forEach((feature, index) => {
@@ -442,5 +457,82 @@ describe('gesture', () => {
                 node: onlyNodeToAdd
             })
         ).to.deep.equal([onlyNodeToAdd]);
+    });
+    
+    it(`should be triggered once on all nodes in the path, when
+            bubble and oneshot flags set`, () => {
+        let triangleMovingPointerInput = buildInputFromPointer({x: 0, y: 0}),
+            bubbleOneshotTriangleDefinition = addFlagsToGesture(
+                ['bubble', 'oneshot'], trianglePathGestureDefinition
+            ),
+            bubbleOneshotTriangleGesture = createGesture(bubbleOneshotTriangleDefinition);
+            
+        let firstNodeInPath = 'first-node';
+        bubbleOneshotTriangleGesture.load({
+            inputObjects: [triangleMovingPointerInput.finished()],
+            node: firstNodeInPath
+        });
+        let secondNodeInPath = 'second-node';
+        triangleMovingPointerInput.moveTo({x: 0, y: 0.5});
+        bubbleOneshotTriangleGesture.load({
+            inputObjects: [triangleMovingPointerInput.finished()],
+            node: secondNodeInPath
+        });
+        let thirdNodeInPath = 'third-node';
+        triangleMovingPointerInput.moveTo({x: 0.5, y: 0})
+                                    .moveTo({x: 0, y: 0});
+        expect(
+            bubbleOneshotTriangleGesture.load({
+                inputObjects: [triangleMovingPointerInput.finished()],
+                node: thirdNodeInPath
+            })
+        ).to.deep.equal([firstNodeInPath, secondNodeInPath, thirdNodeInPath]);
+        // second time won't work because of oneshot
+        expect(
+            bubbleOneshotTriangleGesture.load({
+                inputObjects: [triangleMovingPointerInput.finished()],
+                node: thirdNodeInPath
+            })
+        ).to.deep.equal([]);
+    });
+    
+    it(`should trigger with bubble and oneshot for the second time,
+            if inputObjects change`, () => {
+        let sessionId = 10,
+            triangleMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId}),
+            bubbleOneshotTriangleDefinition = addFlagsToGesture(
+                ['bubble', 'oneshot'], trianglePathGestureDefinition
+            ),
+            bubbleOneshotTriangleGesture = createGesture(bubbleOneshotTriangleDefinition);
+            
+        let firstNodeInPath = 'first-node';
+        bubbleOneshotTriangleGesture.load({
+            inputObjects: [triangleMovingPointerInput.finished()],
+            node: firstNodeInPath
+        });
+        let secondNodeInPath = 'second-node';
+        triangleMovingPointerInput.moveTo({x: 0, y: 0.5});
+        bubbleOneshotTriangleGesture.load({
+            inputObjects: [triangleMovingPointerInput.finished()],
+            node: secondNodeInPath
+        });
+        let thirdNodeInPath = 'third-node';
+        triangleMovingPointerInput.moveTo({x: 0.5, y: 0})
+                                    .moveTo({x: 0, y: 0});
+        expect(
+            bubbleOneshotTriangleGesture.load({
+                inputObjects: [triangleMovingPointerInput.finished()],
+                node: thirdNodeInPath
+            })
+        ).to.deep.equal([firstNodeInPath, secondNodeInPath, thirdNodeInPath]);
+        
+        // will work again because the sessionId changes -> new input
+        triangleMovingPointerInput.newSessionId();
+        expect(
+            bubbleOneshotTriangleGesture.load({
+                inputObjects: [triangleMovingPointerInput.finished()],
+                node: thirdNodeInPath
+            })
+        ).to.deep.equal([thirdNodeInPath]);
     });
 });
