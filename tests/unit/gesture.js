@@ -575,4 +575,88 @@ describe('gesture', () => {
             })
         ).to.deep.equal([]);
     });
+    
+    it(`should be triggered on the original node only once,
+            if oneshot and sticky flags set`, () => {
+        let triangleMovingPointerInput = buildInputFromPointer({x: 0, y: 0})
+                                            .moveTo({x: 0, y: 0.5})
+                                            .moveTo({x: 0.5, y: 0})
+                                            .moveTo({x: 0, y: 0}),
+            stickyOneshotTriangleDefinition = addFlagsToGesture(
+                ['sticky', 'oneshot'], trianglePathGestureDefinition
+            ),
+            stickyOneshotTriangleGesture = createGesture(stickyOneshotTriangleDefinition);
+            
+        let stickyNode = 'sticky-node';
+        expect(
+            stickyOneshotTriangleGesture.load({
+                inputObjects: [triangleMovingPointerInput.finished()],
+                node: stickyNode
+            })
+        ).to.deep.equal([stickyNode]);
+        
+        expect(
+            stickyOneshotTriangleGesture.load({
+                inputObjects: [triangleMovingPointerInput.finished()],
+                node: stickyNode
+            })   
+        ).to.deep.equal([]); 
+    });
+    
+    it(`should be triggered again if oneshot and sticky flags set,
+            and inputObjects change`, () => {
+        let sessionId = 10,
+            triangleMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                            .moveTo({x: 0, y: 0.5})
+                                            .moveTo({x: 0.5, y: 0})
+                                            .moveTo({x: 0, y: 0}),
+            stickyOneshotTriangleDefinition = addFlagsToGesture(
+                ['sticky', 'oneshot'], trianglePathGestureDefinition
+            ),
+            stickyOneshotTriangleGesture = createGesture(stickyOneshotTriangleDefinition);
+            
+        let stickyNode = 'sticky-node';
+        stickyOneshotTriangleGesture.load({
+            inputObjects: [triangleMovingPointerInput.finished()],
+            node: stickyNode
+        });
+        
+        triangleMovingPointerInput.newSessionId();
+        
+        expect(
+            stickyOneshotTriangleGesture.load({
+                inputObjects: [triangleMovingPointerInput.finished()],
+                node: stickyNode
+            })   
+        ).to.deep.equal([stickyNode]);
+    });
+    
+    it(`should not be triggered if oneshot and sticky flags set,
+            and gesture condition not satisfied`, () => {
+        let sessionId = 10,
+            triangleMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                            .moveTo({x: 0, y: 0.5})
+                                            .moveTo({x: 0.5, y: 0})
+                                            .moveTo({x: 0, y: 0}),
+            stickyOneshotTriangleDefinition = addFlagsToGesture(
+                ['sticky', 'oneshot'], trianglePathGestureDefinition
+            ),
+            stickyOneshotTriangleGesture = createGesture(stickyOneshotTriangleDefinition);
+            
+        let stickyNode = 'sticky-node';
+        stickyOneshotTriangleGesture.load({
+            inputObjects: [triangleMovingPointerInput.finished()],
+            node: stickyNode
+        });
+        
+        sessionId += 1;
+        let lineMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                       .moveTo({x: 0.5, y: 0.5});
+        expect(
+            stickyOneshotTriangleGesture.load({
+                inputObjects: [triangleMovingPointerInput.finished()],
+                node: stickyNode
+            })   
+        ).to.deep.equal([]);
+    });
 });
