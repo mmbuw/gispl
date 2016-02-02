@@ -656,7 +656,85 @@ describe('gesture', () => {
             stickyOneshotTriangleGesture.load({
                 inputObjects: [triangleMovingPointerInput.finished()],
                 node: stickyNode
-            })   
+            })
+        ).to.deep.equal([]);
+    });
+    
+    it(`should trigger gesture on all nodes in path if bubble and sticky flag set
+            because bubble takes precedence`, () => {
+                
+        let movingPointerInput = buildInputFromPointer({x: 0, y: 0})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            bubbleStickyGestureDefinition = addFlagsToGesture(['bubble','sticky']),
+            bubbleStickyMotionGesture = createGesture(bubbleStickyGestureDefinition);
+
+        let firstNodeToAdd = 'first-node';
+        bubbleStickyMotionGesture.load({
+            node: firstNodeToAdd,
+            inputObjects: [movingPointerInput.finished()]
+        });
+        
+        let secondNodeToAdd = 'second-node';
+        expect(
+            bubbleStickyMotionGesture.load({
+                node: secondNodeToAdd,
+                inputObjects: [movingPointerInput.finished()]
+            })
+        ).to.deep.equal([firstNodeToAdd, secondNodeToAdd]);
+    });
+    
+    it(`should be triggered on new nodes if bubble and sticky flags set,
+            and inputObjects change`, () => {
+                
+        let sessionId = 10,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            bubbleStickyGestureDefinition = addFlagsToGesture(['bubble','sticky']),
+            bubbleStickyMotionGesture = createGesture(bubbleStickyGestureDefinition);
+
+        let firstNodeToAdd = 'first-node';
+        bubbleStickyMotionGesture.load({
+            node: firstNodeToAdd,
+            inputObjects: [movingPointerInput.finished()]
+        });
+        
+        let secondNodeToAdd = 'second-node';
+        bubbleStickyMotionGesture.load({
+            node: secondNodeToAdd,
+            inputObjects: [movingPointerInput.finished()]
+        });
+        
+        let onlyNode = 'only-node';
+        movingPointerInput.newSessionId();
+        expect(
+            bubbleStickyMotionGesture.load({
+                node: onlyNode,
+                inputObjects: [movingPointerInput.finished()]
+            })
+        ).to.deep.equal([onlyNode]);
+    });
+    
+    it(`should not be triggered if bubble and sticky flags set,
+            and gesture condition not satisfied`, () => {
+        let sessionId = 10,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            bubbleStickyGestureDefinition = addFlagsToGesture(['bubble','sticky']),
+            bubbleStickyMotionGesture = createGesture(bubbleStickyGestureDefinition);
+
+        let firstNodeToAdd = 'first-node';
+        bubbleStickyMotionGesture.load({
+            node: firstNodeToAdd,
+            inputObjects: [movingPointerInput.finished()]
+        });
+        
+        sessionId += 1;
+        let staticPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+        expect(
+            bubbleStickyMotionGesture.load({
+                node: firstNodeToAdd,
+                inputObjects: [staticPointerInput.finished()]
+            })
         ).to.deep.equal([]);
     });
 });
