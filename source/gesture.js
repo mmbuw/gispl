@@ -92,7 +92,7 @@ export function createGesture(definition) {
                 }
                 if (hasBubbleFlag) {
                     if (!matchesPreviousInput) {
-                        bubbleNodesToEmitOn = [node];
+                        bubbleNodesToEmitOn = [];
                     }
                     if (bubbleNodesToEmitOn.indexOf(node) === -1) {
                         bubbleNodesToEmitOn.push(node);
