@@ -737,4 +737,111 @@ describe('gesture', () => {
             })
         ).to.deep.equal([]);
     });
+    
+    it(`should trigger gesture events on multiple nodes once if 
+            bubble, sticky and oneshot flags set`, () => {
+        let triangleMovingPointerInput = buildInputFromPointer({x: 0, y: 0})
+                                            .moveTo({x: 0, y: 0.5}),
+            bubbleStickyOneshotTriangleDefinition = addFlagsToGesture(
+                ['sticky', 'oneshot', 'bubble'], trianglePathGestureDefinition
+            ),
+            bubbleStickyOneshotTriangleGesture = createGesture(
+                bubbleStickyOneshotTriangleDefinition
+            );
+            
+        let firstNodeToAdd = 'first-node';
+        expect(
+            bubbleStickyOneshotTriangleGesture.load({
+                inputObjects: [triangleMovingPointerInput.finished()],
+                node: firstNodeToAdd
+            })
+        ).to.deep.equal([]);
+        let secondNodeToAdd = 'second-node';
+        // will match on next gesture check
+        triangleMovingPointerInput.moveTo({x: 0.5, y: 0})
+                                    .moveTo({x: 0, y: 0});
+        expect(
+            bubbleStickyOneshotTriangleGesture.load({
+                inputObjects: [triangleMovingPointerInput.finished()],
+                node: secondNodeToAdd
+            })
+        ).to.deep.equal([firstNodeToAdd, secondNodeToAdd]);
+        
+        // will not work anymore until input changes
+        // oneshot set
+        expect(
+            bubbleStickyOneshotTriangleGesture.load({
+                inputObjects: [triangleMovingPointerInput.finished()],
+                node: secondNodeToAdd
+            })
+        ).to.deep.equal([]);
+    });
+    
+    it(`should trigger gesture event again on multiple nodes once if 
+            bubble, sticky and oneshot flags set and inputObjects change`, () => {
+        let sessionId = 10,
+            triangleMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                            .moveTo({x: 0, y: 0.5}),
+            bubbleStickyOneshotTriangleDefinition = addFlagsToGesture(
+                ['sticky', 'oneshot', 'bubble'], trianglePathGestureDefinition
+            ),
+            bubbleStickyOneshotTriangleGesture = createGesture(
+                bubbleStickyOneshotTriangleDefinition
+            );
+            
+        let firstNodeToAdd = 'first-node';
+        bubbleStickyOneshotTriangleGesture.load({
+            inputObjects: [triangleMovingPointerInput.finished()],
+            node: firstNodeToAdd
+        });
+        let secondNodeToAdd = 'second-node';
+        // will match on next gesture check
+        triangleMovingPointerInput.moveTo({x: 0.5, y: 0})
+                                    .moveTo({x: 0, y: 0});
+        bubbleStickyOneshotTriangleGesture.load({
+            inputObjects: [triangleMovingPointerInput.finished()],
+            node: secondNodeToAdd
+        });
+        
+        // changing sessionId should reset everything
+        triangleMovingPointerInput.newSessionId();
+        let someOtherNode = 'other-node';
+        expect(
+            bubbleStickyOneshotTriangleGesture.load({
+                inputObjects: [triangleMovingPointerInput.finished()],
+                node: someOtherNode
+            })
+        ).to.deep.equal([someOtherNode]);
+    });
+    
+    it(`should not trigger gesture event if bubble, sticky, oneshot flags set,
+            but gesture condition not satisfied`, () => {
+        let sessionId = 10,
+            triangleMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                            .moveTo({x: 0, y: 0.5})
+                                            .moveTo({x: 0.5, y: 0})
+                                            .moveTo({x: 0, y: 0}),
+            bubbleStickyOneshotTriangleDefinition = addFlagsToGesture(
+                ['sticky', 'oneshot', 'bubble'], trianglePathGestureDefinition
+            ),
+            bubbleStickyOneshotTriangleGesture = createGesture(
+                bubbleStickyOneshotTriangleDefinition
+            );
+            
+        let someNode = 'some-node';
+        bubbleStickyOneshotTriangleGesture.load({
+            inputObjects: [triangleMovingPointerInput.finished()],
+            node: someNode
+        });
+        
+        sessionId += 1;
+        let lineMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                       .moveTo({x: 0.5, y: 0.5});
+        expect(
+            bubbleStickyOneshotTriangleGesture.load({
+                inputObjects: [triangleMovingPointerInput.finished()],
+                node: someNode
+            })
+        ).to.deep.equal([]);
+    });
 });
