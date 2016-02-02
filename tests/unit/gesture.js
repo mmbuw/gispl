@@ -535,4 +535,44 @@ describe('gesture', () => {
             })
         ).to.deep.equal([thirdNodeInPath]);
     });
+    
+    it(`should not trigger with bubble and oneshot for the second time,
+            if inputObjects change but gesture condition not satisfied`, () => {
+        let sessionId = 10,
+            triangleMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId}),
+            bubbleOneshotTriangleDefinition = addFlagsToGesture(
+                ['bubble', 'oneshot'], trianglePathGestureDefinition
+            ),
+            bubbleOneshotTriangleGesture = createGesture(bubbleOneshotTriangleDefinition);
+            
+        let firstNodeInPath = 'first-node';
+        bubbleOneshotTriangleGesture.load({
+            inputObjects: [triangleMovingPointerInput.finished()],
+            node: firstNodeInPath
+        });
+        let secondNodeInPath = 'second-node';
+        triangleMovingPointerInput.moveTo({x: 0, y: 0.5});
+        bubbleOneshotTriangleGesture.load({
+            inputObjects: [triangleMovingPointerInput.finished()],
+            node: secondNodeInPath
+        });
+        let thirdNodeInPath = 'third-node';
+        triangleMovingPointerInput.moveTo({x: 0.5, y: 0})
+                                    .moveTo({x: 0, y: 0});                            
+        bubbleOneshotTriangleGesture.load({
+            inputObjects: [triangleMovingPointerInput.finished()],
+            node: thirdNodeInPath
+        })
+        
+        // will not work because it is not a valid triangle path
+        sessionId += 1;
+        let lineMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5});
+        expect(
+            bubbleOneshotTriangleGesture.load({
+                inputObjects: [lineMovingPointerInput.finished()],
+                node: thirdNodeInPath
+            })
+        ).to.deep.equal([]);
+    });
 });
