@@ -103,19 +103,14 @@ export function createGesture(definition) {
                     if (hasBubbleFlag) {
                         nodesToEmitOn = bubbleNodesToEmitOn;
                     }
-                    else if (hasOneshotFlag) {
-                        nodesToEmitOn = [node];
-                    }
-                    // add current node to nodes to emit on
-                    // only if the same input hasn't already matched a gesture on a node
-                    // if it has
-                    // the old node is 'sticky' until the inputObjects change
-                    else if (hasStickyFlag &&
-                                !inputPreviouslyMatched) {
-                        nodesToEmitOn = [node];
-                    }
-                    // save just the current node
-                    else if (hasNoFlags) {
+                    else if (
+                        // oneshot gestures will get here only once
+                        hasOneshotFlag ||
+                        // if the input was already matched
+                        // use the node previously set for sticky gestures
+                        (hasStickyFlag && !inputPreviouslyMatched) ||
+                        hasNoFlags
+                    ) {
                         nodesToEmitOn = [node];
                     }
                     // save currentInputIds for future reference
