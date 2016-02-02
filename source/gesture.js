@@ -9,51 +9,30 @@ let gestureFlags = {
 };
 
 export function createGesture(definition) {
-    let features = [],
-        flags = [],
-        matchedInputIds = [],
+    let matchedInputIds = [],
         previousInputIds = [],
         bubbleNodesToEmitOn = [],
-        nodesToEmitOn = [];
-
+        nodesToEmitOn = [],
+        features;
+        
+    function validateEveryFeatureFrom(inputState) {
+        return features.every(feature => feature.load(inputState));
+    }
+        
+    // don't store gesture if definition invalid 
     isValidGesture(definition);
-
-    definition.features.forEach(feature => {
-        features.push(featureFactory(feature));
-    });
-
-    let definitionFlags = definition.flags;
-    if (typeof definitionFlags === 'string') {
-        definitionFlags = [definitionFlags];
-    }
-    if (Array.isArray(definitionFlags)) {
-        flags.push(...definitionFlags);
-    }
-
+    // initialize and store features
+    // a valid gesture has every feature valid
+    features = initializeFeaturesFrom(definition);
+    // initialize flags
+    let flags = extractFlagsFrom(definition);
+    // check state of flags
+    // at the moment, flags can't be changed after defining the gesture
     let hasOneshotFlag = flags.indexOf(gestureFlags.ONESHOT) !== -1,
         hasStickyFlag = flags.indexOf(gestureFlags.STICKY) !== -1,
         hasBubbleFlag = flags.indexOf(gestureFlags.BUBBLE) !== -1,
         hasNoFlags = flags.length === 0;
-
-    function extractIdentifiersFrom(inputObjects = []) {
-        return inputObjects
-                    .filter(inputObject => !!inputObject)
-                    .map(inputObject => inputObject.identifier);
-    }
-
-    function compareInput(first, second) {
-        let equalLength = first.length === second.length,
-            secondContainsAllOfFirst = first.every(item => {
-                return second.indexOf(item) !== -1;
-            });
-
-        return equalLength && secondContainsAllOfFirst;
-    }
-
-    function validInput(inputObjects = []) {
-        return !!inputObjects.length;
-    }
-
+        
     return {
         definition() {
             return definition;
@@ -66,7 +45,9 @@ export function createGesture(definition) {
         features() {
             return features;
         },
-
+        // hopefully somehow simpler in the future
+        // checks if the gesture is valid by validating every feature
+        // and returns nodes to emit gestures on (based on which flags are set)
         load(inputState = {}) {
             let {inputObjects,
                     node} = inputState;
@@ -88,8 +69,7 @@ export function createGesture(definition) {
                 // the gesture should not match if it is oneshot
                 // and already triggered
                 if (!oneshotFlagFulfilled) {
-                    everyFeatureMatches = features.every(
-                            feature => feature.load(inputState));
+                    everyFeatureMatches = validateEveryFeatureFrom(inputState);
                 }
                 if (hasBubbleFlag) {
                     if (!isSameAsPreviousInput) {
@@ -179,4 +159,50 @@ function isValidGesture(definition) {
                 Expecting some of: ${gestureFlagNames}; received: ${definitionFlags}`);
         }
     }
+}
+
+// returns an array of instantiated feature objects
+function initializeFeaturesFrom(definition) {
+    return definition.features.map(feature => {
+        return featureFactory(feature);
+    });
+}
+
+// definition can have flags set as string, 'oneshot'
+// or array of flags, ['oneshot'], or ['oneshot', 'bubble']
+// always returns an array
+function extractFlagsFrom(definition) {
+    let definitionFlags = definition.flags,
+        flags = [];
+    if (typeof definitionFlags === 'string') {
+        definitionFlags = [definitionFlags];
+    }
+    if (Array.isArray(definitionFlags)) {
+        flags.push(...definitionFlags);
+    }
+    return flags;
+}
+
+// returns an array of identifiers [1,2,...]
+// from an array of inputObjects
+// [{identifier: 1,...}, {identifier: 2,...},...}
+function extractIdentifiersFrom(inputObjects = []) {
+    return inputObjects
+                .filter(inputObject => !!inputObject)
+                .map(inputObject => inputObject.identifier);
+}
+// compares if an array (of identifiers) is equal to another
+// [1,2,3] equals [1,2,3]
+// but also [3,2,1]
+function compareInput(first, second) {
+    let equalLength = first.length === second.length,
+        secondContainsAllOfFirst = first.every(item => {
+            return second.indexOf(item) !== -1;
+        });
+
+    return equalLength && secondContainsAllOfFirst;
+}
+// check if inputObjects are an array with at least one element
+function validInput(inputObjects = []) {
+    return !!inputObjects.length;
 }
