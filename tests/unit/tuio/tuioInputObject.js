@@ -47,9 +47,9 @@ describe('tuioInputObject', () => {
         expect(input.relativeScreenY).to.equal(y);
     });
 
-    it('should have position information related to the browser', () => {
-        let x = 0.5,
-            y = 0.5,
+    it('should have position information related to the browser viewport', () => {
+        let x = null,
+            y = null,
             clientX = 100,
             clientY = 100,
             pointer = buildPointer({x, y}).finished(),
@@ -64,8 +64,46 @@ describe('tuioInputObject', () => {
                 calibration
             });
 
-        expect(input.clientX).to.equal(100);
-        expect(input.clientY).to.equal(100);
+        expect(input.clientX).to.equal(clientX);
+        expect(input.clientY).to.equal(clientY);
+    });
+    
+    it('should have position information related to the page origin', () => {
+        let x = null,
+            y = null,
+            clientX = 100,
+            clientY = 100,
+            pointer = buildPointer({x, y}).finished(),
+            calibration = {
+                screenToViewportCoordinates: () => ({
+                    x: clientX,
+                    y: clientY
+                })
+            },
+            input = inputObjectFromTuio({
+                tuioComponent: pointer,
+                calibration
+            });
+        // exactly how it is implemented,
+        // maybe irrelevant test
+        expect(input.pageX).to.equal(clientX + window.pageXOffset);
+        expect(input.pageY).to.equal(clientY + window.pageYOffset);
+    });
+    
+    it(`should have undefined browser and page position information,
+            if no calibration object`, () => {
+        let x = null,
+            y = null,
+            pointer = buildPointer({x, y}).finished(),
+            calibration,
+            input = inputObjectFromTuio({
+                tuioComponent: pointer,
+                calibration
+            });
+        expect(input.clientX).to.be.an('undefined');
+        expect(input.clientY).to.be.an('undefined');
+        expect(input.pageX).to.be.an('undefined');
+        expect(input.pageY).to.be.an('undefined');
     });
 
     it('should have a path property of all the previous points', () => {

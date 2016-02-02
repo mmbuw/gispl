@@ -12,7 +12,8 @@ export function inputObjectFromTuio(params) {
     let identifier = tuioComponent.getSessionId(),
         {screenX, screenY,
             relativeScreenX, relativeScreenY,
-            clientX, clientY} = pointParams(tuioComponent, calibration),
+            clientX, clientY,
+            pageX, pageY} = pointParams(tuioComponent, calibration),
         path = tuioComponent.path.map(point => {
             return pointParams(point, calibration);
         }),
@@ -25,7 +26,9 @@ export function inputObjectFromTuio(params) {
     return {
         identifier, type, path,
         relativeScreenX, relativeScreenY,
-        screenX, screenY, clientX, clientY
+        screenX, screenY,
+        clientX, clientY,
+        pageX, pageY
     };
 }
 
@@ -35,17 +38,21 @@ function pointParams(point, calibration) {
         relativeScreenY = point.getY(),
         screenX = point.getScreenX(window.screen.width),
         screenY = point.getScreenY(window.screen.height),
-        clientX, clientY;
+        clientX, clientY,
+        pageX, pageY;
 
     if (typeof calibration !== 'undefined') {
         ({x:clientX,
          y:clientY} = calibration.screenToViewportCoordinates({screenX,
                                                              screenY}));
+        pageX = clientX + window.pageXOffset;
+        pageY = clientY + window.pageYOffset;
     }
 
     return {
         relativeScreenX, relativeScreenY,
         screenX, screenY,
-        clientX, clientY
+        clientX, clientY,
+        pageX, pageY
     };
 }
