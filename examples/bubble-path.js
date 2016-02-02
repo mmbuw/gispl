@@ -50,7 +50,6 @@ $(document).ready(() => {
     });
 
     gispl.initTuio({
-        host: 'ws://localhost:8080',
-        bubble: false
+        host: 'ws://localhost:8080'
     });
 });
