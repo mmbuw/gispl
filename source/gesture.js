@@ -12,7 +12,7 @@ export function createGesture(definition) {
     let features = [],
         flags = [],
         matchedInputIds = [],
-        knownInputIds = [],
+        previousInputIds = [],
         bubbleNodesToEmitOn = [],
         nodesToEmitOn = [];
 
@@ -76,14 +76,15 @@ export function createGesture(definition) {
                 // gestures with oneshot flags should be triggered once
                 // until the identifiers change (e.g. tuio session ids)
                 let currentInputIds = extractIdentifiersFrom(inputObjects),
-                    alreadyMatchedInput = compareInput(currentInputIds,
+                    inputPreviouslyMatched = compareInput(currentInputIds,
                                                         matchedInputIds),
-                    matchesPreviousInput = compareInput(currentInputIds,
-                                                        knownInputIds),
+                    isSameAsPreviousInput = compareInput(currentInputIds,
+                                                        previousInputIds),
                     everyFeatureMatches = false,
-                    oneshotFlagFulfilled = hasOneshotFlag && alreadyMatchedInput;
+                    oneshotFlagFulfilled = hasOneshotFlag && inputPreviouslyMatched;
 
-                knownInputIds = currentInputIds;
+                // save for the next time the .load method is called
+                previousInputIds = currentInputIds;
                 // the gesture should not match if it is oneshot
                 // and already triggered
                 if (!oneshotFlagFulfilled) {
@@ -91,7 +92,7 @@ export function createGesture(definition) {
                             feature => feature.load(inputState));
                 }
                 if (hasBubbleFlag) {
-                    if (!matchesPreviousInput) {
+                    if (!isSameAsPreviousInput) {
                         bubbleNodesToEmitOn = [];
                     }
                     if (bubbleNodesToEmitOn.indexOf(node) === -1) {
@@ -105,15 +106,13 @@ export function createGesture(definition) {
                     else if (hasOneshotFlag) {
                         nodesToEmitOn = [node];
                     }
-                    else if (hasStickyFlag) {
-                        // add current node to nodes to emit on
-                        // only if the same input hasn't already matched a gesture on a node
-                        // if it has
-                        // the old node is 'sticky' until the inputObjects change
-                        if (nodesToEmitOn.length === 0 ||
-                                !alreadyMatchedInput) {
-                            nodesToEmitOn = [node];
-                        }
+                    // add current node to nodes to emit on
+                    // only if the same input hasn't already matched a gesture on a node
+                    // if it has
+                    // the old node is 'sticky' until the inputObjects change
+                    else if (hasStickyFlag &&
+                                !inputPreviouslyMatched) {
+                        nodesToEmitOn = [node];
                     }
                     // save just the current node
                     else if (hasNoFlags) {
