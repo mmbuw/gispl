@@ -25,6 +25,10 @@ export function buildPointer(params = {}) {
             pointer.update({xp, yp});
             return this;
         },
+        newSessionId: function() {
+            si += 1;
+            return this;
+        },
         finished: function() {
             return pointer;
         }
@@ -37,6 +41,10 @@ export function buildInputFromPointer(params) {
     return {
         moveTo: function(params) {
             pointerBuilder.moveTo(params);
+            return this;
+        },
+        newSessionId: function() {
+            pointerBuilder.newSessionId();
             return this;
         },
         finished: function() {
