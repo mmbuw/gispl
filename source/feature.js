@@ -68,6 +68,10 @@ export function lowerUpperVectorLimit(constraints = []) {
     ]);
 }
 
+export function clearUserDefinedPaths() {
+    singleRecognizerInstance.DeleteUserGestures();
+}
+
 export let featureException = {
     NONEXISTING: 'Attempting to add a gesture with a non-existing feature:'
 };
