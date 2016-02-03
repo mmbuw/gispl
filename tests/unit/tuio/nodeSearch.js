@@ -171,22 +171,22 @@ describe('nodeSearch', () => {
     });
     
     it('should not find any elements if no element found and not bubbling', () => {
-        let findNodes = nodeSearch({bubble: false});
+        let findNodes = nodeSearch({propagation: false});
         expect(findNodes.fromPoint({x: 10, y: 10})).to.deep.equal([]);
     });
     
     it('should find just one element if bubbling disabled', () => {
        let element = helper.appendElement({width: 10, height: 10}),
-           findNodes = nodeSearch({bubble: false});
+           findNodes = nodeSearch({propagation: false});
            
         let foundNodes = findNodes.fromPoint({x: 5, y: 5});
         expect(foundNodes.length).to.equal(1);
         expect(foundNodes[0]).to.equal(element);
     });
     
-    it(`should find not elements if searching outside of viewport
+    it(`should find no elements if searching outside of viewport
             and bubbling disabled`, () => {
-        let findNodes = nodeSearch({bubble: false});
+        let findNodes = nodeSearch({propagation: false});
         // calibration will transform screenX to something like this
         // if screenX outside of browser
         let foundNodes = findNodes.fromPoint({x: -100, y: 0});

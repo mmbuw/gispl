@@ -3,7 +3,7 @@ import screenCalibration from './screenCalibration';
 export default function nodeSearch(params = {}) {
 
     let {calibration = screenCalibration(),
-            bubble = true} = params;
+            propagation = true} = params;
 
     function coordinatesFromParams(params = {}) {
         let {x, y, screenX, screenY} = params;
@@ -29,7 +29,7 @@ export default function nodeSearch(params = {}) {
             if (typeof x !== 'undefined' &&
                     typeof y !== 'undefined') {
                 let foundElement = document.elementFromPoint(x, y);
-                if (bubble) {
+                if (propagation) {
                     let elementPath = nodePathFrom(foundElement);
                     while (elementPath.exists()) {
                         nodes.push(elementPath.currentNode());
