@@ -439,24 +439,31 @@ describe('gesture', () => {
     });
     
     it(`should store all the nodes encountered when bubble flag set, 
-            but not multiple times`, () => {
+            but not multiple times, i.e. duplicates`, () => {
         let movingPointerInput = buildInputFromPointer({x: 0, y: 0})
                                         .moveTo({x: 0.5, y: 0.5}),
             bubbleGestureDefinition = addFlagsToGesture('bubble'),
             bubbleMotionGesture = createGesture(bubbleGestureDefinition);
-            
-        let onlyNodeToAdd = 'only-node';
+        
+        // use real node because we also don't want parent duplicates
+        let firstNodeToAdd = document.body;
         bubbleMotionGesture.load({
             inputObjects: [movingPointerInput.finished()],
-            node: onlyNodeToAdd
+            node: firstNodeToAdd
         });
-        
+        bubbleMotionGesture.load({
+            inputObjects: [movingPointerInput.finished()],
+            node: firstNodeToAdd
+        });
+        // should already be in
+        // because it is the parent of document.body
+        let secondNodeToAdd = document.documentElement;
         expect(
             bubbleMotionGesture.load({
                 inputObjects: [movingPointerInput.finished()],
-                node: onlyNodeToAdd
-            })
-        ).to.deep.equal([onlyNodeToAdd]);
+                node: secondNodeToAdd
+            }) 
+        ).to.deep.equal([firstNodeToAdd, document.documentElement, document]);
     });
     
     it(`should be triggered once on all nodes in the path, when
@@ -843,5 +850,38 @@ describe('gesture', () => {
                 node: someNode
             })
         ).to.deep.equal([]);
+    });
+    
+    it('should trigger gesture event on parent element if propagation enabled', () => {
+        // propagation is enabled by default
+        let gesture = createGesture(motionGestureDefinition);
+
+        gesture.features().forEach((feature, index) => {
+            return sinon.stub(feature, 'load').returns(true);
+        });
+        
+        let mockInput = [null],
+            node = document.body;
+        expect(gesture.load({
+            inputObjects: mockInput,
+            node
+        })).to.deep.equal([node, document.documentElement, document]);
+    });
+    
+    it('should not trigger gesture event on parent element if propagation disabled', () => {
+        let gesture = createGesture($.extend(
+            {}, motionGestureDefinition, {propagation: false}
+        ));
+
+        gesture.features().forEach((feature, index) => {
+            return sinon.stub(feature, 'load').returns(true);
+        });
+        
+        let mockInput = [null],
+            node = document.body;
+        expect(gesture.load({
+            inputObjects: mockInput,
+            node
+        })).to.deep.equal([node]);
     });
 });

@@ -158,7 +158,7 @@ describe('gispl', () => {
                 {type:"Motion"}
             ]
         });
-        gispl(document.documentElement).on(motionName, spy);
+        gispl(document).on(motionName, spy);
         window.WebSocket = WebMocket;
 
         let calibration = {
@@ -207,7 +207,7 @@ describe('gispl', () => {
                 {type:"Motion"}
             ]
         });
-        gispl(document.documentElement).on(motionName, spy);
+        gispl(document).on(motionName, spy);
         window.WebSocket = WebMocket;
 
         let calibration = {

@@ -31,57 +31,9 @@ export default function nodeSearch(params = {}) {
             if (typeof x !== 'undefined' &&
                     typeof y !== 'undefined') {
                 foundElement = document.elementFromPoint(x, y);
-                // if (propagation) {
-                //     let elementPath = nodePathFrom(foundElement);
-                //     while (elementPath.exists()) {
-                //         nodes.push(elementPath.currentNode());
-                //         elementPath.moveToParentNode();
-                //     }
-                // }
             }
 
             return foundElement;
-        }
-    };
-}
-
-
-function nodePathFrom(topNode) {
-    let node = topNode;
-
-    return {
-        currentNode() {
-            return node;
-        },
-
-        exists() {
-            return node !== null;
-        },
-
-        moveToParentNode() {
-            node = node.parentNode;
-            return this;
-        },
-
-        //this is unused atm
-        containsPoint(point) {
-
-            if (!this.exists()) {
-                return false;
-            }
-
-            let {x, y} = point;
-
-            let elementGeometry = node.getBoundingClientRect();
-
-            return (elementGeometry.left <= x &&
-                        x < elementGeometry.right &&
-                        elementGeometry.top <= y &&
-                        y < elementGeometry.bottom);
-        },
-        // this too
-        isRoot() {
-            return node === document;
         }
     };
 }

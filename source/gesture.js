@@ -11,13 +11,9 @@ let gestureFlags = {
 export function createGesture(definition) {
     let matchedInputIds = [],
         previousInputIds = [],
-        bubbleNodesToEmitOn = [],
-        nodesToEmitOn = [],
+        bubbleTopNodes = [],
+        validTopNodesOnEmit = [],
         features;
-        
-    function validateEveryFeatureFrom(inputState) {
-        return features.every(feature => feature.load(inputState));
-    }
         
     // don't store gesture if definition invalid 
     isValidGesture(definition);
@@ -25,13 +21,40 @@ export function createGesture(definition) {
     // a valid gesture has every feature valid
     features = initializeFeaturesFrom(definition);
     // initialize flags
-    let flags = extractFlagsFrom(definition);
+    let flags = extractFlagsFrom(definition),
+    // whether the gesture should be triggered on the found top nodes
+    // or on top nodes and all the parent nodes
+    // as with native event propagation
+        {propagation = true} = definition;
     // check state of flags
     // at the moment, flags can't be changed after defining the gesture
     let hasOneshotFlag = flags.indexOf(gestureFlags.ONESHOT) !== -1,
         hasStickyFlag = flags.indexOf(gestureFlags.STICKY) !== -1,
         hasBubbleFlag = flags.indexOf(gestureFlags.BUBBLE) !== -1,
         hasNoFlags = flags.length === 0;
+        
+    function validateEveryFeatureFrom(inputState) {
+        return features.every(feature => feature.load(inputState));
+    }
+    
+    function resultingNodes() {
+        let result = [];
+        if (propagation) {
+            // find all parent nodes from all valid nodes
+            // and add them only once
+            validTopNodesOnEmit.forEach(topNode => {
+                parentNodesFrom(topNode).forEach(node => {
+                    if (result.indexOf(node) === -1) {
+                        result.push(node);
+                    }
+                });
+            });
+        }
+        else {
+            result = validTopNodesOnEmit;
+        }
+        return result;
+    }
         
     return {
         definition() {
@@ -73,15 +96,13 @@ export function createGesture(definition) {
                 }
                 if (hasBubbleFlag) {
                     if (!isSameAsPreviousInput) {
-                        bubbleNodesToEmitOn = [];
+                        bubbleTopNodes = [];
                     }
-                    if (bubbleNodesToEmitOn.indexOf(node) === -1) {
-                        bubbleNodesToEmitOn.push(node);
-                    }
+                    bubbleTopNodes.push(node);
                 }
                 if (everyFeatureMatches) {
                     if (hasBubbleFlag) {
-                        nodesToEmitOn = bubbleNodesToEmitOn;
+                        validTopNodesOnEmit = bubbleTopNodes;
                     }
                     else if (
                         // oneshot gestures will get here only once
@@ -91,17 +112,17 @@ export function createGesture(definition) {
                         (hasStickyFlag && !inputPreviouslyMatched) ||
                         hasNoFlags
                     ) {
-                        nodesToEmitOn = [node];
+                        validTopNodesOnEmit = [node];
                     }
                     // save currentInputIds for future reference
                     matchedInputIds = currentInputIds;
                 }
                 else {
-                    nodesToEmitOn = [];
+                    validTopNodesOnEmit = [];
                 }
             }
-
-            return nodesToEmitOn;
+            // will also include parent nodes of all nodes, if enabled 
+            return resultingNodes();
         },
 
         flags() {
@@ -205,4 +226,16 @@ function compareInput(first, second) {
 // check if inputObjects are an array with at least one element
 function validInput(inputObjects = []) {
     return !!inputObjects.length;
+}
+
+function parentNodesFrom(topNode) {
+    let existingNode = topNode,
+        result = [];
+        
+    while (existingNode) {
+        result.push(existingNode);
+        existingNode = existingNode.parentNode;
+    }
+    
+    return result;
 }
