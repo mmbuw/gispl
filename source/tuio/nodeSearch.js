@@ -2,8 +2,7 @@ import screenCalibration from './screenCalibration';
 
 export default function nodeSearch(params = {}) {
 
-    let {calibration = screenCalibration(),
-            propagation = true} = params;
+    let {calibration = screenCalibration()} = params;
 
     function coordinatesFromParams(params = {}) {
         let {x, y, screenX, screenY} = params;
@@ -23,26 +22,25 @@ export default function nodeSearch(params = {}) {
 
     return {
         fromPoint(params = {}) {
-            let nodes = [],
+            // elementFromPoint returns null when nothing found
+            // e.g. looking outside of the viewport
+            let foundElement = null,
                 {x, y} = coordinatesFromParams(params);
+                
 
             if (typeof x !== 'undefined' &&
                     typeof y !== 'undefined') {
-                let foundElement = document.elementFromPoint(x, y);
-                if (propagation) {
-                    let elementPath = nodePathFrom(foundElement);
-                    while (elementPath.exists()) {
-                        nodes.push(elementPath.currentNode());
-                        elementPath.moveToParentNode();
-                    }
-                }
-                else if (foundElement !== null &&
-                            foundElement.nodeName !== 'HTML') {
-                    nodes.push(foundElement);
-                }
+                foundElement = document.elementFromPoint(x, y);
+                // if (propagation) {
+                //     let elementPath = nodePathFrom(foundElement);
+                //     while (elementPath.exists()) {
+                //         nodes.push(elementPath.currentNode());
+                //         elementPath.moveToParentNode();
+                //     }
+                // }
             }
 
-            return nodes;
+            return foundElement;
         }
     };
 }

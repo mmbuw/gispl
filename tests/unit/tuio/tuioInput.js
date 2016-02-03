@@ -5,6 +5,7 @@ import nodeSearch from '../../../source/tuio/nodeSearch';
 import {WebMocket, MocketServer} from 'webmocket';
 import TuioClient from 'tuio/src/TuioClient';
 import {sendPointerBundle} from '../../helpers/osc';
+import $ from 'jquery';
 
 describe('tuioInput', () => {
 
@@ -15,7 +16,7 @@ describe('tuioInput', () => {
         calibration,
         coordinatesStub,
         screenUsableStub,
-        findNodes,
+        findNode,
         sessionId = 10,
         sessionId2 = 11;
 
@@ -31,17 +32,24 @@ describe('tuioInput', () => {
                             .returns({x: 0, y: 0});
         screenUsableStub = sinon.stub(calibration, 'isScreenUsable')
                             .returns(true);
-        findNodes = nodeSearch({calibration});
+        findNode = nodeSearch({calibration});
+        $('body').css({
+            padding: 0,
+            margin: 0
+        });
     });
 
     afterEach(() => {
         server.close();
         coordinatesStub.restore();
         screenUsableStub.restore();
+        // cleanup any attached nodes
+        $('body').children().remove();
+        expect($('body').children().length).to.equal(0);
     });
 
     it('should allow callbacks to be registered and notified', () => {
-        let input = tuioInput({tuioClient, findNodes}),
+        let input = tuioInput({tuioClient, findNode}),
             spy = sinon.spy(),
             param = 1;
 
@@ -70,7 +78,7 @@ describe('tuioInput', () => {
     });
 
     it('should allow only functions to be registered as callbacks', () => {
-        let input = tuioInput({tuioClient, findNodes});
+        let input = tuioInput({tuioClient, findNode});
 
         expect(function() {
             input.listen();
@@ -88,7 +96,7 @@ describe('tuioInput', () => {
     it('should notify listeners when input received and nodes found', (asyncDone) => {
         let spy = sinon.spy(),
             examplePointer = {},
-            input = tuioInput({tuioClient, findNodes});
+            input = tuioInput({tuioClient, findNode});
 
         input.listen(spy);
 
@@ -104,19 +112,20 @@ describe('tuioInput', () => {
                 sessionId
             },
             spy = sinon.spy(),
-            input = tuioInput({tuioClient, findNodes});
+            input = tuioInput({tuioClient, findNode});
 
         input.listen(spy);
 
         setTimeout(() => {
             sendPointerBundle(server, tuioPointer);
             let regions = spy.getCall(0).args[0];
-            //document and HTML are the only nodes found
+            //html root is the only node found
             //check calibration stub, returns 0, 0
-            expect(regions.has(document)).to.equal(true);
+            let htmlRoot = document.documentElement;
+            expect(regions.has(htmlRoot)).to.equal(true);
             //only one input object ->  tuioPointer
-            expect(regions.get(document).length).to.equal(1);
-            expect(regions.get(document)[0].identifier).to.equal(sessionId);
+            expect(regions.get(htmlRoot).length).to.equal(1);
+            expect(regions.get(htmlRoot)[0].identifier).to.equal(sessionId);
             asyncDone();
         });
     });
@@ -129,16 +138,17 @@ describe('tuioInput', () => {
                 sessionId: sessionId2
             },
             spy = sinon.spy(),
-            input = tuioInput({tuioClient, findNodes});
+            input = tuioInput({tuioClient, findNode});
 
         input.listen(spy);
 
         setTimeout(() => {
             sendPointerBundle(server, tuioPointer1, tuioPointer2);
             let regions = spy.getCall(0).args[0];
-            expect(regions.get(document).length).to.equal(2);
-            expect(regions.get(document)[0].identifier).to.equal(sessionId);
-            expect(regions.get(document)[1].identifier).to.equal(sessionId2);
+            let htmlRoot = document.documentElement;
+            expect(regions.get(htmlRoot).length).to.equal(2);
+            expect(regions.get(htmlRoot)[0].identifier).to.equal(sessionId);
+            expect(regions.get(htmlRoot)[1].identifier).to.equal(sessionId2);
             asyncDone();
         });
     });
@@ -155,26 +165,35 @@ describe('tuioInput', () => {
 
         coordinatesStub.restore();
         coordinatesStub = sinon.stub(calibration, 'screenToViewportCoordinates');
+
+        let element1 = $(`<div style="
+                            position: absolute; top: 0; left: 0;
+                            width: 10px;
+                            height: 10px;"></div>`).appendTo('body');
+        //ensure first search finds element1
         coordinatesStub.onCall(0).returns({x:0, y:0});
 
-        let element = $(`<div style="
+        let element2 = $(`<div style="
                             width: 10px;
                             height: 10px;
-                            margin-left: 95px;"></div>`).appendTo('body')[0];
-        //ensure second search finds the appended element
+                            margin-left: 95px;"></div>`).appendTo('body');
+        //ensure second search finds element2
         coordinatesStub.onCall(1).returns({x:100, y:0});
 
-        let input = tuioInput({tuioClient, findNodes});
+        let input = tuioInput({tuioClient, findNode});
         input.listen(spy);
 
         setTimeout(() => {
             sendPointerBundle(server, tuioPointer1, tuioPointer2);
             let regions = spy.getCall(0).args[0];
-            //document contains both pointers
-            expect(regions.get(document).length).to.equal(2);
-            //element only one
-            expect(regions.get(element).length).to.equal(1);
-            expect(regions.get(element)[0].identifier).to.equal(sessionId2);
+            // element1 contains the first point
+            expect(regions.has(element1[0])).to.equal(true);
+            expect(regions.get(element1[0]).length).to.equal(1);
+            expect(regions.get(element1[0])[0].identifier).to.equal(sessionId);
+            // element2 the second
+            expect(regions.has(element2[0])).to.equal(true);
+            expect(regions.get(element2[0]).length).to.equal(1);
+            expect(regions.get(element2[0])[0].identifier).to.equal(sessionId2);
             asyncDone();
         });
     });
@@ -182,7 +201,7 @@ describe('tuioInput', () => {
     it('should allow a listener to be removed', (asyncDone) => {
         let spy = sinon.spy(),
             examplePointer = {},
-            input = tuioInput({tuioClient, findNodes});
+            input = tuioInput({tuioClient, findNode});
 
         input.listen(spy);
         input.mute(spy);
@@ -199,7 +218,7 @@ describe('tuioInput', () => {
             examplePointer = {},
             spy = sinon.spy();
 
-        let input = tuioInput({tuioClient, findNodes});
+        let input = tuioInput({tuioClient, findNode});
 
         input.listen(spy);
         input.disable();
@@ -219,7 +238,7 @@ describe('tuioInput', () => {
         let spy = sinon.spy(),
             examplePointer = {};
 
-        let input = tuioInput({tuioClient, findNodes});
+        let input = tuioInput({tuioClient, findNode});
 
         input.listen(spy);
         input.disable();
@@ -235,7 +254,7 @@ describe('tuioInput', () => {
     it('should not enable twice, e.g. if already enabled', () => {
         let spy = sinon.spy(tuioClient, 'on');
 
-        let input = tuioInput({tuioClient, findNodes});
+        let input = tuioInput({tuioClient, findNode});
         input.enable();
 
         expect(spy.callCount).to.equal(1);
@@ -246,7 +265,7 @@ describe('tuioInput', () => {
     it('should not disable twice, e.g. if already disabled', () => {
         let spy = sinon.spy(tuioClient, 'off');
 
-        let input = tuioInput({tuioClient, findNodes});
+        let input = tuioInput({tuioClient, findNode});
         input.disable();
         input.disable();
 

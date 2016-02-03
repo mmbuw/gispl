@@ -4,7 +4,7 @@ import screenCalibration from '../../../source/tuio/screenCalibration';
 
 describe('nodeSearch', () => {
 
-    let findNodes,
+    let findNode,
         appendedTestElements = [],
         helper = {
             appendElement: function (options = {}) {
@@ -33,10 +33,10 @@ describe('nodeSearch', () => {
 
                 return element[0];
             },
-            assertNodesExpectation: function (foundNodes, expectedNodes) {
-                expect(foundNodes.length).to.equal(expectedNodes.length);
+            assertNodesExpectation: function (foundNode, expectedNodes) {
+                expect(foundNode.length).to.equal(expectedNodes.length);
                 expectedNodes.forEach((expectedNode, index) => {
-                    let nodeName = this.tagName(foundNodes[index]);
+                    let nodeName = this.tagName(foundNode[index]);
                     expect(nodeName).to.equal(expectedNode);
                 });
             },
@@ -46,7 +46,7 @@ describe('nodeSearch', () => {
         };
 
     beforeEach(function() {
-        findNodes = nodeSearch();
+        findNode = nodeSearch();
         $('body').css({
             padding: 0,
             margin: 0
@@ -67,9 +67,9 @@ describe('nodeSearch', () => {
             marginTop: 10
         });
         let x = 0, y = 0;
-        let foundNodes = findNodes.fromPoint({x, y});
+        let foundNode = findNode.fromPoint({x, y});
 
-        expect(helper.tagName(foundNodes[0])).to.equal('html');
+        expect(helper.tagName(foundNode)).to.equal('html');
     });
 
     it('should return the element if it contains the point', () => {
@@ -79,23 +79,23 @@ describe('nodeSearch', () => {
             marginTop: 10
         });
         let x = 15, y = 15;
-        let foundNodes = findNodes.fromPoint({x, y});
-        expect(helper.tagName(foundNodes[0])).to.equal('div');
+        let foundNode = findNode.fromPoint({x, y});
+        expect(helper.tagName(foundNode)).to.equal('div');
     });
 
-    it('should return all elements that contain the point, and can usually attach listeners to',
-       () => {
+    // it('should return all elements that contain the point, and can usually attach listeners to',
+    //    () => {
 
-        helper.appendElement({
-            marginLeft: 10,
-            marginTop: 10
-        });
-        let x = 10, y = 10;
-        let foundNodes = findNodes.fromPoint({x, y});
-        let expectedNodes = ['div', 'body', 'html', '#document'];
+    //     helper.appendElement({
+    //         marginLeft: 10,
+    //         marginTop: 10
+    //     });
+    //     let x = 10, y = 10;
+    //     let foundNode = findNode.fromPoint({x, y});
+    //     let expectedNodes = ['div', 'body', 'html', '#document'];
 
-        helper.assertNodesExpectation(foundNodes, expectedNodes);
-    });
+    //     helper.assertNodesExpectation(foundNode, expectedNodes);
+    // });
 
     it('should treat right and bottom dom element boundary as point non inclusive', () => {
 
@@ -104,10 +104,9 @@ describe('nodeSearch', () => {
             width: x,
             height: y
         });
-        let foundNodes = findNodes.fromPoint({x, y}),
-            foundOnTop = foundNodes.shift();
+        let foundNode = findNode.fromPoint({x, y});
 
-        expect(foundOnTop).to.not.equal(element);
+        expect(foundNode).to.not.equal(element);
     });
 
     it('should ignore elements that are overlapped by other elements', () => {
@@ -120,24 +119,24 @@ describe('nodeSearch', () => {
             top: 10
         });
         let x = 15, y = 15;
-        let foundNodes = findNodes.fromPoint({x, y});
-        expect(foundNodes[0]).to.equal(element2);
+        let foundNode = findNode.fromPoint({x, y});
+        expect(foundNode).to.equal(element2);
     });
 
     it('should return nothing when not supplying coordinates to the find method', () => {
 
-        let foundNodes = findNodes.fromPoint();
-        expect(foundNodes.length).to.equal(0);
+        let foundNode = findNode.fromPoint();
+        expect(foundNode).to.equal(null);
     });
 
     it('should return nothing when the screen is not calibrated', () => {
-        let findNodes = nodeSearch({
+        let findNode = nodeSearch({
            calibration: {
                isScreenUsable: () => false
            }
         });
-        let foundNodes = findNodes.fromPoint({screenX: 10, screenY: 10});
-        expect(foundNodes.length).to.equal(0);
+        let foundNode = findNode.fromPoint({screenX: 10, screenY: 10});
+        expect(foundNode).to.equal(null);
     });
 
     it('should find elements based on their screen size', () => {
@@ -146,7 +145,7 @@ describe('nodeSearch', () => {
         // actual screen values depend on where the browser running the test is positioned
         // and how it looks like - address bar, tabs, etc. influence the browser height
         // so the test is possibly useless because the values are constructed
-        // findNodes will use similar methods to construct its own results
+        // findNode will use similar methods to construct its own results
         let clientX = 0, clientY = 0,
             // approximations - make actual element large, especially for height
             screenX = window.screenX,
@@ -155,7 +154,7 @@ describe('nodeSearch', () => {
         let mockCalibration = screenCalibration().mouseEvent({
             clientX, clientY, screenX, screenY
         });
-        let findNodes = nodeSearch({
+        let findNode = nodeSearch({
             calibration: mockCalibration
         });
         let element = helper.appendElement({
@@ -165,31 +164,8 @@ describe('nodeSearch', () => {
 
         screenX = window.screenX + 50;
         screenY = window.screenY + 200;
-        let foundNodes = findNodes.fromPoint({screenX, screenY});
+        let foundNode = findNode.fromPoint({screenX, screenY});
 
-        expect(foundNodes[0]).to.equal(element);
-    });
-    
-    it('should not find any elements if no element found and not bubbling', () => {
-        let findNodes = nodeSearch({propagation: false});
-        expect(findNodes.fromPoint({x: 10, y: 10})).to.deep.equal([]);
-    });
-    
-    it('should find just one element if bubbling disabled', () => {
-       let element = helper.appendElement({width: 10, height: 10}),
-           findNodes = nodeSearch({propagation: false});
-           
-        let foundNodes = findNodes.fromPoint({x: 5, y: 5});
-        expect(foundNodes.length).to.equal(1);
-        expect(foundNodes[0]).to.equal(element);
-    });
-    
-    it(`should find no elements if searching outside of viewport
-            and bubbling disabled`, () => {
-        let findNodes = nodeSearch({propagation: false});
-        // calibration will transform screenX to something like this
-        // if screenX outside of browser
-        let foundNodes = findNodes.fromPoint({x: -100, y: 0});
-        expect(foundNodes.length).to.equal(0); 
+        expect(foundNode).to.equal(element);
     });
 });

@@ -76,10 +76,10 @@ gispl.initTuio = function gisplInitTuio(params) {
             calibration = screenCalibration()} = params;
 
     let tuioClient = new TuioClient({host}),
-        findNodes = nodeSearch({calibration, propagation});
+        findNode = nodeSearch({calibration, propagation});
 
     tuioInput({tuioClient,
-                findNodes,
+                findNode,
                 calibration}).listen(handleInput);
 };
 

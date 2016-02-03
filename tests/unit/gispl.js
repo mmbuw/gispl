@@ -13,10 +13,17 @@ describe('gispl', () => {
 
     beforeEach(() => {
         testGispl = gispl(document);
+        $('body').css({
+            padding: 0,
+            margin: 0
+        });
     });
 
     afterEach(() => {
         gispl.clearGestures();
+        // cleanup any appended nodes
+        $('body').children().remove();
+        expect($('body').children().length).to.equal(0);
     });
 
     it('should construct without parameter', () => {
@@ -151,7 +158,7 @@ describe('gispl', () => {
                 {type:"Motion"}
             ]
         });
-        gispl(document).on(motionName, spy);
+        gispl(document.documentElement).on(motionName, spy);
         window.WebSocket = WebMocket;
 
         let calibration = {
@@ -200,7 +207,7 @@ describe('gispl', () => {
                 {type:"Motion"}
             ]
         });
-        gispl(document).on(motionName, spy);
+        gispl(document.documentElement).on(motionName, spy);
         window.WebSocket = WebMocket;
 
         let calibration = {

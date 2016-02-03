@@ -2,7 +2,7 @@ import {inputObjectFromTuio} from './tuioInputObject';
 
 export default function tuioInput(params = {}) {
     let {tuioClient,
-            findNodes,
+            findNode,
             calibration,
             screenWidth = window.screen.width,
             screenHeight = window.screen.height} = params,
@@ -23,19 +23,16 @@ export default function tuioInput(params = {}) {
         pointers.forEach(pointer => {
             let screenX = pointer.getScreenX(screenWidth),
                 screenY = pointer.getScreenY(screenHeight);
-
-            findNodes
-                .fromPoint({screenX, screenY})
-                .forEach(node => {
-                    if (!nodesWithInput.has(node)) {
-                        nodesWithInput.set(node, []);
-                    }
-                    let inputObject = inputObjectFromTuio({
-                        tuioComponent: pointer,
-                        calibration
-                    });
-                    nodesWithInput.get(node).push(inputObject);
-                });
+            
+            let node = findNode.fromPoint({screenX, screenY});
+            if (!nodesWithInput.has(node)) {
+                nodesWithInput.set(node, []);
+            }
+            let inputObject = inputObjectFromTuio({
+                tuioComponent: pointer,
+                calibration
+            });
+            nodesWithInput.get(node).push(inputObject);
         });
 
         notify(nodesWithInput);
