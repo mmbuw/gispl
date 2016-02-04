@@ -25,17 +25,11 @@ export function createGesture(definition) {
     // a valid gesture has every feature valid
     features = initializeFeaturesFrom(definition);
     // initialize flags
-    let flags = extractFlagsFrom(definition),
+    let flags = initializeFlagsFrom(definition),
     // whether the gesture should be triggered on the found top nodes
     // or on top nodes and all the parent nodes
     // as with native event propagation
         {propagation = true} = definition;
-    // check state of flags
-    // at the moment, flags can't be changed after defining the gesture
-    let hasOneshotFlag = flags.indexOf(gestureFlags.ONESHOT) !== -1,
-        hasStickyFlag = flags.indexOf(gestureFlags.STICKY) !== -1,
-        hasBubbleFlag = flags.indexOf(gestureFlags.BUBBLE) !== -1,
-        hasNoFlags = flags.length === 0;
         
     function validateEveryFeatureFrom(inputState) {
         return features.every(feature => feature.load(inputState));
@@ -72,6 +66,10 @@ export function createGesture(definition) {
         features() {
             return features;
         },
+        
+        flags() {
+            return flags.all();
+        },
         // hopefully somehow simpler in the future
         // checks if the gesture is valid by validating every feature
         // and returns nodes to emit gestures on (based on which flags are set)
@@ -89,7 +87,7 @@ export function createGesture(definition) {
                     isSameAsPreviousInput = compareInput(currentInputIds,
                                                         previousInputIds),
                     everyFeatureMatches = false,
-                    oneshotFlagFulfilled = hasOneshotFlag && inputPreviouslyMatched;
+                    oneshotFlagFulfilled = flags.hasOneshot() && inputPreviouslyMatched;
 
                 // save for the next time the .load method is called
                 previousInputIds = currentInputIds;
@@ -98,23 +96,23 @@ export function createGesture(definition) {
                 if (!oneshotFlagFulfilled) {
                     everyFeatureMatches = validateEveryFeatureFrom(inputState);
                 }
-                if (hasBubbleFlag) {
+                if (flags.hasBubble()) {
                     if (!isSameAsPreviousInput) {
                         bubbleTopNodes = [];
                     }
                     bubbleTopNodes.push(node);
                 }
                 if (everyFeatureMatches) {
-                    if (hasBubbleFlag) {
+                    if (flags.hasBubble()) {
                         validTopNodesOnEmit = bubbleTopNodes;
                     }
                     else if (
                         // oneshot gestures will get here only once
-                        hasOneshotFlag ||
+                        flags.hasOneshot() ||
                         // if the input was already matched
                         // use the node previously set for sticky gestures
-                        (hasStickyFlag && !inputPreviouslyMatched) ||
-                        hasNoFlags
+                        (flags.hasSticky() && !inputPreviouslyMatched) ||
+                        flags.hasNone()
                     ) {
                         validTopNodesOnEmit = [node];
                     }
@@ -127,10 +125,6 @@ export function createGesture(definition) {
             }
             // will also include parent nodes of all nodes, if enabled 
             return resultingNodes();
-        },
-
-        flags() {
-            return flags;
         }
     };
 }
@@ -232,4 +226,25 @@ function parentNodesFrom(topNode) {
     }
     
     return result;
+}
+
+function initializeFlagsFrom(gestureDefinition) {
+    let flags = extractFlagsFrom(gestureDefinition);
+    return {
+        hasOneshot() {
+            return flags.indexOf(gestureFlags.ONESHOT) !== -1;
+        },
+        hasBubble() {
+            return flags.indexOf(gestureFlags.BUBBLE) !== -1;
+        },
+        hasSticky() {
+            return flags.indexOf(gestureFlags.STICKY) !== -1;
+        },
+        hasNone() {
+            return flags.length === 0;
+        },
+        all() {
+            return flags;
+        }
+    };
 }
