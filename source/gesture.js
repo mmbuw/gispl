@@ -42,11 +42,11 @@ export function createGesture(gestureDefinition) {
             let pointPath = inputObjects[0].path;
             let firstPoint = pointPath[0];
             let lastPoint = pointPath[pointPath.length - 1];
-            if ((lastPoint.time - firstPoint.time) < duration[0] * 1000) {
+            if ((lastPoint.time - firstPoint.time) < duration[0]) {
                 validDuration = false;
             }
             if (validDuration && (typeof duration[1] !== 'undefined')) {
-                if ((lastPoint.time - firstPoint.time) > duration[1] * 1000) {
+                if ((lastPoint.time - firstPoint.time) > duration[1]) {
                     validDuration = false;
                 }
             }
@@ -242,7 +242,10 @@ function extractIdentifiersFrom(inputObjects = []) {
 function extractDurationFrom(gestureDefinition) {
     let duration = [];
     if (typeof gestureDefinition.duration !== 'undefined') {
-        duration = gestureDefinition.duration;
+        // transfrom from seconds to milliseconds
+        duration = gestureDefinition.duration.map(bound => {
+            return bound*1000;
+        });
     }
     return duration;
 }

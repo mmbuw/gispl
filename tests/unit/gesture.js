@@ -141,12 +141,13 @@ describe('gesture', () => {
         }).to.throw(Error, new RegExp(gestureException.INVALID_FLAGS));
     });
     
-    it('should allow a duration for a gesture', () => {
-        let duration = [1],
+    it(`should allow setting a duration for a gesture in seconds,
+            and store in milliseconds`, () => {
+        let duration = [1, 2],
             durationMotionGestureDefinition = addDurationToGesture(duration),
             gesture = createGesture(durationMotionGestureDefinition);
             
-       expect(gesture.duration()).to.deep.equal(duration);
+       expect(gesture.duration()).to.deep.equal([1000, 2000]);
     });
     
     it('should throw when setting duration with invalid parameter length', () => {
