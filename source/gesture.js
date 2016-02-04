@@ -12,7 +12,7 @@ let gestureFlagNames = Object.keys(gestureFlags).map(key => {
     return gestureFlags[key];
 });
 
-export function createGesture(definition) {
+export function createGesture(gestureDefinition) {
     let matchedInputIds = [],
         previousInputIds = [],
         bubbleTopNodes = [],
@@ -20,16 +20,16 @@ export function createGesture(definition) {
         features;
         
     // don't store gesture if definition invalid 
-    isValidGesture(definition);
+    isValidGesture(gestureDefinition);
     // initialize and store features
     // a valid gesture has every feature valid
-    features = initializeFeaturesFrom(definition);
+    features = initializeFeaturesFrom(gestureDefinition);
     // initialize flags
-    let flags = initializeFlagsFrom(definition),
+    let flags = initializeFlagsFrom(gestureDefinition),
     // whether the gesture should be triggered on the found top nodes
     // or on top nodes and all the parent nodes
     // as with native event propagation
-        {propagation = true} = definition;
+        {propagation = true} = gestureDefinition;
         
     function validateEveryFeatureFrom(inputState) {
         return features.every(feature => feature.load(inputState));
@@ -56,11 +56,11 @@ export function createGesture(definition) {
         
     return {
         definition() {
-            return definition;
+            return gestureDefinition;
         },
 
         name() {
-            return definition.name;
+            return gestureDefinition.name;
         },
 
         features() {
@@ -171,8 +171,8 @@ function isValidGesture(definition) {
 }
 
 // returns an array of instantiated feature objects
-function initializeFeaturesFrom(definition) {
-    return definition.features.map(feature => {
+function initializeFeaturesFrom(gestureDefinition) {
+    return gestureDefinition.features.map(feature => {
         return featureFactory(feature);
     });
 }
@@ -180,8 +180,8 @@ function initializeFeaturesFrom(definition) {
 // definition can have flags set as string, 'oneshot'
 // or array of flags, ['oneshot'], or ['oneshot', 'bubble']
 // always returns an array
-function extractFlagsFrom(definition) {
-    let definitionFlags = definition.flags,
+function extractFlagsFrom(gestureDefinition) {
+    let definitionFlags = gestureDefinition.flags,
         flags = [];
     if (typeof definitionFlags !== 'undefined') {
         if (!Array.isArray(definitionFlags)) {
