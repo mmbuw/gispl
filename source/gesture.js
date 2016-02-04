@@ -26,14 +26,32 @@ export function createGesture(gestureDefinition) {
     features = initializeFeaturesFrom(gestureDefinition);
     // initialize flags
     let flags = initializeFlagsFrom(gestureDefinition),
+        duration = extractDurationFrom(gestureDefinition),
     // whether the gesture should be triggered on the found top nodes
     // or on top nodes and all the parent nodes
     // as with native event propagation
-        {propagation = true,
-            duration} = gestureDefinition;
+        {propagation = true} = gestureDefinition;
         
     function validateEveryFeatureFrom(inputState) {
         return features.every(feature => feature.load(inputState));
+    }
+    
+    function validDurationOf(inputObjects) {
+        let validDuration = true;
+        if (typeof duration[0] !== 'undefined') {
+            let pointPath = inputObjects[0].path;
+            let firstPoint = pointPath[0];
+            let lastPoint = pointPath[pointPath.length - 1];
+            if ((lastPoint.time - firstPoint.time) < duration[0] * 1000) {
+                validDuration = false;
+            }
+            if (validDuration && (typeof duration[1] !== 'undefined')) {
+                if ((lastPoint.time - firstPoint.time) > duration[1] * 1000) {
+                    validDuration = false;
+                }
+            }
+        }
+        return validDuration;
     }
     
     function resultingNodes() {
@@ -82,7 +100,8 @@ export function createGesture(gestureDefinition) {
             let {inputObjects,
                     node} = inputState;
 
-            if (validInput(inputObjects)) {
+            if (validInput(inputObjects) &&
+                    validDurationOf(inputObjects)) {
                 // boils down to
                 // gestures with oneshot flags should be triggered once
                 // until the identifiers change (e.g. tuio session ids)
@@ -218,6 +237,14 @@ function extractIdentifiersFrom(inputObjects = []) {
     return inputObjects
                 .filter(inputObject => !!inputObject)
                 .map(inputObject => inputObject.identifier);
+}
+
+function extractDurationFrom(gestureDefinition) {
+    let duration = [];
+    if (typeof gestureDefinition.duration !== 'undefined') {
+        duration = gestureDefinition.duration;
+    }
+    return duration;
 }
 // compares if an array (of identifiers) is equal to another
 // [1,2,3] equals [1,2,3]
