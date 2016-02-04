@@ -3,7 +3,7 @@ import {clearUserDefinedPaths} from '../../source/feature';
 import $ from 'jquery';
 import {buildInputFromPointer} from '../helpers/pointer';
 
-describe('flags', () => {
+describe('gesture with flags', () => {
 
     let motionGestureDefinition,
         trianglePathGestureDefinition,
