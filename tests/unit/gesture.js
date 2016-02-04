@@ -17,6 +17,12 @@ describe('gesture', () => {
             {}, gesture, {flags}
         );
     }
+    
+    function addDurationToGesture(duration, gesture = motionGestureDefinition) {
+        return $.extend(
+            {}, gesture, {duration}
+        );
+    }
 
     beforeEach(() => {
         clearUserDefinedPaths();
@@ -133,6 +139,68 @@ describe('gesture', () => {
                 invalidFlagsGestureDefinition = addFlagsToGesture(flags);
             createGesture(invalidFlagsGestureDefinition);
         }).to.throw(Error, new RegExp(gestureException.INVALID_FLAGS));
+    });
+    
+    it('should allow a duration for a gesture', () => {
+        let duration = [1],
+            durationMotionGestureDefinition = addDurationToGesture(duration),
+            gesture = createGesture(durationMotionGestureDefinition);
+            
+       expect(gesture.duration()).to.deep.equal(duration);
+    });
+    
+    it('should throw when setting duration with invalid parameter length', () => {
+        let validDurationLengths = [
+            [], [1], [1,1]
+        ],
+            invalidDurationLengths = [
+            [1,2,3], [1,2,3,4] // ... and so on
+        ];
+        
+        validDurationLengths.forEach(duration => {
+            expect(() => {
+                let durationMotionGestureDefinition = addDurationToGesture(duration),
+                    gesture = createGesture(durationMotionGestureDefinition);
+            }).to.not.throw();
+        });
+        
+        invalidDurationLengths.forEach(duration => {
+            expect(() => {
+                let durationMotionGestureDefinition = addDurationToGesture(duration);
+                createGesture(durationMotionGestureDefinition);
+            }).to.throw(Error, new RegExp(gestureException.INVALID_DURATION));
+        });
+    });
+    
+    it('should throw when using non-arrays as duration', () => {
+        expect(() => {
+            let numericalDuration = 0;
+            createGesture(
+                addDurationToGesture(numericalDuration)
+            );
+        }).to.throw(Error, new RegExp(gestureException.INVALID_DURATION));
+        expect(() => {
+            let stringDuration = '0,0';
+            createGesture(
+                addDurationToGesture(stringDuration)
+            );
+        }).to.throw(Error, new RegExp(gestureException.INVALID_DURATION));
+    });
+    
+    it('should throw when using non-numeric duration lengths', () => {
+        expect(() => {
+            let durationOfStrings = ["0"];
+            createGesture(
+                addDurationToGesture(durationOfStrings)
+            );
+        }).to.throw(Error, new RegExp(gestureException.INVALID_DURATION));
+        
+        expect(() => {
+            let durationOfStrings = [0, "1"];
+            createGesture(
+                addDurationToGesture(durationOfStrings)
+            );
+        }).to.throw(Error, new RegExp(gestureException.INVALID_DURATION));
     });
     
     it('should trigger gesture event on parent element if propagation enabled', () => {

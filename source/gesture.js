@@ -29,7 +29,8 @@ export function createGesture(gestureDefinition) {
     // whether the gesture should be triggered on the found top nodes
     // or on top nodes and all the parent nodes
     // as with native event propagation
-        {propagation = true} = gestureDefinition;
+        {propagation = true,
+            duration} = gestureDefinition;
         
     function validateEveryFeatureFrom(inputState) {
         return features.every(feature => feature.load(inputState));
@@ -69,6 +70,10 @@ export function createGesture(gestureDefinition) {
         
         flags() {
             return flags.all();
+        },
+        
+        duration() {
+            return duration;
         },
         // hopefully somehow simpler in the future
         // checks if the gesture is valid by validating every feature
@@ -135,7 +140,8 @@ export let gestureException = {
     NO_NAME: 'Attempting to define a gesture without name',
     NO_FEATURES: 'Attempting to define a gestures without features',
     DUPLICATE: 'Attempting to define a gesture that already exists',
-    INVALID_FLAGS: 'Attempting to define a gesture with an invalid flag'
+    INVALID_FLAGS: 'Attempting to define a gesture with an invalid flag',
+    INVALID_DURATION: 'Attempting to define a gesture with invalid duration'
 };
 
 function isValidGesture(definition) {
@@ -144,7 +150,7 @@ function isValidGesture(definition) {
         throw new Error(gestureException.EMPTY);
     }
 
-    let {name, features} = definition;
+    let {name, features, duration} = definition;
 
     if (typeof name === 'undefined') {
         throw new Error(gestureException.NO_NAME);
@@ -167,6 +173,19 @@ function isValidGesture(definition) {
             throw new Error(`${gestureException.INVALID_FLAGS}.
                 Expecting some of: ${gestureFlagNames}; received: ${definitionFlags}`);
         }
+    }
+    if (typeof duration !== 'undefined') {
+        if (!Array.isArray(duration) ||
+                duration.length > 2) {
+            throw new Error(`${gestureException.INVALID_DURATION}. Expecting
+                                [number], or [number, number]; received ${duration}`);
+        }
+        duration.forEach(durationLimit => {
+            if (typeof durationLimit !== 'number') {
+                throw new Error(`${gestureException.INVALID_DURATION}. Expecting
+                                    array of numbers, received ${typeof durationLimit}`);
+            }
+        });
     }
 }
 
