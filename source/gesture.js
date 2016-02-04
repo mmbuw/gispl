@@ -8,6 +8,10 @@ let gestureFlags = {
     BUBBLE: 'bubble'
 };
 
+let gestureFlagNames = Object.keys(gestureFlags).map(key => {
+    return gestureFlags[key];
+});
+
 export function createGesture(definition) {
     let matchedInputIds = [],
         previousInputIds = [],
@@ -140,17 +144,13 @@ export let gestureException = {
     INVALID_FLAGS: 'Attempting to define a gesture with an invalid flag'
 };
 
-let gestureFlagNames = Object.keys(gestureFlags).map(key => {
-    return gestureFlags[key];
-});
-
 function isValidGesture(definition) {
     if (typeof definition === 'undefined' ||
             Object.keys(definition).length === 0) {
         throw new Error(gestureException.EMPTY);
     }
 
-    let {name, features, flags:definitionFlags} = definition;
+    let {name, features} = definition;
 
     if (typeof name === 'undefined') {
         throw new Error(gestureException.NO_NAME);
@@ -163,19 +163,13 @@ function isValidGesture(definition) {
     if (userDefinedGestures.has(name)) {
         throw new Error(gestureException.DUPLICATE);
     }
-    if (typeof definitionFlags !== 'undefined') {
-        let flagIsValid = false;
-        if (typeof definitionFlags === 'string') {
-            flagIsValid = gestureFlagNames.some(flagName => {
-                return flagName === definitionFlags;
-            });
-        }
-        else if (Array.isArray(definitionFlags)) {
-            flagIsValid = definitionFlags.every(flagName => {
-                return gestureFlagNames.indexOf(flagName) !== -1;
-            });
-        }
-        if (!flagIsValid) {
+    if (typeof definition.flags !== 'undefined') {
+        let definitionFlags = extractFlagsFrom(definition);
+        // needs to be one of 'sticky', 'bubble', 'oneshot'
+        let validFlags = definitionFlags.every(flagName => {
+            return gestureFlagNames.indexOf(flagName) !== -1;
+        });
+        if (!validFlags) {
             throw new Error(`${gestureException.INVALID_FLAGS}.
                 Expecting some of: ${gestureFlagNames}; received: ${definitionFlags}`);
         }
@@ -195,11 +189,11 @@ function initializeFeaturesFrom(definition) {
 function extractFlagsFrom(definition) {
     let definitionFlags = definition.flags,
         flags = [];
-    if (typeof definitionFlags === 'string') {
-        definitionFlags = [definitionFlags];
-    }
-    if (Array.isArray(definitionFlags)) {
-        flags.push(...definitionFlags);
+    if (typeof definitionFlags !== 'undefined') {
+        if (!Array.isArray(definitionFlags)) {
+            definitionFlags = [definitionFlags];   
+        }
+        flags = definitionFlags;
     }
     return flags;
 }
