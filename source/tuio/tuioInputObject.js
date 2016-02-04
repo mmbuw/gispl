@@ -1,11 +1,3 @@
-//let inputInterface = {
-//    identifier: undefined,
-//    type: undefined,
-//    screenX: undefined,
-//    screenY: undefined,
-//    path: undefined
-//};
-
 export function inputObjectFromTuio(params) {
     let {tuioComponent, calibration} = params;
 
@@ -36,6 +28,11 @@ function pointParams(point, calibration) {
 
     let relativeScreenX = point.getX(),
         relativeScreenY = point.getY(),
+        // does tuio not have a normal time converter?
+        // I don't know. kill me
+        // this is time in milliseconds
+        time = (point.getTuioTime().seconds * 1e6 +
+                    point.getTuioTime().microSeconds) * 1e-3,
         screenX = point.getScreenX(window.screen.width),
         screenY = point.getScreenY(window.screen.height),
         clientX, clientY,
@@ -53,6 +50,7 @@ function pointParams(point, calibration) {
         relativeScreenX, relativeScreenY,
         screenX, screenY,
         clientX, clientY,
-        pageX, pageY
+        pageX, pageY,
+        time
     };
 }

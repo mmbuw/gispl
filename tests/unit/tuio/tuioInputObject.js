@@ -137,5 +137,20 @@ describe('tuioInputObject', () => {
         expect(inputWithHistory.path[1].clientX).to.equal(clientX);
         expect(inputWithHistory.path[1].clientY).to.equal(clientY);
     });
+    
+    it('should have the time information in the point path', () => {
+        let startingTime = new Date().getTime(),
+            timeAfterOneSecond = startingTime + 1000,
+            movingPointer = buildPointer({time: startingTime})
+                                .moveTo({time: timeAfterOneSecond})
+                                .finished(),
+            input = inputObjectFromTuio({
+                tuioComponent: movingPointer
+            }),
+            path = input.path;
+        
+        expect(path[0].time).to.equal(startingTime);
+        expect(path[1].time).to.equal(timeAfterOneSecond);
+    });
 
 });
