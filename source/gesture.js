@@ -39,6 +39,7 @@ export function createGesture(gestureDefinition) {
     function validGestureDuration(inputObjects) {
         let validDuration = true;
         if (typeof duration.min !== 'undefined') {
+            // path is guaranteed to have at least one point
             let pointPath = inputObjects[0].path,
                 firstPoint = pointPath[0],
                 lastPoint = pointPath[pointPath.length - 1],
@@ -47,6 +48,7 @@ export function createGesture(gestureDefinition) {
             if (timeDiff < duration.min) {
                 validDuration = false;
             }
+            // max can't be defined if min undefined
             if (validDuration && (typeof duration.max !== 'undefined')) {
                 if (timeDiff > duration.max) {
                     validDuration = false;
@@ -102,8 +104,7 @@ export function createGesture(gestureDefinition) {
             let {inputObjects,
                     node} = inputState;
 
-            if (validInput(inputObjects) &&
-                    validGestureDuration(inputObjects)) {
+            if (validInput(inputObjects)) {
                 // boils down to
                 // gestures with oneshot flags should be triggered once
                 // until the identifiers change (e.g. tuio session ids)
@@ -119,7 +120,8 @@ export function createGesture(gestureDefinition) {
                 previousInputIds = currentInputIds;
                 // the gesture should not match if it is oneshot
                 // and already triggered
-                if (!oneshotFlagFulfilled) {
+                if (!oneshotFlagFulfilled &&
+                        validGestureDuration(inputObjects)) {
                     everyFeatureMatches = validateEveryFeatureFrom(inputState);
                 }
                 if (flags.hasBubble()) {

@@ -741,4 +741,67 @@ describe('gesture with flags', () => {
         ).to.deep.equal([]);
     });
     
+    it(`should trigger gesture event on all crossed nodes with bubble flag,
+            even if min duration set`, () => {
+        let minimumOneSecondDuration = [1],
+            sessionId = 10,
+            startTime = new Date().getTime(),
+            timeAfter999ms = startTime + 999,
+            timeAfter1000ms = startTime + 1000,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId, time: startTime})
+                                    .moveTo({x: 0.5, y: 0.5, time: timeAfter999ms}),
+            bubbleGestureDefinition = addFlagsToGesture('bubble');
+            
+        bubbleGestureDefinition.duration = minimumOneSecondDuration;
+        let bubbleMotionGesture = createGesture(bubbleGestureDefinition);
+        
+        let firstNodeToAdd = 'first-node';
+        expect(
+            bubbleMotionGesture.load({
+                inputObjects: [movingPointerInput.finished()],
+                node: firstNodeToAdd
+            })
+        ).to.deep.equal([]); // not recognized, min duration not reached
+        
+        let secondNodeToAdd = 'second-node';
+        movingPointerInput.moveTo({x: 1, y: 1, time: timeAfter1000ms});
+        expect(
+            bubbleMotionGesture.load({
+                inputObjects: [movingPointerInput.finished()],
+                node: secondNodeToAdd
+            })
+        ).to.deep.equal([firstNodeToAdd, secondNodeToAdd]); // min duration reached
+    });
+    
+    it('should clear bubble flags if max gesture duration exceeded', () => {
+        let maxOneSecondDuration = [0, 1],
+            sessionId = 10,
+            startTime = new Date().getTime(),
+            timeAfter1000ms = startTime + 1000,
+            timeAfter1001ms = startTime + 1001,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId, time: startTime})
+                                    .moveTo({x: 0.5, y: 0.5, time: timeAfter1000ms}),
+            bubbleGestureDefinition = addFlagsToGesture('bubble');
+            
+        bubbleGestureDefinition.duration = maxOneSecondDuration;
+        let bubbleMotionGesture = createGesture(bubbleGestureDefinition);
+        
+        let firstNodeToAdd = 'first-node';
+        expect(
+            bubbleMotionGesture.load({
+                inputObjects: [movingPointerInput.finished()],
+                node: firstNodeToAdd
+            })
+        ).to.deep.equal([firstNodeToAdd]); // max duration not reached
+        
+        let secondNodeToAdd = 'second-node';
+        movingPointerInput.moveTo({x: 1, y: 1, time: timeAfter1001ms});
+        expect(
+            bubbleMotionGesture.load({
+                inputObjects: [movingPointerInput.finished()],
+                node: secondNodeToAdd
+            })
+        ).to.deep.equal([]); // max duration reached
+    });
+    
 });
