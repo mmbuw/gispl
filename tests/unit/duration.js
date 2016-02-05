@@ -33,7 +33,7 @@ describe('gesture with duration', () => {
             oneSecondDurationMotionDefinition = addDurationToGesture(oneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-       let pointerMovingOneSecond = buildInputFromPointer({
+       let pointerMoving = buildInputFromPointer({
                                             x: 0, y: 0, time: startingTime
                                         })
                                         .moveTo({
@@ -43,7 +43,7 @@ describe('gesture with duration', () => {
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMovingOneSecond.finished()]
+               inputObjects: [pointerMoving.finished()]
            })
        ).to.deep.equal([]);
     });
@@ -56,7 +56,7 @@ describe('gesture with duration', () => {
             oneSecondDurationMotionDefinition = addDurationToGesture(minimumOneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-       let pointerMovingOneSecond = buildInputFromPointer({
+       let pointerMoving = buildInputFromPointer({
                                             x: 0, y: 0, time: startingTime
                                         })
                                         .moveTo({
@@ -66,7 +66,7 @@ describe('gesture with duration', () => {
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMovingOneSecond.finished()]
+               inputObjects: [pointerMoving.finished()]
            })
        ).to.deep.equal(nodesToEmitOn);
     });
@@ -78,7 +78,7 @@ describe('gesture with duration', () => {
             oneSecondDurationMotionDefinition = addDurationToGesture(maximumOneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-       let pointerMovingOneSecond = buildInputFromPointer({
+       let pointerMoving = buildInputFromPointer({
                                             x: 0, y: 0, time: startingTime
                                         })
                                         .moveTo({
@@ -88,7 +88,7 @@ describe('gesture with duration', () => {
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMovingOneSecond.finished()]
+               inputObjects: [pointerMoving.finished()]
            })
        ).to.deep.equal([]);
     });
@@ -101,7 +101,7 @@ describe('gesture with duration', () => {
             oneSecondDurationMotionDefinition = addDurationToGesture(maximumOneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-       let pointerMovingOneSecond = buildInputFromPointer({
+       let pointerMoving = buildInputFromPointer({
                                             x: 0, y: 0, time: startingTime
                                         })
                                         .moveTo({
@@ -111,7 +111,7 @@ describe('gesture with duration', () => {
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMovingOneSecond.finished()]
+               inputObjects: [pointerMoving.finished()]
            })
        ).to.deep.equal(nodesToEmitOn);
     });
@@ -128,5 +128,23 @@ describe('gesture with duration', () => {
         expect(
             emptyDurationMotionGesture.load(mockState)
         ).to.deep.equal(nodesToEmitOn);
+    });
+    
+    it('should not recognize gesture if min duration defined, and just one point in path', () => {
+        let minimumOneSecondDuration = [1],
+            startingTime = new Date().getTime(),
+            oneSecondDurationMotionDefinition = addDurationToGesture(minimumOneSecondDuration),
+            oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
+       
+       let pointerMoving = buildInputFromPointer({
+                                            x: 0, y: 0, time: startingTime
+                                        });
+                                        
+       expect(
+           oneSecondDurationMotionGesture.load({
+               node,
+               inputObjects: [pointerMoving.finished()]
+           })
+       ).to.deep.equal([]);
     });
 });

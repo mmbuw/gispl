@@ -39,14 +39,16 @@ export function createGesture(gestureDefinition) {
     function validGestureDuration(inputObjects) {
         let validDuration = true;
         if (typeof duration.min !== 'undefined') {
-            let pointPath = inputObjects[0].path;
-            let firstPoint = pointPath[0];
-            let lastPoint = pointPath[pointPath.length - 1];
-            if ((lastPoint.time - firstPoint.time) < duration.min) {
+            let pointPath = inputObjects[0].path,
+                firstPoint = pointPath[0],
+                lastPoint = pointPath[pointPath.length - 1],
+                timeDiff = lastPoint.time - firstPoint.time;
+                
+            if (timeDiff < duration.min) {
                 validDuration = false;
             }
             if (validDuration && (typeof duration.max !== 'undefined')) {
-                if ((lastPoint.time - firstPoint.time) > duration.max) {
+                if (timeDiff > duration.max) {
                     validDuration = false;
                 }
             }
@@ -243,6 +245,7 @@ function extractDurationFrom(gestureDefinition) {
     let duration = {
         // original definition
         definition: undefined,
+        // in milliseconds
         min: undefined,
         max: undefined
     };
