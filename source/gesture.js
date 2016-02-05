@@ -36,17 +36,17 @@ export function createGesture(gestureDefinition) {
         return features.every(feature => feature.load(inputState));
     }
     
-    function validDurationOf(inputObjects) {
+    function validGestureDuration(inputObjects) {
         let validDuration = true;
-        if (typeof duration[0] !== 'undefined') {
+        if (typeof duration.min !== 'undefined') {
             let pointPath = inputObjects[0].path;
             let firstPoint = pointPath[0];
             let lastPoint = pointPath[pointPath.length - 1];
-            if ((lastPoint.time - firstPoint.time) < duration[0]) {
+            if ((lastPoint.time - firstPoint.time) < duration.min) {
                 validDuration = false;
             }
-            if (validDuration && (typeof duration[1] !== 'undefined')) {
-                if ((lastPoint.time - firstPoint.time) > duration[1]) {
+            if (validDuration && (typeof duration.max !== 'undefined')) {
+                if ((lastPoint.time - firstPoint.time) > duration.max) {
                     validDuration = false;
                 }
             }
@@ -101,7 +101,7 @@ export function createGesture(gestureDefinition) {
                     node} = inputState;
 
             if (validInput(inputObjects) &&
-                    validDurationOf(inputObjects)) {
+                    validGestureDuration(inputObjects)) {
                 // boils down to
                 // gestures with oneshot flags should be triggered once
                 // until the identifiers change (e.g. tuio session ids)
@@ -240,12 +240,21 @@ function extractIdentifiersFrom(inputObjects = []) {
 }
 
 function extractDurationFrom(gestureDefinition) {
-    let duration = [];
+    let duration = {
+        // original definition
+        definition: undefined,
+        min: undefined,
+        max: undefined
+    };
     if (typeof gestureDefinition.duration !== 'undefined') {
+        let definition = duration.definition = gestureDefinition.duration;
         // transfrom from seconds to milliseconds
-        duration = gestureDefinition.duration.map(bound => {
-            return bound*1000;
-        });
+        if (typeof definition[0] !== 'undefined') {
+            duration.min = definition[0] * 1000;   
+        }
+        if (typeof definition[1] !== 'undefined') {
+            duration.max = definition[1] * 1000;   
+        }
     }
     return duration;
 }

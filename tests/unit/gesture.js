@@ -146,8 +146,11 @@ describe('gesture', () => {
         let duration = [1, 2],
             durationMotionGestureDefinition = addDurationToGesture(duration),
             gesture = createGesture(durationMotionGestureDefinition);
-            
-       expect(gesture.duration()).to.deep.equal([1000, 2000]);
+      
+       let gestureDuration = gesture.duration();
+       expect(gestureDuration.definition).to.deep.equal(duration);
+       expect(gestureDuration.min).to.equal(duration[0]*1000);
+       expect(gestureDuration.max).to.equal(duration[1]*1000);
     });
     
     it('should throw when setting duration with invalid parameter length', () => {
