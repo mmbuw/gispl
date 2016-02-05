@@ -1,6 +1,6 @@
 {
   "name": "gispl.js",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "gispl.js is a JavaScript implementation for GISpL (Gestural Interface Specification Language), a formal language for describing human-computer interfaces which use gestures.",
   "main": "index.js",
   "scripts": {
