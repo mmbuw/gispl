@@ -24,6 +24,8 @@ export function buildPointer(params = {}) {
             return si;
         }
     }
+    
+    let identicalPointsAlreadyInPath = false;
 
     return {
         moveTo: function(params) {
@@ -37,7 +39,15 @@ export function buildPointer(params = {}) {
             else {
                 updateParams = {xp, yp};
             }
-            pointer.update(updateParams);
+            // tuio client does not update to the same position more than once
+            let lastPoint = pointer.path[pointer.path.length-1],
+                previousPointIdentical = (lastPoint.getX() === xp) &&
+                                            (lastPoint.getY() === yp);
+            if (!(previousPointIdentical &&
+                    identicalPointsAlreadyInPath)) {
+                pointer.update(updateParams);
+            }
+            identicalPointsAlreadyInPath = previousPointIdentical ? true : false;
             return this;
         },
         newSessionId: function() {
