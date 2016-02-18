@@ -16,6 +16,7 @@ export function createGesture(gestureDefinition) {
     let matchedInputIds = [],
         previousInputIds = [],
         bubbleTopNodes = [],
+        stickyTopNode = null, 
         validTopNodesOnEmit = [],
         features;
         
@@ -131,12 +132,16 @@ export function createGesture(gestureDefinition) {
                     if (flags.hasBubble()) {
                         validTopNodesOnEmit = bubbleTopNodes;
                     }
+                    else if (flags.hasSticky()) {
+                        // if input the same use the already known sticky node
+                        if (!inputPreviouslyMatched) {
+                            stickyTopNode = node;
+                        }
+                        validTopNodesOnEmit = [stickyTopNode];
+                    }
                     else if (
                         // oneshot gestures will get here only once
                         flags.hasOneshot() ||
-                        // if the input was already matched
-                        // use the node previously set for sticky gestures
-                        (flags.hasSticky() && !inputPreviouslyMatched) ||
                         flags.hasNone()
                     ) {
                         validTopNodesOnEmit = [node];

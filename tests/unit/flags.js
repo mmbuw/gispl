@@ -192,6 +192,38 @@ describe('gesture with flags', () => {
         ).to.deep.equal([]);
     });
     
+    it(`should not trigger sticky gestures if gesture condition not satisfied,
+            but when it does it should continue triggering on the old sticky node`, () => {
+        let sessionId = 10,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                        .moveTo({x: 0.5, y: 0.5}),
+            stickyGestureDefinition = addFlagsToGesture('sticky'),
+            stickyMotionGesture = createGesture(stickyGestureDefinition);
+
+        let firstNodeToMatch = 'sticky-node';
+        stickyMotionGesture.load({
+            node: firstNodeToMatch,
+            inputObjects: [movingPointerInput.finished()]
+        })
+
+        let differentNode = 'new-node';
+        movingPointerInput.moveTo({x: 0.5, y: 0.5}); // pointer is not moving, gesture not valid
+        expect(
+            stickyMotionGesture.load({
+                node: differentNode,
+                inputObjects: [movingPointerInput.finished()]
+            })
+        ).to.deep.equal([]);
+        
+        movingPointerInput.moveTo({x: 0.7, y: 0.7});
+        expect(
+            stickyMotionGesture.load({
+                node: differentNode,
+                inputObjects: [movingPointerInput.finished()]
+            })
+        ).to.deep.equal([firstNodeToMatch]);
+    });
+    
     it(`should trigger events in all crossed nodes,
             when assigned the bubble flag`, () => {
         let sessionId = 10,
