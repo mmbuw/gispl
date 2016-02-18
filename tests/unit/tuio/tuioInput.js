@@ -301,8 +301,9 @@ describe('tuioInput', () => {
         });
     });
     
-    it('should not store more than 10 old tuio objects, removing the older ones once limit reached', () => {
-        let storedTuioInput = tuioObjectStore(),
+    it(`should not store more than the specified number of old tuio objects,
+            removing the older ones once limit reached`, () => {
+        let storedTuioInput = tuioObjectStore({storeLimit: 10}),
             sessionIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             tuioComponents = sessionIds.map(sessionId => {
                 return buildPointer({sessionId}).finished();
