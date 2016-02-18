@@ -139,7 +139,7 @@ describe('tuioInputObject', () => {
     });
     
     it('should have the time information in the point path', () => {
-        let startingTime = new Date().getTime(),
+        let startingTime = 300,
             timeAfterOneSecond = startingTime + 1000,
             movingPointer = buildPointer({time: startingTime})
                                 .moveTo({time: timeAfterOneSecond})

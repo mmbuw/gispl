@@ -28,7 +28,7 @@ describe('gesture with duration', () => {
     
     it('should not recognize gesture if path time less than lower duration bound', () => {
         let oneSecondDuration = [1],
-            startingTime = new Date().getTime(),
+            startingTime = 300,
             timeAfter999ms = startingTime + 999,
             oneSecondDurationMotionDefinition = addDurationToGesture(oneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
@@ -51,7 +51,7 @@ describe('gesture with duration', () => {
     it(`should recognize gesture if path time more than or equal to lower duration bound,
             and other parameters valid`, () => {
         let minimumOneSecondDuration = [1],
-            startingTime = new Date().getTime(),
+            startingTime = 300,
             timeAfter1000ms = startingTime + 1000,
             oneSecondDurationMotionDefinition = addDurationToGesture(minimumOneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
@@ -73,7 +73,7 @@ describe('gesture with duration', () => {
     
     it('should not recognize gesture if path time more than upper duration bound', () => {
         let maximumOneSecondDuration = [0,1],
-            startingTime = new Date().getTime(),
+            startingTime = 300,
             timeAfter1001ms = startingTime + 1001,
             oneSecondDurationMotionDefinition = addDurationToGesture(maximumOneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
@@ -96,7 +96,7 @@ describe('gesture with duration', () => {
     it(`should recognize gesture if path time less than or equal to upper duration bound,
             and other parameters valid`, () => {
         let maximumOneSecondDuration = [0,1],
-            startingTime = new Date().getTime(),
+            startingTime = 300,
             timeAfter1000ms = startingTime + 1000,
             oneSecondDurationMotionDefinition = addDurationToGesture(maximumOneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
@@ -132,7 +132,7 @@ describe('gesture with duration', () => {
     
     it('should not recognize gesture if min duration defined, and just one point in path', () => {
         let minimumOneSecondDuration = [1],
-            startingTime = new Date().getTime(),
+            startingTime = 300,
             oneSecondDurationMotionDefinition = addDurationToGesture(minimumOneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
