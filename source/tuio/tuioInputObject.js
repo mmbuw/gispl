@@ -7,6 +7,7 @@ export function inputObjectFromTuio(params) {
             clientX, clientY,
             pageX, pageY} = pointParams(tuioComponent, calibration),
         path = tuioObjectPath(params),
+        startingTime = new Date().getTime(),
         type;
 
     if (typeof tuioComponent.getTypeId === 'function') {
@@ -18,7 +19,8 @@ export function inputObjectFromTuio(params) {
         relativeScreenX, relativeScreenY,
         screenX, screenY,
         clientX, clientY,
-        pageX, pageY
+        pageX, pageY,
+        startingTime
     };
 }
 

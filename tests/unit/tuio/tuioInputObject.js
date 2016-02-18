@@ -152,4 +152,19 @@ describe('tuioInputObject', () => {
         expect(path[0].tuioTime).to.equal(startingTime);
         expect(path[1].tuioTime).to.equal(timeAfterOneSecond);
     });
+    
+    it('should have the starting time information', () => {
+        let realTime = new Date().getTime(),
+            tuioTime = 1000,
+            clock = sinon.useFakeTimers(realTime),
+            pointer = buildPointer({time: tuioTime}).finished(),
+            input = inputObjectFromTuio({
+                tuioComponent: pointer
+            });
+            
+        expect(input.startingTime).to.equal(realTime);
+        
+        clock.restore();
+    });
+
 });
