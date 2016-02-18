@@ -149,8 +149,7 @@ describe('tuioInputObject', () => {
             }),
             path = input.path;
         
-        expect(path[0].time).to.equal(startingTime);
-        expect(path[1].time).to.equal(timeAfterOneSecond);
+        expect(path[0].tuioTime).to.equal(startingTime);
+        expect(path[1].tuioTime).to.equal(timeAfterOneSecond);
     });
-
 });

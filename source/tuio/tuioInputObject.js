@@ -35,7 +35,7 @@ function pointParams(point, calibration) {
         // does tuio not have a normal time converter?
         // I don't know. kill me
         // this is time in milliseconds
-        time = (point.getTuioTime().seconds * 1e6 +
+        tuioTime = (point.getTuioTime().seconds * 1e6 +
                     point.getTuioTime().microSeconds) * 1e-3,
         screenX = point.getScreenX(window.screen.width),
         screenY = point.getScreenY(window.screen.height),
@@ -55,6 +55,6 @@ function pointParams(point, calibration) {
         screenX, screenY,
         clientX, clientY,
         pageX, pageY,
-        time
+        tuioTime
     };
 }

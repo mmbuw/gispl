@@ -43,7 +43,7 @@ export function createGesture(gestureDefinition) {
             let pointPath = inputObjects[0].path,
                 firstPoint = pointPath[0],
                 lastPoint = pointPath[pointPath.length - 1],
-                timeDiff = lastPoint.time - firstPoint.time;
+                timeDiff = lastPoint.tuioTime - firstPoint.tuioTime;
                 
             if (timeDiff < duration.min) {
                 validDuration = false;
