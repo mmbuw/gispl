@@ -1,4 +1,4 @@
-import tuioInput from '../../../source/tuio/tuioInput';
+import tuioInput, {tuioObjectStore} from '../../../source/tuio/tuioInput';
 import gispl from '../../../source/gispl';
 import screenCalibration from '../../../source/tuio/screenCalibration';
 import nodeSearch from '../../../source/tuio/nodeSearch';
@@ -6,6 +6,7 @@ import {WebMocket, MocketServer} from 'webmocket';
 import TuioClient from 'tuio/src/TuioClient';
 import {sendPointerBundle} from '../../helpers/osc';
 import $ from 'jquery';
+import {buildPointer} from '../../helpers/pointer'
 
 describe('tuioInput', () => {
 
@@ -272,6 +273,48 @@ describe('tuioInput', () => {
         expect(spy.callCount).to.equal(1);
 
         spy.restore();
+    });
+    
+    it('should create and update the same tuio object, not create new ones', (asyncDone) => {
+        let tuioPointer1 = {
+                sessionId
+            },
+            spy = sinon.spy();
+
+        let input = tuioInput({tuioClient, findNode});
+        input.listen(spy);
+
+        setTimeout(() => {
+            sendPointerBundle(server, tuioPointer1);
+            let regions = spy.getCall(0).args[0],
+                pointers = regions.get(document.documentElement),
+                pointerOnFirstUpdate = pointers[0];
+                
+            sendPointerBundle(server, tuioPointer1);
+            regions = spy.getCall(1).args[0];
+            pointers = regions.get(document.documentElement);
+            
+            let pointerOnSecondUpdate = pointers[0];
+            
+            expect(pointerOnFirstUpdate).to.equal(pointerOnSecondUpdate);
+            asyncDone();
+        });
+    });
+    
+    it('should not store more than 10 old tuio objects, removing the older ones once limit reached', () => {
+        let storedTuioInput = tuioObjectStore(),
+            sessionIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            tuioComponents = sessionIds.map(sessionId => {
+                return buildPointer({sessionId}).finished();
+            });
+        
+        storedTuioInput.store({tuioComponents, calibration});
+        expect(storedTuioInput.objects().length).to.equal(10);
+        
+        let moreTuioComponents = [buildPointer({sessionId: 11}).finished()];
+        storedTuioInput.store({tuioComponents: moreTuioComponents, calibration});
+        expect(storedTuioInput.objects().length).to.equal(10);
+        expect(storedTuioInput.objects()[0].identifier).to.equal(sessionIds[1]);
     });
 
 });

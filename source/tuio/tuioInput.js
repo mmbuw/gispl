@@ -1,39 +1,37 @@
-import {inputObjectFromTuio} from './tuioInputObject';
+import {inputObjectFromTuio,
+            tuioObjectPath} from './tuioInputObject';
 
 export default function tuioInput(params = {}) {
     let {tuioClient,
             findNode,
-            calibration,
-            screenWidth = window.screen.width,
-            screenHeight = window.screen.height} = params,
+            calibration} = params,
         listeners = [],
+        knownTuioInput = tuioObjectStore(),
         enabled = false;
 
     function onTuioRefresh() {
-        let pointers = tuioClient.getTuioPointers(),
+        let tuioComponents = tuioClient.getTuioPointers(),
             nodesWithInput = new Map();
 
-        if (pointers.length === 0) {
+        if (tuioComponents.length === 0) {
             let cursors = tuioClient.getTuioCursors();
             for (var key in cursors) {
-                pointers.push(cursors[key]);
+                tuioComponents.push(cursors[key]);
             }
         }
-
-        pointers.forEach(pointer => {
-            let screenX = pointer.getScreenX(screenWidth),
-                screenY = pointer.getScreenY(screenHeight);
+        
+        knownTuioInput
+            .store({tuioComponents, calibration})
+            .forEach(tuioObject => {
+                let screenX = tuioObject.screenX,
+                    screenY = tuioObject.screenY;
             
-            let node = findNode.fromPoint({screenX, screenY});
-            if (!nodesWithInput.has(node)) {
-                nodesWithInput.set(node, []);
-            }
-            let inputObject = inputObjectFromTuio({
-                tuioComponent: pointer,
-                calibration
+                let node = findNode.fromPoint({screenX, screenY});
+                if (!nodesWithInput.has(node)) {
+                    nodesWithInput.set(node, []);
+                }
+                nodesWithInput.get(node).push(tuioObject);
             });
-            nodesWithInput.get(node).push(inputObject);
-        });
 
         notify(nodesWithInput);
     }
@@ -83,6 +81,52 @@ export default function tuioInput(params = {}) {
                 tuioClient.off('refresh', onTuioRefresh);
                 enabled = false;
             }
+        }
+    };
+}
+            
+export function tuioObjectStore(params = {}) {
+    let {storeLimit = 10} = params,
+        storedObjects = [];
+    
+    function findIndexOf(tuioComponent) {
+        let indexOfComponent = -1;  
+        storedObjects.forEach((object, index) => {
+            if (object.identifier === tuioComponent.getSessionId()) {
+                indexOfComponent = index;
+            }
+        });
+        return indexOfComponent;
+    }
+    
+    return {
+        objects() {
+            return storedObjects;
+        },
+        store({tuioComponents, calibration}) {
+            return tuioComponents.map(tuioComponent => {
+                let indexOfComponent = findIndexOf(tuioComponent),
+                    newComponent = indexOfComponent === -1,
+                    inputObject;
+                
+                if (newComponent) {
+                    let storeLimitReached = storedObjects.length === storeLimit;
+                    inputObject = inputObjectFromTuio({
+                        tuioComponent,
+                        calibration
+                    });
+                    if (storeLimitReached) {
+                        storedObjects.shift();
+                    }
+                    storedObjects.push(inputObject);
+                }
+                else {
+                    inputObject = storedObjects[indexOfComponent];
+                    // update path of already known object
+                    inputObject.path = tuioObjectPath({tuioComponent, calibration});
+                }
+                return inputObject;
+            });
         }
     };
 }

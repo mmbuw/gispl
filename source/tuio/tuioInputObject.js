@@ -6,9 +6,7 @@ export function inputObjectFromTuio(params) {
             relativeScreenX, relativeScreenY,
             clientX, clientY,
             pageX, pageY} = pointParams(tuioComponent, calibration),
-        path = tuioComponent.path.map(point => {
-            return pointParams(point, calibration);
-        }),
+        path = tuioObjectPath(params),
         type;
 
     if (typeof tuioComponent.getTypeId === 'function') {
@@ -22,6 +20,12 @@ export function inputObjectFromTuio(params) {
         clientX, clientY,
         pageX, pageY
     };
+}
+
+export function tuioObjectPath({tuioComponent, calibration}) {
+    return tuioComponent.path.map(point => {
+        return pointParams(point, calibration);
+    });
 }
 
 function pointParams(point, calibration) {
