@@ -126,7 +126,9 @@ export function createGesture(gestureDefinition) {
                     if (!isSameAsPreviousInput) {
                         bubbleTopNodes = [];
                     }
-                    bubbleTopNodes.push(node);
+                    if (bubbleTopNodes.indexOf(node) === -1) {
+                        bubbleTopNodes.push(node);   
+                    }
                 }
                 if (everyFeatureMatches) {
                     if (flags.hasBubble()) {
