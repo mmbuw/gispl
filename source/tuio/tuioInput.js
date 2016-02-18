@@ -1,5 +1,5 @@
 import {inputObjectFromTuio,
-            tuioObjectPath} from './tuioInputObject';
+            tuioObjectUpdate} from './tuioInputObject';
 
 export default function tuioInput(params = {}) {
     let {tuioClient,
@@ -122,8 +122,7 @@ export function tuioObjectStore(params = {}) {
                 }
                 else {
                     inputObject = storedObjects[indexOfComponent];
-                    // update path of already known object
-                    inputObject.path = tuioObjectPath({tuioComponent, calibration});
+                    tuioObjectUpdate({inputObject, tuioComponent, calibration});
                 }
                 return inputObject;
             });

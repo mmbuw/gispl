@@ -5,7 +5,7 @@ export function inputObjectFromTuio(params) {
         {screenX, screenY,
             relativeScreenX, relativeScreenY,
             clientX, clientY,
-            pageX, pageY} = pointParams(tuioComponent, calibration),
+            pageX, pageY} = pointInformation(tuioComponent, calibration),
         path = tuioObjectPath(params),
         startingTime = new Date().getTime(),
         type;
@@ -24,13 +24,23 @@ export function inputObjectFromTuio(params) {
     };
 }
 
-export function tuioObjectPath({tuioComponent, calibration}) {
+export function tuioObjectUpdate(params) {
+    let {tuioComponent,
+            calibration,
+            inputObject} = params;
+    // update path
+    inputObject.path = tuioObjectPath(params);
+    // update point information (screenX, clientX...)
+    Object.assign(inputObject, pointInformation(tuioComponent, calibration));
+}
+
+function tuioObjectPath({tuioComponent, calibration}) {
     return tuioComponent.path.map(point => {
-        return pointParams(point, calibration);
+        return pointInformation(point, calibration);
     });
 }
 
-function pointParams(point, calibration) {
+function pointInformation(point, calibration) {
 
     let relativeScreenX = point.getX(),
         relativeScreenY = point.getY(),
