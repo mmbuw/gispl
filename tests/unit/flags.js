@@ -8,7 +8,9 @@ describe('gesture with flags', () => {
     let motionGestureDefinition,
         trianglePathGestureDefinition,
         node = 'test-dom-node-does-not-matter-if-it-is-a-string',
-        nodesToEmitOn = [node];
+        nodesToEmitOn = [node],
+        startingTime,
+        clock;
 
     function addFlagsToGesture(flags, gesture = motionGestureDefinition) {
         return $.extend(
@@ -35,7 +37,13 @@ describe('gesture with flags', () => {
                 },
                 
             ]
-        }
+        };
+        startingTime = new Date().getTime();
+        clock = sinon.useFakeTimers(startingTime);
+    });
+    
+    afterEach(() => {
+        clock.restore();
     });
 
     it('should only be triggered once for the same inputObjects with oneshot flag', () => {
@@ -745,29 +753,30 @@ describe('gesture with flags', () => {
             even if min duration set`, () => {
         let minimumOneSecondDuration = [1],
             sessionId = 10,
-            startTime = new Date().getTime(),
-            timeAfter999ms = startTime + 999,
-            timeAfter1000ms = startTime + 1000,
-            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId, time: startTime})
-                                    .moveTo({x: 0.5, y: 0.5, time: timeAfter999ms}),
+            timeAfter999ms = 999,
+            timeAfter1000ms = 1,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                    .moveTo({x: 0.5, y: 0.5})
+                                    .finished(),
             bubbleGestureDefinition = addFlagsToGesture('bubble');
             
         bubbleGestureDefinition.duration = minimumOneSecondDuration;
         let bubbleMotionGesture = createGesture(bubbleGestureDefinition);
         
         let firstNodeToAdd = 'first-node';
+        clock.tick(timeAfter999ms);
         expect(
             bubbleMotionGesture.load({
-                inputObjects: [movingPointerInput.finished()],
+                inputObjects: [movingPointerInput],
                 node: firstNodeToAdd
             })
         ).to.deep.equal([]); // not recognized, min duration not reached
         
         let secondNodeToAdd = 'second-node';
-        movingPointerInput.moveTo({x: 1, y: 1, time: timeAfter1000ms});
+        clock.tick(timeAfter1000ms);
         expect(
             bubbleMotionGesture.load({
-                inputObjects: [movingPointerInput.finished()],
+                inputObjects: [movingPointerInput],
                 node: secondNodeToAdd
             })
         ).to.deep.equal([firstNodeToAdd, secondNodeToAdd]); // min duration reached
@@ -776,29 +785,30 @@ describe('gesture with flags', () => {
     it('should clear bubble flags if max gesture duration exceeded', () => {
         let maxOneSecondDuration = [0, 1],
             sessionId = 10,
-            startTime = new Date().getTime(),
-            timeAfter1000ms = startTime + 1000,
-            timeAfter1001ms = startTime + 1001,
-            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId, time: startTime})
-                                    .moveTo({x: 0.5, y: 0.5, time: timeAfter1000ms}),
+            timeAfter1000ms = 1000,
+            timeAfter1001ms = 1,
+            movingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
+                                    .moveTo({x: 0.5, y: 0.5})
+                                    .finished(),
             bubbleGestureDefinition = addFlagsToGesture('bubble');
             
         bubbleGestureDefinition.duration = maxOneSecondDuration;
         let bubbleMotionGesture = createGesture(bubbleGestureDefinition);
         
         let firstNodeToAdd = 'first-node';
+        clock.tick(timeAfter1000ms);
         expect(
             bubbleMotionGesture.load({
-                inputObjects: [movingPointerInput.finished()],
+                inputObjects: [movingPointerInput],
                 node: firstNodeToAdd
             })
         ).to.deep.equal([firstNodeToAdd]); // max duration not reached
         
         let secondNodeToAdd = 'second-node';
-        movingPointerInput.moveTo({x: 1, y: 1, time: timeAfter1001ms});
+        clock.tick(timeAfter1001ms);
         expect(
             bubbleMotionGesture.load({
-                inputObjects: [movingPointerInput.finished()],
+                inputObjects: [movingPointerInput],
                 node: secondNodeToAdd
             })
         ).to.deep.equal([]); // max duration reached

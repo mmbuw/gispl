@@ -39,11 +39,8 @@ export function createGesture(gestureDefinition) {
     function validGestureDuration(inputObjects) {
         let validDuration = true;
         if (typeof duration.min !== 'undefined') {
-            // path is guaranteed to have at least one point
-            let pointPath = inputObjects[0].path,
-                firstPoint = pointPath[0],
-                lastPoint = pointPath[pointPath.length - 1],
-                timeDiff = lastPoint.tuioTime - firstPoint.tuioTime;
+            let currentTime = new Date().getTime(), 
+                timeDiff = currentTime - inputObjects[0].startingTime;
                 
             if (timeDiff < duration.min) {
                 validDuration = false;

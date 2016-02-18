@@ -9,7 +9,9 @@ describe('gesture with duration', () => {
         mockState = {
             node,
             inputObjects: [null] //should contain e.g. tuio pointers but it doesn't matter
-        };;
+        },
+        startingTime,
+        clock;
     
     function addDurationToGesture(duration, gesture = motionGestureDefinition) {
         return $.extend(
@@ -24,26 +26,29 @@ describe('gesture with duration', () => {
                 {type: 'Motion'}
             ]
         };
+        startingTime = new Date().getTime()
+        clock = sinon.useFakeTimers(startingTime);
+    });
+    
+    afterEach(() => {
+        clock.restore();
     });
     
     it('should not recognize gesture if path time less than lower duration bound', () => {
         let oneSecondDuration = [1],
-            startingTime = 300,
-            timeAfter999ms = startingTime + 999,
+            timeAfter999ms = 999,
             oneSecondDurationMotionDefinition = addDurationToGesture(oneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-       let pointerMoving = buildInputFromPointer({
-                                            x: 0, y: 0, time: startingTime
-                                        })
-                                        .moveTo({
-                                            x: 0.1, y: 0.1, time: timeAfter999ms
-                                        });
-                                        
+       let pointerMoving = buildInputFromPointer({x: 0, y: 0})
+                                        .moveTo({x: 0.1, y: 0.1})
+                                        .finished();
+       clock.tick(timeAfter999ms);
+       
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMoving.finished()]
+               inputObjects: [pointerMoving]
            })
        ).to.deep.equal([]);
     });
@@ -51,44 +56,39 @@ describe('gesture with duration', () => {
     it(`should recognize gesture if path time more than or equal to lower duration bound,
             and other parameters valid`, () => {
         let minimumOneSecondDuration = [1],
-            startingTime = 300,
-            timeAfter1000ms = startingTime + 1000,
+            timeAfter1000ms = 1000,
             oneSecondDurationMotionDefinition = addDurationToGesture(minimumOneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-       let pointerMoving = buildInputFromPointer({
-                                            x: 0, y: 0, time: startingTime
-                                        })
-                                        .moveTo({
-                                            x: 0.1, y: 0.1, time: timeAfter1000ms
-                                        });
-                                        
+       let pointerMoving = buildInputFromPointer({x: 0, y: 0})
+                                        .moveTo({x: 0.1, y: 0.1})
+                                        .finished();
+                            
+       clock.tick(timeAfter1000ms);
+                 
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMoving.finished()]
+               inputObjects: [pointerMoving]
            })
        ).to.deep.equal(nodesToEmitOn);
     });
     
     it('should not recognize gesture if path time more than upper duration bound', () => {
         let maximumOneSecondDuration = [0,1],
-            startingTime = 300,
-            timeAfter1001ms = startingTime + 1001,
+            timeAfter1001ms = 1001,
             oneSecondDurationMotionDefinition = addDurationToGesture(maximumOneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-       let pointerMoving = buildInputFromPointer({
-                                            x: 0, y: 0, time: startingTime
-                                        })
-                                        .moveTo({
-                                            x: 0.1, y: 0.1, time: timeAfter1001ms
-                                        });
-                                        
+       let pointerMoving = buildInputFromPointer({x: 0, y: 0})
+                                        .moveTo({x: 0.1, y: 0.1})
+                                        .finished();                                 
+       clock.tick(timeAfter1001ms);
+            
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMoving.finished()]
+               inputObjects: [pointerMoving]
            })
        ).to.deep.equal([]);
     });
@@ -96,22 +96,19 @@ describe('gesture with duration', () => {
     it(`should recognize gesture if path time less than or equal to upper duration bound,
             and other parameters valid`, () => {
         let maximumOneSecondDuration = [0,1],
-            startingTime = 300,
-            timeAfter1000ms = startingTime + 1000,
+            timeAfter1000ms = 1000,
             oneSecondDurationMotionDefinition = addDurationToGesture(maximumOneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-       let pointerMoving = buildInputFromPointer({
-                                            x: 0, y: 0, time: startingTime
-                                        })
-                                        .moveTo({
-                                            x: 0.1, y: 0.1, time: timeAfter1000ms
-                                        });
-                                        
+       let pointerMoving = buildInputFromPointer({x: 0, y: 0})
+                                        .moveTo({x: 0.1, y: 0.1})
+                                        .finished();
+       clock.tick(timeAfter1000ms);
+       
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMoving.finished()]
+               inputObjects: [pointerMoving]
            })
        ).to.deep.equal(nodesToEmitOn);
     });
@@ -132,18 +129,15 @@ describe('gesture with duration', () => {
     
     it('should not recognize gesture if min duration defined, and just one point in path', () => {
         let minimumOneSecondDuration = [1],
-            startingTime = 300,
             oneSecondDurationMotionDefinition = addDurationToGesture(minimumOneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-       let pointerMoving = buildInputFromPointer({
-                                            x: 0, y: 0, time: startingTime
-                                        });
+       let pointerMoving = buildInputFromPointer({x: 0, y: 0}).finished();
                                         
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMoving.finished()]
+               inputObjects: [pointerMoving]
            })
        ).to.deep.equal([]);
     });
