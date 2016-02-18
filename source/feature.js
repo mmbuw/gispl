@@ -2,6 +2,8 @@ import {vector} from './vector';
 import motion from './features/motion';
 import count from './features/count';
 import path from './features/path';
+import {extractDurationFrom,
+        validDuration} from './gesture';
 import {DollarRecognizer} from './libs/dollar';
 
 let singleRecognizerInstance = new DollarRecognizer();
@@ -24,23 +26,30 @@ export function featureFactory(params = {}) {
 }
 
 export function featureBase(params) {
-    let {filters} = params;
+    let {filters} = params,
+        duration = extractDurationFrom(params);
+    
+    
+    function matchFiltersWith(inputObject) {
+        //tuio v1 objects and cursors have not typeid
+        //unknown typeId in v2 is 0
+        let typeId = inputObject.type ? inputObject.type : 0,
+            typeIdKnown = typeId !== 0,
+            hasNoFilters = typeof filters === 'undefined',
+            filtersMatch = false;
+
+        if (typeIdKnown) {
+            let typeIdAsBitmask = 1<<(typeId-1);
+            filtersMatch = filters & typeIdAsBitmask;
+        }
+
+        return hasNoFilters || filtersMatch;
+    }
 
     return {
-        matchFiltersWith(input) {
-            //tuio v1 objects and cursors have not typeid
-            //unknown typeId in v2 is 0
-            let typeId = input.type ? input.type : 0,
-                typeIdKnown = typeId !== 0,
-                hasNoFilters = typeof filters === 'undefined',
-                filtersMatch = false;
-
-            if (typeIdKnown) {
-                let typeIdAsBitmask = 1<<(typeId-1);
-                filtersMatch = filters & typeIdAsBitmask;
-            }
-
-            return hasNoFilters || filtersMatch;
+        checkAgainstDefinition(inputObject) {
+            return matchFiltersWith(inputObject) &&
+                    validDuration({inputObject, duration});
         }
     };
 }

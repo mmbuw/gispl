@@ -19,7 +19,7 @@ export default function count(params) {
 
             let count = 0;
             inputObjects.forEach(inputObject => {
-                if (baseFeature.matchFiltersWith(inputObject)) {
+                if (baseFeature.checkAgainstDefinition(inputObject)) {
                     count += 1;
                 }
             });

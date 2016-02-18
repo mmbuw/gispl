@@ -25,7 +25,7 @@ export default function path(params) {
             return inputObjects.every(inputObject => {
                 let match = false;
 
-                if (baseFeature.matchFiltersWith(inputObject)) {
+                if (baseFeature.checkAgainstDefinition(inputObject)) {
                     let $points = inputObject.path.map(point => {
                         return new Point(point.screenX, point.screenY);
                     });

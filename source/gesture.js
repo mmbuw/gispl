@@ -38,22 +38,9 @@ export function createGesture(gestureDefinition) {
     }
     
     function validGestureDuration(inputObjects) {
-        let validDuration = true;
-        if (typeof duration.min !== 'undefined') {
-            let currentTime = new Date().getTime(), 
-                timeDiff = currentTime - inputObjects[0].startingTime;
-                
-            if (timeDiff < duration.min) {
-                validDuration = false;
-            }
-            // max can't be defined if min undefined
-            if (validDuration && (typeof duration.max !== 'undefined')) {
-                if (timeDiff > duration.max) {
-                    validDuration = false;
-                }
-            }
-        }
-        return validDuration;
+        return inputObjects.every(inputObject => {
+            return validDuration({inputObject, duration});
+        });
     }
     
     function resultingNodes() {
@@ -247,7 +234,7 @@ function extractIdentifiersFrom(inputObjects = []) {
                 .map(inputObject => inputObject.identifier);
 }
 
-function extractDurationFrom(gestureDefinition) {
+export function extractDurationFrom(definitionObject) {
     let duration = {
         // original definition
         definition: undefined,
@@ -255,8 +242,8 @@ function extractDurationFrom(gestureDefinition) {
         min: undefined,
         max: undefined
     };
-    if (typeof gestureDefinition.duration !== 'undefined') {
-        let definition = duration.definition = gestureDefinition.duration;
+    if (typeof definitionObject.duration !== 'undefined') {
+        let definition = duration.definition = definitionObject.duration;
         // transfrom from seconds to milliseconds
         if (typeof definition[0] !== 'undefined') {
             duration.min = definition[0] * 1000;   
@@ -314,4 +301,23 @@ function initializeFlagsFrom(gestureDefinition) {
             return flags;
         }
     };
+}
+
+export function validDuration({inputObject, duration}) {
+    let validDuration = true;
+    if (typeof duration.min !== 'undefined') {
+        let currentTime = new Date().getTime(), 
+            timeDiff = currentTime - inputObject.startingTime;
+            
+        if (timeDiff < duration.min) {
+            validDuration = false;
+        }
+        // max can't be defined if min undefined
+        if (validDuration && (typeof duration.max !== 'undefined')) {
+            if (timeDiff > duration.max) {
+                validDuration = false;
+            }
+        }
+    }
+    return validDuration;
 }

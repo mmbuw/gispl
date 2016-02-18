@@ -24,8 +24,8 @@ export default function motion(params) {
 
             inputObjects.forEach(inputObject => {
                 let path = inputObject.path;
-                if (path.length > 1
-                        && baseFeature.matchFiltersWith(inputObject)) {
+                if (path.length > 1 &&
+                        baseFeature.checkAgainstDefinition(inputObject)) {
                     let lastPoint = path[path.length-1],
                         beforeLastPoint = path[path.length-2];
 

@@ -19,6 +19,17 @@ describe('gesture with duration', () => {
         );
     }
     
+    function addDurationToFeature(duration, gesture = motionGestureDefinition) {
+        let feature = $.extend(
+            {}, gesture.features[0], {duration}
+        ),
+            newGesture = $.extend({}, gesture);
+            
+        return $.extend(
+            {}, newGesture, {features: [feature]}
+        );
+    }
+    
     beforeEach(() => {
         motionGestureDefinition = {
             name: 'motion-gesture',
@@ -140,5 +151,49 @@ describe('gesture with duration', () => {
                inputObjects: [pointerMoving]
            })
        ).to.deep.equal([]);
+    });
+    
+    // some base checks for the feature duration
+    // the function that checks is the same 
+    it('should not recognize gesture if path time less than lower duration bound of a feature', () => {
+        let oneSecondDuration = [1],
+            timeAfter999ms = 999,
+            oneSecondDurationMotionDefinition = addDurationToFeature(oneSecondDuration),
+            oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
+            
+            console.log(oneSecondDurationMotionDefinition)
+       
+       let pointerMoving = buildInputFromPointer({x: 0, y: 0})
+                                        .moveTo({x: 0.1, y: 0.1})
+                                        .finished();
+       clock.tick(timeAfter999ms);
+       
+       expect(
+           oneSecondDurationMotionGesture.load({
+               node,
+               inputObjects: [pointerMoving]
+           })
+       ).to.deep.equal([]);
+    });
+    
+    it(`should recognize gesture if path time more than or equal to lower duration bound
+            of feature and other parameters valid`, () => {
+        let minimumOneSecondDuration = [1],
+            timeAfter1000ms = 1000,
+            oneSecondDurationMotionDefinition = addDurationToFeature(minimumOneSecondDuration),
+            oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
+       
+       let pointerMoving = buildInputFromPointer({x: 0, y: 0})
+                                        .moveTo({x: 0.1, y: 0.1})
+                                        .finished();
+                            
+       clock.tick(timeAfter1000ms);
+                 
+       expect(
+           oneSecondDurationMotionGesture.load({
+               node,
+               inputObjects: [pointerMoving]
+           })
+       ).to.deep.equal(nodesToEmitOn);
     });
 });
