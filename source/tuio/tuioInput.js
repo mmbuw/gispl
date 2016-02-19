@@ -10,15 +10,8 @@ export default function tuioInput(params = {}) {
         enabled = false;
 
     function onTuioRefresh() {
-        let tuioComponents = tuioClient.getTuioPointers(),
+        let tuioComponents = fetchTuioData(),
             nodesWithInput = new Map();
-
-        if (tuioComponents.length === 0) {
-            let cursors = tuioClient.getTuioCursors();
-            for (var key in cursors) {
-                tuioComponents.push(cursors[key]);
-            }
-        }
         
         knownTuioInput
             .store({tuioComponents, calibration})
@@ -34,6 +27,25 @@ export default function tuioInput(params = {}) {
             });
 
         notify(nodesWithInput);
+    }
+    
+    function fetchTuioData() {
+        let pointers = tuioClient.getTuioPointers(),
+            cursors = tuioClient.getTuioCursors(),
+            tokens = tuioClient.getTuioTokens(),
+            objects = tuioClient.getTuioObjects();
+            
+        let tuioComponents = pointers;
+        tuioComponents.push(...tokens);
+        // tuio v1 types are stored in an {} object
+        Object.keys(cursors).forEach(key => {
+            tuioComponents.push(cursors[key]); 
+        });
+        Object.keys(objects).forEach(key => {
+            tuioComponents.push(objects[key]); 
+        });
+        
+        return tuioComponents;
     }
 
     function enable() {
