@@ -64,7 +64,7 @@ describe('feature', () => {
                     x: 0.53, y: 0.51
                 }).finished();
 
-            let inputObjects = [rectangleMovingPointersCounterClockwise];
+            let inputObjects = [[rectangleMovingPointersCounterClockwise]];
 
             expect(rectanglePath.load({inputObjects})).to.equal(true);
         });
@@ -96,7 +96,7 @@ describe('feature', () => {
                     x: 0.8, y: 0.45
                 }).finished();
 
-            let inputObjects = [rectangleMovingPointersClockwise];
+            let inputObjects = [[rectangleMovingPointersClockwise]];
 
             expect(rectanglePath.load({inputObjects})).to.equal(false);
         });
@@ -140,10 +140,10 @@ describe('feature', () => {
                     x: 0.8, y: 0.45
                 }).finished();
 
-            let inputObjects = [
+            let inputObjects = [[
                 rectangleMovingPointersCounterClockwise,
                 rectangleMovingPointersClockwise
-            ];
+            ]];
 
             expect(rectanglePath.load({inputObjects})).to.equal(false);
         });
@@ -179,7 +179,7 @@ describe('feature', () => {
                     x: 0.53, y: 0.51
                 }).finished();
 
-            let inputObjects = [rectangleMovingPointersCounterClockwise];
+            let inputObjects = [[rectangleMovingPointersCounterClockwise]];
 
             expect(filteredPath.load({inputObjects})).to.equal(false);
         });

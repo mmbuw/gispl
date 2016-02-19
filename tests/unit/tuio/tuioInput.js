@@ -1,4 +1,5 @@
-import tuioInput, {tuioObjectStore} from '../../../source/tuio/tuioInput';
+import tuioInput, {tuioObjectStore,
+                    tuioInputStateHistory} from '../../../source/tuio/tuioInput';
 import gispl from '../../../source/gispl';
 import screenCalibration from '../../../source/tuio/screenCalibration';
 import nodeSearch from '../../../source/tuio/nodeSearch';
@@ -125,8 +126,8 @@ describe('tuioInput', () => {
             let htmlRoot = document.documentElement;
             expect(regions.has(htmlRoot)).to.equal(true);
             //only one input object ->  tuioPointer
-            expect(regions.get(htmlRoot).length).to.equal(1);
-            expect(regions.get(htmlRoot)[0].identifier).to.equal(sessionId);
+            expect(regions.get(htmlRoot)[0].length).to.equal(1);
+            expect(regions.get(htmlRoot)[0][0].identifier).to.equal(sessionId);
             asyncDone();
         });
     });
@@ -147,9 +148,9 @@ describe('tuioInput', () => {
             sendPointerBundle(server, tuioPointer1, tuioPointer2);
             let regions = spy.getCall(0).args[0];
             let htmlRoot = document.documentElement;
-            expect(regions.get(htmlRoot).length).to.equal(2);
-            expect(regions.get(htmlRoot)[0].identifier).to.equal(sessionId);
-            expect(regions.get(htmlRoot)[1].identifier).to.equal(sessionId2);
+            expect(regions.get(htmlRoot)[0].length).to.equal(2);
+            expect(regions.get(htmlRoot)[0][0].identifier).to.equal(sessionId);
+            expect(regions.get(htmlRoot)[0][1].identifier).to.equal(sessionId2);
             asyncDone();
         });
     });
@@ -189,12 +190,12 @@ describe('tuioInput', () => {
             let regions = spy.getCall(0).args[0];
             // element1 contains the first point
             expect(regions.has(element1[0])).to.equal(true);
-            expect(regions.get(element1[0]).length).to.equal(1);
-            expect(regions.get(element1[0])[0].identifier).to.equal(sessionId);
+            expect(regions.get(element1[0])[0].length).to.equal(1);
+            expect(regions.get(element1[0])[0][0].identifier).to.equal(sessionId);
             // element2 the second
             expect(regions.has(element2[0])).to.equal(true);
-            expect(regions.get(element2[0]).length).to.equal(1);
-            expect(regions.get(element2[0])[0].identifier).to.equal(sessionId2);
+            expect(regions.get(element2[0])[0].length).to.equal(1);
+            expect(regions.get(element2[0])[0][0].identifier).to.equal(sessionId2);
             asyncDone();
         });
     });
@@ -289,13 +290,13 @@ describe('tuioInput', () => {
             sendPointerBundle(server, tuioPointer1);
             let regions = spy.getCall(0).args[0],
                 pointers = regions.get(document.documentElement),
-                pointerOnFirstUpdate = pointers[0];
+                pointerOnFirstUpdate = pointers[0][0];
                 
             sendPointerBundle(server, tuioPointer1);
             regions = spy.getCall(1).args[0];
             pointers = regions.get(document.documentElement);
             
-            let pointerOnSecondUpdate = pointers[0];
+            let pointerOnSecondUpdate = pointers[0][0];
             
             expect(pointerOnFirstUpdate).to.equal(pointerOnSecondUpdate);
             asyncDone();
@@ -317,6 +318,71 @@ describe('tuioInput', () => {
         storedTuioInput.store({tuioComponents: moreTuioComponents, calibration});
         expect(storedTuioInput.objects().length).to.equal(10);
         expect(storedTuioInput.objects()[0].identifier).to.equal(sessionIds[1]);
+    });
+    
+    it('should keep a history of input states per node', (asyncDone) => {
+        let tuioPointer1 = {
+                sessionId
+            },
+            tuioPointer2 = {
+                sessionId: sessionId2
+            },
+            spy = sinon.spy();
+
+        let input = tuioInput({tuioClient, findNode});
+        input.listen(spy);
+
+        setTimeout(() => {
+            sendPointerBundle(server, tuioPointer1, tuioPointer2);
+            sendPointerBundle(server, tuioPointer1);
+            
+            let history = spy.getCall(1).args[0],
+                rootHistory = history.get(document.documentElement);
+            expect(rootHistory.length).to.equal(2);
+            
+            let lastCall = rootHistory[0],
+                firstCall = rootHistory[1];
+                
+            expect(lastCall.length).to.equal(1);
+            expect(firstCall.length).to.equal(2);
+            
+            expect(lastCall[0].identifier).to.equal(sessionId);
+            expect(firstCall[0].identifier).to.equal(sessionId);
+            expect(firstCall[1].identifier).to.equal(sessionId2);
+            asyncDone();
+        });
+    });
+    
+    it(`should keep only a history of specified length,
+            removing older entries if larger`, () => {
+        let historyLimit = 3,
+            history = tuioInputStateHistory({historyLimit}),
+            node = {},
+            firstInputObjects = [{}];
+        
+        history.add({node, inputObjects: firstInputObjects});
+        expect(history.getFor({node}).length).to.equal(1);
+        expect(history.getFor({node})[0]).to.equal(firstInputObjects);
+        
+        history.add({node, inputObjects: [{}]});
+        expect(history.getFor({node}).length).to.equal(2);
+        
+        history.add({node, inputObjects: [{}]});
+        expect(history.getFor({node}).length).to.equal(3);
+        
+        history.add({node, inputObjects: [{}]});
+        expect(history.getFor({node}).length).to.equal(historyLimit);
+        expect(history.getFor({node})[0]).to.not.equal(firstInputObjects);
+    });
+    
+    it(`should only add to history if it is an unknown input state`, () => {
+        let history = tuioInputStateHistory(),
+            node = {},
+            inputObjects = [{}];
+            
+        history.add({node, inputObjects});
+        history.add({node, inputObjects});
+        expect(history.getFor({node}).length).to.equal(1);
     });
 
 });

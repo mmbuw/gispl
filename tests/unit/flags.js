@@ -53,11 +53,11 @@ describe('gesture with flags', () => {
             oneshotGestureDefinition = addFlagsToGesture('oneshot'),
             oneshotMotionGesture = createGesture(oneshotGestureDefinition);
 
-        let inputObjects = [movingPointerInput.finished()];
+        let inputObjects = [[movingPointerInput.finished()]];
         expect(oneshotMotionGesture.load({node, inputObjects})).to.deep.equal(nodesToEmitOn);
 
         movingPointerInput.moveTo({x: 0.4, y: 0.4});
-        inputObjects = [movingPointerInput.finished()];
+        inputObjects = [[movingPointerInput.finished()]];
         expect(oneshotMotionGesture.load({inputObjects})).to.deep.equal([]);
     });
 
@@ -68,18 +68,18 @@ describe('gesture with flags', () => {
             oneshotGestureDefinition = addFlagsToGesture('oneshot'),
             oneshotMotionGesture = createGesture(oneshotGestureDefinition);
 
-        let inputObjects = [movingPointerInput.finished()];
+        let inputObjects = [[movingPointerInput.finished()]];
         expect(oneshotMotionGesture.load({node, inputObjects})).to.deep.equal(nodesToEmitOn);
 
         sessionId += 1;
         let newMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
                                         .moveTo({x: 0.5, y: 0.5});
 
-        inputObjects = [newMovingPointerInput.finished()];
+        inputObjects = [[newMovingPointerInput.finished()]];
         expect(oneshotMotionGesture.load({node, inputObjects})).to.deep.equal(nodesToEmitOn);
 
         newMovingPointerInput.moveTo({x: 0.4, y: 0.4});
-        inputObjects = [newMovingPointerInput.finished()];
+        inputObjects = [[newMovingPointerInput.finished()]];
         expect(oneshotMotionGesture.load({inputObjects})).to.deep.equal([]);
     });
 
@@ -92,17 +92,17 @@ describe('gesture with flags', () => {
             oneshotGestureDefinition = addFlagsToGesture('oneshot'),
             oneshotMotionGesture = createGesture(oneshotGestureDefinition);
 
-        let inputObjects = [movingPointerInput.finished()];
+        let inputObjects = [[movingPointerInput.finished()]];
         expect(oneshotMotionGesture.load({node, inputObjects})).to.deep.equal(nodesToEmitOn);
 
         sessionId += 1;
         let staticPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId});
 
-        inputObjects = [staticPointerInput.finished()];
+        inputObjects = [[staticPointerInput.finished()]];
         expect(oneshotMotionGesture.load({node, inputObjects})).to.deep.equal([]);
 
         staticPointerInput.moveTo({x: 0.4, y: 0.4});
-        inputObjects = [staticPointerInput.finished()];
+        inputObjects = [[staticPointerInput.finished()]];
         expect(oneshotMotionGesture.load({node, inputObjects})).to.deep.equal(nodesToEmitOn);
     });
 
@@ -115,7 +115,7 @@ describe('gesture with flags', () => {
             stickyMotionGesture = createGesture(stickyGestureDefinition);
 
         let firstNodeToMatch = 'sticky-node',
-            inputObjects = [movingPointerInput.finished()];
+            inputObjects = [[movingPointerInput.finished()]];
 
         expect(
             stickyMotionGesture.load({
@@ -126,7 +126,7 @@ describe('gesture with flags', () => {
 
         let differentNode = 'new-node';
         movingPointerInput.moveTo({x: 0.7, y: 0.7});
-        inputObjects = [movingPointerInput.finished()];
+        inputObjects = [[movingPointerInput.finished()]];
 
         expect(
             stickyMotionGesture.load({
@@ -144,7 +144,7 @@ describe('gesture with flags', () => {
             stickyMotionGesture = createGesture(stickyGestureDefinition);
 
         let firstNodeToMatch = 'sticky-node',
-            inputObjects = [movingPointerInput.finished()];
+            inputObjects = [[movingPointerInput.finished()]];
         // this is normal and already tested
         expect(
             stickyMotionGesture.load({
@@ -157,7 +157,7 @@ describe('gesture with flags', () => {
         let differentNode = 'new-node',
             newMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
                                         .moveTo({x: 0.5, y: 0.5}),
-            newInputObjects = [newMovingPointerInput.finished()];
+            newInputObjects = [[newMovingPointerInput.finished()]];
         // load and recognize with a different node
         expect(
             stickyMotionGesture.load({
@@ -176,14 +176,14 @@ describe('gesture with flags', () => {
             stickyMotionGesture = createGesture(stickyGestureDefinition);
 
         let firstNodeToMatch = 'first-node',
-            inputObjects = [movingPointerInput.finished()];
+            inputObjects = [[movingPointerInput.finished()]];
         stickyMotionGesture.load({node: firstNodeToMatch, inputObjects});
 
         sessionId += 1;
         let secondNodeToMatch = 'second-node',
             staticPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId});
 
-        inputObjects = [staticPointerInput.finished()];
+        inputObjects = [[staticPointerInput.finished()]];
         expect(
             stickyMotionGesture.load({
                 node: secondNodeToMatch,
@@ -203,7 +203,7 @@ describe('gesture with flags', () => {
         let firstNodeToMatch = 'sticky-node';
         stickyMotionGesture.load({
             node: firstNodeToMatch,
-            inputObjects: [movingPointerInput.finished()]
+            inputObjects: [[movingPointerInput.finished()]]
         })
 
         let differentNode = 'new-node';
@@ -211,7 +211,7 @@ describe('gesture with flags', () => {
         expect(
             stickyMotionGesture.load({
                 node: differentNode,
-                inputObjects: [movingPointerInput.finished()]
+                inputObjects: [[movingPointerInput.finished()]]
             })
         ).to.deep.equal([]);
         
@@ -219,7 +219,7 @@ describe('gesture with flags', () => {
         expect(
             stickyMotionGesture.load({
                 node: differentNode,
-                inputObjects: [movingPointerInput.finished()]
+                inputObjects: [[movingPointerInput.finished()]]
             })
         ).to.deep.equal([firstNodeToMatch]);
     });
@@ -233,7 +233,7 @@ describe('gesture with flags', () => {
             bubbleMotionGesture = createGesture(bubbleGestureDefinition);
         
         let firstNodeToAdd = 'first-node',
-            inputObjects = [movingPointerInput.finished()];
+            inputObjects = [[movingPointerInput.finished()]];
         expect(
             bubbleMotionGesture.load({
                 inputObjects,
@@ -261,7 +261,7 @@ describe('gesture with flags', () => {
         let firstNodeToAdd = 'first-node';
         expect(
             bubbleMotionGesture.load({
-                inputObjects: [staticPointerInput.finished()],
+                inputObjects: [[staticPointerInput.finished()]],
                 node: firstNodeToAdd
             })
         ).to.deep.equal([]);
@@ -271,7 +271,7 @@ describe('gesture with flags', () => {
                                     .moveTo({x: 0.5, y: 0.5});
         expect(
             bubbleMotionGesture.load({
-                inputObjects: [movingPointerInput.finished()],
+                inputObjects: [[movingPointerInput.finished()]],
                 node: secondNodeToAdd
             })
         ).to.deep.equal([firstNodeToAdd, secondNodeToAdd]);
@@ -288,7 +288,7 @@ describe('gesture with flags', () => {
         let onlyNodeToAdd = 'only-node';
         expect(
             bubbleMotionGesture.load({
-                inputObjects: [movingPointerInput],
+                inputObjects: [[movingPointerInput]],
                 node: onlyNodeToAdd
             })
         ).to.deep.equal([onlyNodeToAdd]);
@@ -304,7 +304,7 @@ describe('gesture with flags', () => {
         
         let firstNodeToAdd = 'first-node',
             secondNodeToAdd = 'second-node',
-            inputObjects = [movingPointerInput.finished()];
+            inputObjects = [[movingPointerInput.finished()]];
             
         bubbleMotionGesture.load({
             inputObjects,
@@ -320,7 +320,7 @@ describe('gesture with flags', () => {
             fourthNodeToAdd = 'fourth-node',
             newMovingPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId})
                                         .moveTo({x: 0.5, y: 0.5}),
-            newInputObjects = [newMovingPointerInput.finished()];
+            newInputObjects = [[newMovingPointerInput.finished()]];
         bubbleMotionGesture.load({
             node: thirdNodeToAdd,
             inputObjects: newInputObjects
@@ -343,7 +343,7 @@ describe('gesture with flags', () => {
             
         let firstNodeToAdd = 'first-node',
             secondNodeToAdd = 'second-node',
-            inputObjects = [movingPointerInput.finished()];
+            inputObjects = [[movingPointerInput.finished()]];
             
         bubbleMotionGesture.load({
             inputObjects,
@@ -358,7 +358,7 @@ describe('gesture with flags', () => {
         let thirdNodeToAdd = 'third-node',
             staticPointerInput = buildInputFromPointer({x: 0, y: 0, sessionId});
 
-        inputObjects = [staticPointerInput.finished()];
+        inputObjects = [[staticPointerInput.finished()]];
         expect(
             bubbleMotionGesture.load({
                 node: thirdNodeToAdd,
@@ -377,11 +377,11 @@ describe('gesture with flags', () => {
         // use real node because we also don't want parent duplicates
         let firstNodeToAdd = document.body;
         bubbleMotionGesture.load({
-            inputObjects: [movingPointerInput.finished()],
+            inputObjects: [[movingPointerInput.finished()]],
             node: firstNodeToAdd
         });
         bubbleMotionGesture.load({
-            inputObjects: [movingPointerInput.finished()],
+            inputObjects: [[movingPointerInput.finished()]],
             node: firstNodeToAdd
         });
         // should already be in
@@ -389,7 +389,7 @@ describe('gesture with flags', () => {
         let secondNodeToAdd = document.documentElement;
         expect(
             bubbleMotionGesture.load({
-                inputObjects: [movingPointerInput.finished()],
+                inputObjects: [[movingPointerInput.finished()]],
                 node: secondNodeToAdd
             }) 
         ).to.deep.equal([firstNodeToAdd, document.documentElement, document]);
@@ -405,13 +405,13 @@ describe('gesture with flags', () => {
             
         let firstNodeInPath = 'first-node';
         bubbleOneshotTriangleGesture.load({
-            inputObjects: [triangleMovingPointerInput.finished()],
+            inputObjects: [[triangleMovingPointerInput.finished()]],
             node: firstNodeInPath
         });
         let secondNodeInPath = 'second-node';
         triangleMovingPointerInput.moveTo({x: 0, y: 0.5});
         bubbleOneshotTriangleGesture.load({
-            inputObjects: [triangleMovingPointerInput.finished()],
+            inputObjects: [[triangleMovingPointerInput.finished()]],
             node: secondNodeInPath
         });
         let thirdNodeInPath = 'third-node';
@@ -419,14 +419,14 @@ describe('gesture with flags', () => {
                                     .moveTo({x: 0, y: 0});
         expect(
             bubbleOneshotTriangleGesture.load({
-                inputObjects: [triangleMovingPointerInput.finished()],
+                inputObjects: [[triangleMovingPointerInput.finished()]],
                 node: thirdNodeInPath
             })
         ).to.deep.equal([firstNodeInPath, secondNodeInPath, thirdNodeInPath]);
         // second time won't work because of oneshot
         expect(
             bubbleOneshotTriangleGesture.load({
-                inputObjects: [triangleMovingPointerInput.finished()],
+                inputObjects: [[triangleMovingPointerInput.finished()]],
                 node: thirdNodeInPath
             })
         ).to.deep.equal([]);
@@ -443,13 +443,13 @@ describe('gesture with flags', () => {
             
         let firstNodeInPath = 'first-node';
         bubbleOneshotTriangleGesture.load({
-            inputObjects: [triangleMovingPointerInput.finished()],
+            inputObjects: [[triangleMovingPointerInput.finished()]],
             node: firstNodeInPath
         });
         let secondNodeInPath = 'second-node';
         triangleMovingPointerInput.moveTo({x: 0, y: 0.5});
         bubbleOneshotTriangleGesture.load({
-            inputObjects: [triangleMovingPointerInput.finished()],
+            inputObjects: [[triangleMovingPointerInput.finished()]],
             node: secondNodeInPath
         });
         let thirdNodeInPath = 'third-node';
@@ -457,7 +457,7 @@ describe('gesture with flags', () => {
                                     .moveTo({x: 0, y: 0});
         expect(
             bubbleOneshotTriangleGesture.load({
-                inputObjects: [triangleMovingPointerInput.finished()],
+                inputObjects: [[triangleMovingPointerInput.finished()]],
                 node: thirdNodeInPath
             })
         ).to.deep.equal([firstNodeInPath, secondNodeInPath, thirdNodeInPath]);
@@ -466,7 +466,7 @@ describe('gesture with flags', () => {
         triangleMovingPointerInput.newSessionId();
         expect(
             bubbleOneshotTriangleGesture.load({
-                inputObjects: [triangleMovingPointerInput.finished()],
+                inputObjects: [[triangleMovingPointerInput.finished()]],
                 node: thirdNodeInPath
             })
         ).to.deep.equal([thirdNodeInPath]);
@@ -483,20 +483,20 @@ describe('gesture with flags', () => {
             
         let firstNodeInPath = 'first-node';
         bubbleOneshotTriangleGesture.load({
-            inputObjects: [triangleMovingPointerInput.finished()],
+            inputObjects: [[triangleMovingPointerInput.finished()]],
             node: firstNodeInPath
         });
         let secondNodeInPath = 'second-node';
         triangleMovingPointerInput.moveTo({x: 0, y: 0.5});
         bubbleOneshotTriangleGesture.load({
-            inputObjects: [triangleMovingPointerInput.finished()],
+            inputObjects: [[triangleMovingPointerInput.finished()]],
             node: secondNodeInPath
         });
         let thirdNodeInPath = 'third-node';
         triangleMovingPointerInput.moveTo({x: 0.5, y: 0})
                                     .moveTo({x: 0, y: 0});                            
         bubbleOneshotTriangleGesture.load({
-            inputObjects: [triangleMovingPointerInput.finished()],
+            inputObjects: [[triangleMovingPointerInput.finished()]],
             node: thirdNodeInPath
         })
         
@@ -506,7 +506,7 @@ describe('gesture with flags', () => {
                                         .moveTo({x: 0.5, y: 0.5});
         expect(
             bubbleOneshotTriangleGesture.load({
-                inputObjects: [lineMovingPointerInput.finished()],
+                inputObjects: [[lineMovingPointerInput.finished()]],
                 node: thirdNodeInPath
             })
         ).to.deep.equal([]);
@@ -526,14 +526,14 @@ describe('gesture with flags', () => {
         let stickyNode = 'sticky-node';
         expect(
             stickyOneshotTriangleGesture.load({
-                inputObjects: [triangleMovingPointerInput.finished()],
+                inputObjects: [[triangleMovingPointerInput.finished()]],
                 node: stickyNode
             })
         ).to.deep.equal([stickyNode]);
         
         expect(
             stickyOneshotTriangleGesture.load({
-                inputObjects: [triangleMovingPointerInput.finished()],
+                inputObjects: [[triangleMovingPointerInput.finished()]],
                 node: stickyNode
             })   
         ).to.deep.equal([]); 
@@ -553,7 +553,7 @@ describe('gesture with flags', () => {
             
         let stickyNode = 'sticky-node';
         stickyOneshotTriangleGesture.load({
-            inputObjects: [triangleMovingPointerInput.finished()],
+            inputObjects: [[triangleMovingPointerInput.finished()]],
             node: stickyNode
         });
         
@@ -561,7 +561,7 @@ describe('gesture with flags', () => {
         
         expect(
             stickyOneshotTriangleGesture.load({
-                inputObjects: [triangleMovingPointerInput.finished()],
+                inputObjects: [[triangleMovingPointerInput.finished()]],
                 node: stickyNode
             })   
         ).to.deep.equal([stickyNode]);
@@ -581,7 +581,7 @@ describe('gesture with flags', () => {
             
         let stickyNode = 'sticky-node';
         stickyOneshotTriangleGesture.load({
-            inputObjects: [triangleMovingPointerInput.finished()],
+            inputObjects: [[triangleMovingPointerInput.finished()]],
             node: stickyNode
         });
         
@@ -590,7 +590,7 @@ describe('gesture with flags', () => {
                                        .moveTo({x: 0.5, y: 0.5});
         expect(
             stickyOneshotTriangleGesture.load({
-                inputObjects: [triangleMovingPointerInput.finished()],
+                inputObjects: [[triangleMovingPointerInput.finished()]],
                 node: stickyNode
             })
         ).to.deep.equal([]);
@@ -607,14 +607,14 @@ describe('gesture with flags', () => {
         let firstNodeToAdd = 'first-node';
         bubbleStickyMotionGesture.load({
             node: firstNodeToAdd,
-            inputObjects: [movingPointerInput.finished()]
+            inputObjects: [[movingPointerInput.finished()]]
         });
         
         let secondNodeToAdd = 'second-node';
         expect(
             bubbleStickyMotionGesture.load({
                 node: secondNodeToAdd,
-                inputObjects: [movingPointerInput.finished()]
+                inputObjects: [[movingPointerInput.finished()]]
             })
         ).to.deep.equal([firstNodeToAdd, secondNodeToAdd]);
     });
@@ -631,13 +631,13 @@ describe('gesture with flags', () => {
         let firstNodeToAdd = 'first-node';
         bubbleStickyMotionGesture.load({
             node: firstNodeToAdd,
-            inputObjects: [movingPointerInput.finished()]
+            inputObjects: [[movingPointerInput.finished()]]
         });
         
         let secondNodeToAdd = 'second-node';
         bubbleStickyMotionGesture.load({
             node: secondNodeToAdd,
-            inputObjects: [movingPointerInput.finished()]
+            inputObjects: [[movingPointerInput.finished()]]
         });
         
         let onlyNode = 'only-node';
@@ -645,7 +645,7 @@ describe('gesture with flags', () => {
         expect(
             bubbleStickyMotionGesture.load({
                 node: onlyNode,
-                inputObjects: [movingPointerInput.finished()]
+                inputObjects: [[movingPointerInput.finished()]]
             })
         ).to.deep.equal([onlyNode]);
     });
@@ -661,7 +661,7 @@ describe('gesture with flags', () => {
         let firstNodeToAdd = 'first-node';
         bubbleStickyMotionGesture.load({
             node: firstNodeToAdd,
-            inputObjects: [movingPointerInput.finished()]
+            inputObjects: [[movingPointerInput.finished()]]
         });
         
         sessionId += 1;
@@ -669,7 +669,7 @@ describe('gesture with flags', () => {
         expect(
             bubbleStickyMotionGesture.load({
                 node: firstNodeToAdd,
-                inputObjects: [staticPointerInput.finished()]
+                inputObjects: [[staticPointerInput.finished()]]
             })
         ).to.deep.equal([]);
     });
@@ -688,7 +688,7 @@ describe('gesture with flags', () => {
         let firstNodeToAdd = 'first-node';
         expect(
             bubbleStickyOneshotTriangleGesture.load({
-                inputObjects: [triangleMovingPointerInput.finished()],
+                inputObjects: [[triangleMovingPointerInput.finished()]],
                 node: firstNodeToAdd
             })
         ).to.deep.equal([]);
@@ -698,7 +698,7 @@ describe('gesture with flags', () => {
                                     .moveTo({x: 0, y: 0});
         expect(
             bubbleStickyOneshotTriangleGesture.load({
-                inputObjects: [triangleMovingPointerInput.finished()],
+                inputObjects: [[triangleMovingPointerInput.finished()]],
                 node: secondNodeToAdd
             })
         ).to.deep.equal([firstNodeToAdd, secondNodeToAdd]);
@@ -707,7 +707,7 @@ describe('gesture with flags', () => {
         // oneshot set
         expect(
             bubbleStickyOneshotTriangleGesture.load({
-                inputObjects: [triangleMovingPointerInput.finished()],
+                inputObjects: [[triangleMovingPointerInput.finished()]],
                 node: secondNodeToAdd
             })
         ).to.deep.equal([]);
@@ -727,7 +727,7 @@ describe('gesture with flags', () => {
             
         let firstNodeToAdd = 'first-node';
         bubbleStickyOneshotTriangleGesture.load({
-            inputObjects: [triangleMovingPointerInput.finished()],
+            inputObjects: [[triangleMovingPointerInput.finished()]],
             node: firstNodeToAdd
         });
         let secondNodeToAdd = 'second-node';
@@ -735,7 +735,7 @@ describe('gesture with flags', () => {
         triangleMovingPointerInput.moveTo({x: 0.5, y: 0})
                                     .moveTo({x: 0, y: 0});
         bubbleStickyOneshotTriangleGesture.load({
-            inputObjects: [triangleMovingPointerInput.finished()],
+            inputObjects: [[triangleMovingPointerInput.finished()]],
             node: secondNodeToAdd
         });
         
@@ -744,7 +744,7 @@ describe('gesture with flags', () => {
         let someOtherNode = 'other-node';
         expect(
             bubbleStickyOneshotTriangleGesture.load({
-                inputObjects: [triangleMovingPointerInput.finished()],
+                inputObjects: [[triangleMovingPointerInput.finished()]],
                 node: someOtherNode
             })
         ).to.deep.equal([someOtherNode]);
@@ -766,7 +766,7 @@ describe('gesture with flags', () => {
             
         let someNode = 'some-node';
         bubbleStickyOneshotTriangleGesture.load({
-            inputObjects: [triangleMovingPointerInput.finished()],
+            inputObjects: [[triangleMovingPointerInput.finished()]],
             node: someNode
         });
         
@@ -775,7 +775,7 @@ describe('gesture with flags', () => {
                                        .moveTo({x: 0.5, y: 0.5});
         expect(
             bubbleStickyOneshotTriangleGesture.load({
-                inputObjects: [triangleMovingPointerInput.finished()],
+                inputObjects: [[triangleMovingPointerInput.finished()]],
                 node: someNode
             })
         ).to.deep.equal([]);
@@ -799,7 +799,7 @@ describe('gesture with flags', () => {
         clock.tick(timeAfter999ms);
         expect(
             bubbleMotionGesture.load({
-                inputObjects: [movingPointerInput],
+                inputObjects: [[movingPointerInput]],
                 node: firstNodeToAdd
             })
         ).to.deep.equal([]); // not recognized, min duration not reached
@@ -808,7 +808,7 @@ describe('gesture with flags', () => {
         clock.tick(timeAfter1000ms);
         expect(
             bubbleMotionGesture.load({
-                inputObjects: [movingPointerInput],
+                inputObjects: [[movingPointerInput]],
                 node: secondNodeToAdd
             })
         ).to.deep.equal([firstNodeToAdd, secondNodeToAdd]); // min duration reached
@@ -831,7 +831,7 @@ describe('gesture with flags', () => {
         clock.tick(timeAfter1000ms);
         expect(
             bubbleMotionGesture.load({
-                inputObjects: [movingPointerInput],
+                inputObjects: [[movingPointerInput]],
                 node: firstNodeToAdd
             })
         ).to.deep.equal([firstNodeToAdd]); // max duration not reached
@@ -840,7 +840,7 @@ describe('gesture with flags', () => {
         clock.tick(timeAfter1001ms);
         expect(
             bubbleMotionGesture.load({
-                inputObjects: [movingPointerInput],
+                inputObjects: [[movingPointerInput]],
                 node: secondNodeToAdd
             })
         ).to.deep.equal([]); // max duration reached

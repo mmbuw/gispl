@@ -8,7 +8,7 @@ describe('gesture with duration', () => {
         nodesToEmitOn = [node],
         mockState = {
             node,
-            inputObjects: [null] //should contain e.g. tuio pointers but it doesn't matter
+            inputObjects: [[null]] //should contain e.g. tuio pointers but it doesn't matter
         },
         startingTime,
         clock;
@@ -59,7 +59,7 @@ describe('gesture with duration', () => {
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMoving]
+               inputObjects: [[pointerMoving]]
            })
        ).to.deep.equal([]);
     });
@@ -80,7 +80,7 @@ describe('gesture with duration', () => {
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMoving]
+               inputObjects: [[pointerMoving]]
            })
        ).to.deep.equal(nodesToEmitOn);
     });
@@ -99,7 +99,7 @@ describe('gesture with duration', () => {
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMoving]
+               inputObjects: [[pointerMoving]]
            })
        ).to.deep.equal([]);
     });
@@ -119,7 +119,7 @@ describe('gesture with duration', () => {
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMoving]
+               inputObjects: [[pointerMoving]]
            })
        ).to.deep.equal(nodesToEmitOn);
     });
@@ -148,7 +148,7 @@ describe('gesture with duration', () => {
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMoving]
+               inputObjects: [[pointerMoving]]
            })
        ).to.deep.equal([]);
     });
@@ -171,7 +171,7 @@ describe('gesture with duration', () => {
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMoving]
+               inputObjects: [[pointerMoving]]
            })
        ).to.deep.equal([]);
     });
@@ -192,7 +192,7 @@ describe('gesture with duration', () => {
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMoving]
+               inputObjects: [[pointerMoving]]
            })
        ).to.deep.equal(nodesToEmitOn);
     });

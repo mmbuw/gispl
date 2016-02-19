@@ -7,6 +7,7 @@ export default function tuioInput(params = {}) {
             calibration} = params,
         listeners = [],
         knownTuioInput = tuioObjectStore(),
+        inputHistory = tuioInputStateHistory(),
         enabled = false;
 
     function onTuioRefresh() {
@@ -25,8 +26,15 @@ export default function tuioInput(params = {}) {
                 }
                 nodesWithInput.get(node).push(tuioObject);
             });
+            
+        let nodesWithInputHistory = new Map();
+        nodesWithInput.forEach((inputObjects, node) => {
+            inputHistory.add({node, inputObjects});
+            // add to active nodes map
+            nodesWithInputHistory.set(node, inputHistory.getFor({node}));
+        });
 
-        notify(nodesWithInput);
+        notify(nodesWithInputHistory);
     }
     
     function fetchTuioData() {
@@ -138,6 +146,43 @@ export function tuioObjectStore(params = {}) {
                 }
                 return inputObject;
             });
+        }
+    };
+}
+
+export function tuioInputStateHistory({historyLimit = 3} = {}) {
+    
+    let nodesHistory = new WeakMap();
+    
+    function isPreviousInputState({inputObjects, currentNodeHistory}) {
+        let previousInputObjects = currentNodeHistory[0]; // last one
+        return !!previousInputObjects &&
+                !!inputObjects &&
+                (previousInputObjects.length === inputObjects.length) &&
+                previousInputObjects.every(previousInputObject => {
+                    return inputObjects.some(inputObject => {
+                        return inputObject === previousInputObject;
+                    });
+                });
+    }
+    
+    return {
+        add({node, inputObjects}) {
+            let currentNodeHistory = this.getFor({node});
+            if (!isPreviousInputState({inputObjects, currentNodeHistory})) {
+                if (currentNodeHistory.length === historyLimit) {
+                    currentNodeHistory.pop();
+                }            
+                // push latest history to front
+                currentNodeHistory.unshift(inputObjects);   
+            }        
+            return this;
+        },
+        getFor({node}) {
+            if (!nodesHistory.has(node)) {
+                nodesHistory.set(node, []);
+            }
+            return nodesHistory.get(node);
         }
     };
 }

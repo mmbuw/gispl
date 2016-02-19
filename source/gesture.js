@@ -86,9 +86,13 @@ export function createGesture(gestureDefinition) {
         // checks if the gesture is valid by validating every feature
         // and returns nodes to emit gestures on (based on which flags are set)
         load(inputState = {}) {
-            let {inputObjects,
+            let {inputObjects:inputObjectsHistory,
                     node} = inputState;
-
+            
+            let inputObjects = (typeof inputObjectsHistory !== 'undefined') ?
+                                                    inputObjectsHistory[0] :
+                                                    [];
+                                                    
             if (validInput(inputObjects)) {
                 // boils down to
                 // gestures with oneshot flags should be triggered once

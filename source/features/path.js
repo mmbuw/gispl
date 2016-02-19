@@ -20,7 +20,8 @@ export default function path(params) {
         },
 
         load(inputState) {
-            let {inputObjects} = inputState;
+            let {inputObjects:inputObjectsHistory} = inputState,
+                inputObjects = inputObjectsHistory[0];
 
             return inputObjects.every(inputObject => {
                 let match = false;
