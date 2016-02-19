@@ -29,13 +29,15 @@ export function tuioObjectUpdate(params) {
             calibration,
             inputObject} = params;
     // update path
-    inputObject.path = tuioObjectPath(params);
+    let startFrom = inputObject.path.length,
+        newPointsInPath = tuioObjectPath(params, startFrom);
+    inputObject.path.push(...newPointsInPath);
     // update point information (screenX, clientX...)
     Object.assign(inputObject, pointInformation(tuioComponent, calibration));
 }
 
-function tuioObjectPath({tuioComponent, calibration}) {
-    return tuioComponent.path.map(point => {
+function tuioObjectPath({tuioComponent, calibration}, startFrom = 0) {
+    return tuioComponent.path.slice(startFrom).map(point => {
         return pointInformation(point, calibration);
     });
 }

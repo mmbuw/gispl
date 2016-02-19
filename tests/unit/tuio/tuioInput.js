@@ -275,7 +275,8 @@ describe('tuioInput', () => {
         spy.restore();
     });
     
-    it('should create and update the same tuio object, not create new ones', (asyncDone) => {
+    it(`should create and update the same tuio object,
+            not create new ones`, (asyncDone) => {
         let tuioPointer1 = {
                 sessionId
             },
