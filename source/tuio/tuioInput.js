@@ -7,6 +7,7 @@ export default function tuioInput(params = {}) {
             calibration} = params,
         listeners = [],
         knownTuioInput = tuioObjectStore(),
+        tuioInputHistory = nodeInputHistory(),
         enabled = false;
 
     function onTuioRefresh() {
@@ -15,18 +16,19 @@ export default function tuioInput(params = {}) {
         
         knownTuioInput
             .store({tuioComponents, calibration})
-            .forEach(tuioObject => {
-                let screenX = tuioObject.screenX,
-                    screenY = tuioObject.screenY;
+            .forEach(inputObject => {
+                let screenX = inputObject.screenX,
+                    screenY = inputObject.screenY;
             
                 let node = findNode.fromPoint({screenX, screenY});
                 if (!nodesWithInput.has(node)) {
                     nodesWithInput.set(node, []);
                 }
-                nodesWithInput.get(node).push(tuioObject);
+                nodesWithInput.get(node).push(inputObject);
+                tuioInputHistory.add({node, inputObject});
             });
 
-        notify(nodesWithInput);
+        notify(nodesWithInput, tuioInputHistory.data());
     }
     
     function fetchTuioData() {
@@ -138,6 +140,31 @@ export function tuioObjectStore(params = {}) {
                 }
                 return inputObject;
             });
+        }
+    };
+}
+
+function nodeInputHistory() {
+    let nodeHistory = new WeakMap(),
+        historyLimit = 10;
+        
+    return {
+        data() {
+            return nodeHistory;
+        },
+        add({node, inputObject}) {
+            if (!nodeHistory.has(node)) {
+                nodeHistory.set(node, []);
+            }
+            let historyForNode = nodeHistory.get(node),
+                historyLimitReached = historyForNode.length === historyLimit;
+            if (historyLimitReached) {
+                historyForNode.shift();
+            }
+            if (historyForNode.indexOf(inputObject) === -1) {
+                historyForNode.push(inputObject);
+            }
+            return this;
         }
     };
 }

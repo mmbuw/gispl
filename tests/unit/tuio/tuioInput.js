@@ -318,5 +318,89 @@ describe('tuioInput', () => {
         expect(storedTuioInput.objects().length).to.equal(10);
         expect(storedTuioInput.objects()[0].identifier).to.equal(sessionIds[1]);
     });
+    
+    
+    it('should keep a history of input states per node', (asyncDone) => {
+        let tuioPointer1 = {
+                sessionId
+            },
+            tuioPointer2 = {
+                sessionId: sessionId2
+            },
+            spy = sinon.spy();
+
+        let input = tuioInput({tuioClient, findNode});
+        input.listen(spy);
+
+        setTimeout(() => {
+            sendPointerBundle(server, tuioPointer1, tuioPointer2);
+            sendPointerBundle(server, tuioPointer1);
+            
+            let history = spy.getCall(1).args[1],
+                rootHistory = history.get(document.documentElement);
+                
+            expect(rootHistory.length).to.equal(2);
+            
+            let firstPointer = rootHistory[0],
+                secondPointer = rootHistory[1];
+            
+            expect(firstPointer.identifier).to.equal(sessionId);
+            expect(secondPointer.identifier).to.equal(sessionId2);
+            asyncDone();
+        });
+    });
+    
+    it(`should only add to history if it is an unknown input object`, (asyncDone) => {
+        let tuioPointer1 = {
+                sessionId
+            },
+            spy = sinon.spy();
+
+        let input = tuioInput({tuioClient, findNode});
+        input.listen(spy);
+
+        setTimeout(() => {
+            sendPointerBundle(server, tuioPointer1);
+            sendPointerBundle(server, tuioPointer1);
+            
+            let history = spy.getCall(1).args[1],
+                rootHistory = history.get(document.documentElement);
+                
+            expect(rootHistory.length).to.equal(1);
+            asyncDone();
+        });
+    });
+    
+    it(`should keep only a history of 10 input objects,
+            removing older entries if larger`, (asyncDone) => {
+        let args = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(sessionId => {
+                return {sessionId};
+            }),
+            spy = sinon.spy();
+
+        let input = tuioInput({tuioClient, findNode});
+        args.unshift(server);
+        
+        input.listen(spy);
+
+        setTimeout(() => {
+            sendPointerBundle.apply(undefined, args);
+            
+            let history = spy.getCall(0).args[1],
+                rootHistory = history.get(document.documentElement);
+                
+            expect(rootHistory.length).to.equal(10);
+            expect(rootHistory[0].identifier).to.equal(1);
+            
+            args.push({sessionId: 11});
+            sendPointerBundle.apply(undefined, args);
+            
+            expect(rootHistory.length).to.equal(10);
+            expect(rootHistory[0].identifier).to.equal(2);
+            
+            asyncDone();
+        });
+    });
+
 
 });
