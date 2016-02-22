@@ -18,12 +18,12 @@ describe('feature', () => {
                 x: 0.5, y: 0.5
             }).moveTo({x: 0.6, y: 0.6}).finished();
 
-            let inputObjects = [[movingPointer]];
+            let inputObjects = [movingPointer];
             expect(motion.load({inputObjects})).to.equal(true);
         });
 
         it('should not recognize motion of inputs with only one known point', () => {
-            let inputObjects = [[buildInputFromPointer().finished()]];
+            let inputObjects = [buildInputFromPointer().finished()];
             expect(motion.load({inputObjects})).to.equal(false);
         });
 
@@ -34,7 +34,7 @@ describe('feature', () => {
                                     .moveTo({x: 0.1, y: 0.1})
                                     .finished();
 
-            let inputObjects = [[stoppedPointer]];
+            let inputObjects = [stoppedPointer];
             expect(motion.load({inputObjects})).to.equal(false);
         });
 
@@ -46,10 +46,10 @@ describe('feature', () => {
             let staticPointer = buildInputFromPointer({x: 0.1, y: 0.2})
                                     .finished();
 
-            let inputObjects = [[
+            let inputObjects = [
                 movingPointer,
                 staticPointer
-            ]];
+            ];
 
             expect(motion.load({inputObjects})).to.equal(true);
         });
@@ -60,10 +60,10 @@ describe('feature', () => {
                                     .finished();
             let staticPointer2 = buildInputFromPointer({x: 0.1, y: 0.2})
                                     .finished();
-            let inputObjects = [[
+            let inputObjects = [
                 staticPointer,
                 staticPointer2
-            ]];
+            ];
             expect(motion.load({inputObjects})).to.equal(false);
         });
         
@@ -72,9 +72,9 @@ describe('feature', () => {
                                     .moveTo({x: 0.5001, y: 0.5001})
                                     .finished();
 
-            let inputObjects = [[
+            let inputObjects = [
                 movingPointer
-            ]];
+            ];
 
             expect(motion.load({inputObjects})).to.equal(true);
         });
@@ -89,9 +89,9 @@ describe('feature', () => {
             let movingPointer = buildInputFromPointer(
                                     {x: 0.1, y: 0.2, typeId: tuioRightIndexFinger}
                                 ).moveTo({x: 0.4, y: 0.1}).finished(),
-                inputObjects = [[
+                inputObjects = [
                     movingPointer
-                ]];
+                ];
 
             expect(filteredMotion.load({inputObjects})).to.equal(false);
         });
@@ -104,9 +104,9 @@ describe('feature', () => {
             let movingPointer = buildInputFromPointer(
                                     {x: 0.1, y: 0.2, typeId: tuioRightThumbFingerId}
                                 ).moveTo({x: 0.4, y: 0.1}).finished(),
-                inputObjects = [[
+                inputObjects = [
                     movingPointer
-                ]];
+                ];
 
             expect(filteredMotion.load({inputObjects})).to.equal(true);
         });
@@ -124,11 +124,11 @@ describe('feature', () => {
             yp += 0.2;
             movingCursor.update({xp, yp});
 
-            let inputObjects = [[
+            let inputObjects = [
                 inputObjectFromTuio({
                     tuioComponent: movingCursor
                 })
-            ]];
+            ];
 
             expect(filteredMotion.load({inputObjects})).to.equal(false);
         });
@@ -144,45 +144,45 @@ describe('feature', () => {
                 movingPointer = buildInputFromPointer({x: 1, y: 1})
                                     .moveTo({x: 0.5, y: 0.5});
 
-            let inputObjects = [[
+            let inputObjects = [
                 movingPointer.finished()
-            ]];
+            ];
             expect(constrainedMotion.load({inputObjects})).to.equal(false);
 
             movingPointer.moveTo({x: 1, y: 1});
-            inputObjects = [[
+            inputObjects = [
                 movingPointer.finished()
-            ]];
+            ];
             expect(constrainedMotion.load({inputObjects})).to.equal(false);
 
             movingPointer.moveTo({x: 0, y: 1});
-            inputObjects = [[
+            inputObjects = [
                 movingPointer.finished()
-            ]];
+            ];
             expect(constrainedMotion.load({inputObjects})).to.equal(false);
 
             movingPointer.moveTo({x: 0, y: 1});
-            inputObjects = [[
+            inputObjects = [
                 movingPointer.finished()
-            ]];
+            ];
             expect(constrainedMotion.load({inputObjects})).to.equal(false);
 
             movingPointer.moveTo({x: 0, y: 0});
-            inputObjects = [[
+            inputObjects = [
                 movingPointer.finished()
-            ]];
+            ];
             expect(constrainedMotion.load({inputObjects})).to.equal(false);
 
             movingPointer.moveTo({x: 0.5, y: 0.5});
-            inputObjects = [[
+            inputObjects = [
                 movingPointer.finished()
-            ]];
+            ];
             expect(constrainedMotion.load({inputObjects})).to.equal(false);
 
             movingPointer.moveTo({x: 1, y: 0});
-            inputObjects = [[
+            inputObjects = [
                 movingPointer.finished()
-            ]];
+            ];
             expect(constrainedMotion.load({inputObjects})).to.equal(true);
         });
     });

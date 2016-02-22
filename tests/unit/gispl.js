@@ -236,8 +236,7 @@ describe('gispl', () => {
             let callbackArgs = spy.lastCall.args;
             expect(callbackArgs.length).to.equal(1);
 
-            let inputStateHistory = callbackArgs[0],
-                inputState = inputStateHistory[0];
+            let inputState = callbackArgs[0];
             expect(inputState.length).to.equal(1);
 
             let pointer = inputState[0];

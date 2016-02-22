@@ -15,8 +15,7 @@ export default function count(params) {
         },
 
         load(inputState) {
-            let {inputObjects:inputObjectsHistory} = inputState,
-                inputObjects = inputObjectsHistory[0];
+            let {inputObjects} = inputState;
 
             let count = 0;
             inputObjects.forEach(inputObject => {

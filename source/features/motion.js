@@ -17,8 +17,7 @@ export default function motion(params) {
         },
 
         load(inputState) {
-            let {inputObjects:inputObjectsHistory} = inputState,
-                inputObjects = inputObjectsHistory[0];
+            let {inputObjects} = inputState;
 
             let directionVectorAllInputs = vector(),
                 inputCount = 0;

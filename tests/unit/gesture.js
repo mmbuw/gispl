@@ -9,7 +9,7 @@ describe('gesture', () => {
         nodesToEmitOn = [node],
         mockState = {
             node,
-            inputObjects: [[null]] //should contain e.g. tuio pointers but it doesn't matter
+            inputObjects: [null] //should contain e.g. tuio pointers but it doesn't matter
         };
 
     function addFlagsToGesture(flags, gesture = motionGestureDefinition) {
@@ -215,7 +215,7 @@ describe('gesture', () => {
             return sinon.stub(feature, 'load').returns(true);
         });
         
-        let mockInput = [[null]],
+        let mockInput = [null],
             node = document.body;
         expect(gesture.load({
             inputObjects: mockInput,
@@ -231,8 +231,12 @@ describe('gesture', () => {
         gesture.features().forEach((feature, index) => {
             return sinon.stub(feature, 'load').returns(true);
         });
-        expect(gesture.load(
-            mockState
-        )).to.deep.equal(nodesToEmitOn);
+        
+        let mockInput = [null],
+            node = document.body;
+        expect(gesture.load({
+            inputObjects: mockInput,
+            node
+        })).to.deep.equal([node]);
     });
 });

@@ -12,10 +12,10 @@ describe('feature', () => {
         function buildInputState(params = {}) {
             let {count = 1} = params,
                 tuioPointer = buildInputFromPointer(params).finished(),
-                inputObjects = [[]];
+                inputObjects = [];
 
             for(let i = 0; i < count; i += 1) {
-                inputObjects[0].push(tuioPointer);
+                inputObjects.push(tuioPointer);
             }
 
             return {inputObjects};
