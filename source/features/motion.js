@@ -17,9 +17,8 @@ export default function motion(params) {
         },
 
         load(inputState) {
-            let {inputObjects} = inputState;
-
-            let directionVectorAllInputs = vector(),
+            let inputObjects = baseFeature.inputObjectsFrom(inputState),
+                directionVectorAllInputs = vector(),
                 inputCount = 0;
 
             inputObjects.forEach(inputObject => {

@@ -20,7 +20,7 @@ export default function path(params) {
         },
 
         load(inputState) {
-            let {inputObjects} = inputState;
+            let inputObjects = baseFeature.inputObjectsFrom(inputState);
 
             return inputObjects.every(inputObject => {
                 let match = false;

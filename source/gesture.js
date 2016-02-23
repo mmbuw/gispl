@@ -39,7 +39,23 @@ export function createGesture(gestureDefinition) {
     
     function validGestureDuration(inputObjects) {
         return inputObjects.every(inputObject => {
-            return validDuration({inputObject, duration});
+            let validDuration = true;
+            
+            if (typeof duration.min !== 'undefined') {
+                let currentTime = new Date().getTime(), 
+                    timeDiff = currentTime - inputObject.startingTime;
+                    
+                if (timeDiff < duration.min) {
+                    validDuration = false;
+                }
+                // max can't be defined if min undefined
+                if (validDuration && (typeof duration.max !== 'undefined')) {
+                    if (timeDiff > duration.max) {
+                        validDuration = false;
+                    }
+                }
+            }
+            return validDuration;
         });
     }
     
@@ -87,7 +103,6 @@ export function createGesture(gestureDefinition) {
         // and returns nodes to emit gestures on (based on which flags are set)
         load(inputState = {}) {
             let {inputObjects,
-                    inputHistory = [],
                     node} = inputState;
 
             if (validInput(inputObjects)) {
@@ -302,23 +317,4 @@ function initializeFlagsFrom(gestureDefinition) {
             return flags;
         }
     };
-}
-
-export function validDuration({inputObject, duration}) {
-    let validDuration = true;
-    if (typeof duration.min !== 'undefined') {
-        let currentTime = new Date().getTime(), 
-            timeDiff = currentTime - inputObject.startingTime;
-            
-        if (timeDiff < duration.min) {
-            validDuration = false;
-        }
-        // max can't be defined if min undefined
-        if (validDuration && (typeof duration.max !== 'undefined')) {
-            if (timeDiff > duration.max) {
-                validDuration = false;
-            }
-        }
-    }
-    return validDuration;
 }

@@ -26,6 +26,29 @@ export function inputObjectFromTuio(params) {
     };
 }
 
+export function inputObjectFromPath(params = {}) {
+    let {identifier,
+            path} = params;
+            
+    let {screenX, screenY,
+            relativeScreenX, relativeScreenY,
+            clientX, clientY,
+            pageX, pageY,
+            tuioTime,
+            startingTime} = path[0];
+    
+    return {
+        identifier,
+        path,
+        screenX, screenY,
+        relativeScreenX, relativeScreenY,
+        clientX, clientY,
+        pageX, pageY,
+        tuioTime,
+        startingTime
+    };
+}
+
 export function tuioObjectUpdate(params) {
     let {tuioComponent,
             calibration,

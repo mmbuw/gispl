@@ -1,5 +1,7 @@
 import {createGesture} from '../../source/gesture';
-import {buildInputFromPointer} from '../helpers/pointer';
+import {tuioObjectUpdate} from '../../source/tuio/tuioInputObject';
+import {buildInputFromPointer,
+            buildPointer} from '../helpers/pointer';
 
 describe('gesture with duration', () => {
 
@@ -51,15 +53,14 @@ describe('gesture with duration', () => {
             oneSecondDurationMotionDefinition = addDurationToGesture(oneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-       let pointerMoving = buildInputFromPointer({x: 0, y: 0})
-                                        .moveTo({x: 0.1, y: 0.1})
-                                        .finished();
+       let pointerMoving = buildInputFromPointer({x: 0, y: 0});
        clock.tick(timeAfter999ms);
+       pointerMoving.moveTo({x: 0.1, y: 0.1});
        
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMoving]
+               inputObjects: [pointerMoving.finished()]
            })
        ).to.deep.equal([]);
     });
@@ -160,18 +161,15 @@ describe('gesture with duration', () => {
             timeAfter999ms = 999,
             oneSecondDurationMotionDefinition = addDurationToFeature(oneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
-            
-            console.log(oneSecondDurationMotionDefinition)
        
-       let pointerMoving = buildInputFromPointer({x: 0, y: 0})
-                                        .moveTo({x: 0.1, y: 0.1})
-                                        .finished();
+       let pointerMoving = buildInputFromPointer({x: 0, y: 0});
        clock.tick(timeAfter999ms);
+       pointerMoving.moveTo({x: 0.1, y: 0.1});
        
        expect(
            oneSecondDurationMotionGesture.load({
                node,
-               inputObjects: [pointerMoving]
+               inputObjects: [pointerMoving.finished()]
            })
        ).to.deep.equal([]);
     });
@@ -182,18 +180,48 @@ describe('gesture with duration', () => {
             timeAfter1000ms = 1000,
             oneSecondDurationMotionDefinition = addDurationToFeature(minimumOneSecondDuration),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
-       
-       let pointerMoving = buildInputFromPointer({x: 0, y: 0})
-                                        .moveTo({x: 0.1, y: 0.1})
-                                        .finished();
-                            
-       clock.tick(timeAfter1000ms);
-                 
-       expect(
-           oneSecondDurationMotionGesture.load({
-               node,
-               inputObjects: [pointerMoving]
-           })
-       ).to.deep.equal(nodesToEmitOn);
+
+        let pointerMoving = buildInputFromPointer({x: 0, y: 0})
+                                .moveTo({x: 0.5, y: 0.5})
+                                .finished();
+                                
+        clock.tick(timeAfter1000ms);
+                    
+        expect(
+            oneSecondDurationMotionGesture.load({
+                node,
+                inputObjects: [pointerMoving],
+                inputHistory: [pointerMoving]
+            })
+        ).to.deep.equal(nodesToEmitOn);
+    });
+        
+    it('should check input history when feature duration set', () => {
+        
+        let doubleTapDefinition = {
+            name: 'doubletap',
+            features:[
+                { type: 'Count', constraints:[0,0], duration: [0.2, 0.3]},
+                { type: 'Count', constraints:[1,1], duration: [0.1, 0.2]},
+                { type: 'Count', constraints:[0,0], duration: [0.01, 0.1]},
+                { type: 'Count', constraints:[1,1], duration: [0, 0.01]}
+            ]
+        },
+        doubleTapGesture = createGesture(doubleTapDefinition);
+        
+        let firstTap = buildInputFromPointer({x: 0, y: 0}).finished();
+        
+        clock.tick(150);
+        
+        let secondTap = buildInputFromPointer({x: 0, y: 0}).finished(),
+            inputObjects = [secondTap],
+            inputHistory = [firstTap, secondTap],
+            node = 'node';
+                
+        expect(
+            doubleTapGesture.load({
+                node, inputObjects, inputHistory
+            })
+        ).to.deep.equal([node]);
     });
 });
