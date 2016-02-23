@@ -5,9 +5,9 @@ export function inputObjectFromTuio(params) {
         {screenX, screenY,
             relativeScreenX, relativeScreenY,
             clientX, clientY,
-            pageX, pageY} = pointInformation(tuioComponent, calibration),
+            pageX, pageY,
+            startingTime} = pointInformation(tuioComponent, calibration),
         path = tuioObjectPath(params),
-        startingTime = new Date().getTime(),
         type;
 
     if (typeof tuioComponent.getTypeId === 'function') {
@@ -42,7 +42,8 @@ function tuioObjectPath({tuioComponent, calibration}, startFrom = 0) {
     });
 }
 
-function pointInformation(point, calibration) {
+function pointInformation(point, calibration,
+                                startingTime = new Date().getTime()) {
 
     let relativeScreenX = point.getX(),
         relativeScreenY = point.getY(),
@@ -69,6 +70,7 @@ function pointInformation(point, calibration) {
         screenX, screenY,
         clientX, clientY,
         pageX, pageY,
+        startingTime,
         tuioTime
     };
 }
