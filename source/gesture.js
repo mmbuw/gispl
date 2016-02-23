@@ -87,6 +87,7 @@ export function createGesture(gestureDefinition) {
         // and returns nodes to emit gestures on (based on which flags are set)
         load(inputState = {}) {
             let {inputObjects,
+                    inputHistory = [],
                     node} = inputState;
 
             if (validInput(inputObjects)) {

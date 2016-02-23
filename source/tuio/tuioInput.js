@@ -6,7 +6,6 @@ export default function tuioInput(params = {}) {
             findNode,
             calibration} = params,
         listeners = [],
-        knownTuioInput = tuioObjectStore(),
         tuioInputHistory = nodeInputHistory(),
         enabled = false;
 
@@ -14,7 +13,7 @@ export default function tuioInput(params = {}) {
         let tuioComponents = fetchTuioData(),
             nodesWithInput = new Map();
         
-        knownTuioInput
+        tuioInputHistory
             .store({tuioComponents, calibration})
             .forEach(inputObject => {
                 let screenX = inputObject.screenX,
@@ -28,7 +27,7 @@ export default function tuioInput(params = {}) {
                 tuioInputHistory.add({node, inputObject});
             });
 
-        notify(nodesWithInput, tuioInputHistory.data());
+        notify(nodesWithInput, tuioInputHistory.historyData());
     }
     
     function fetchTuioData() {
@@ -98,10 +97,11 @@ export default function tuioInput(params = {}) {
         }
     };
 }
-            
-export function tuioObjectStore(params = {}) {
-    let {storeLimit = 10} = params,
-        storedObjects = [];
+
+function nodeInputHistory(params = {}) {
+    let storedObjects = [],
+        nodeHistory = new WeakMap(),
+        {limit = 10} = params;
     
     function findIndexOf(tuioComponent) {
         let indexOfComponent = -1;  
@@ -113,9 +113,30 @@ export function tuioObjectStore(params = {}) {
         return indexOfComponent;
     }
     
+    function removeDroppedInputObjectsFrom(historyForNode) {
+        historyForNode.forEach((inputObject, currentIndex) => {
+            let notStored = storedObjects.indexOf(inputObject) === -1;
+            if (notStored) {
+                historyForNode.splice(currentIndex, 1);
+            }
+        });
+    }
+        
     return {
-        objects() {
-            return storedObjects;
+        historyData() {
+            return nodeHistory;
+        },
+        add({node, inputObject}) {
+            if (!nodeHistory.has(node)) {
+                nodeHistory.set(node, []);
+            }
+            let historyForNode = nodeHistory.get(node),
+                inputObjectNotInHistory = historyForNode.indexOf(inputObject) === -1;
+            if (inputObjectNotInHistory) {
+                removeDroppedInputObjectsFrom(historyForNode);
+                historyForNode.push(inputObject);
+            }
+            return this;
         },
         store({tuioComponents, calibration}) {
             return tuioComponents.map(tuioComponent => {
@@ -124,7 +145,7 @@ export function tuioObjectStore(params = {}) {
                     inputObject;
                 
                 if (newComponent) {
-                    let storeLimitReached = storedObjects.length === storeLimit;
+                    let storeLimitReached = storedObjects.length === limit;
                     inputObject = inputObjectFromTuio({
                         tuioComponent,
                         calibration
@@ -140,31 +161,6 @@ export function tuioObjectStore(params = {}) {
                 }
                 return inputObject;
             });
-        }
-    };
-}
-
-function nodeInputHistory() {
-    let nodeHistory = new WeakMap(),
-        historyLimit = 10;
-        
-    return {
-        data() {
-            return nodeHistory;
-        },
-        add({node, inputObject}) {
-            if (!nodeHistory.has(node)) {
-                nodeHistory.set(node, []);
-            }
-            let historyForNode = nodeHistory.get(node),
-                historyLimitReached = historyForNode.length === historyLimit;
-            if (historyLimitReached) {
-                historyForNode.shift();
-            }
-            if (historyForNode.indexOf(inputObject) === -1) {
-                historyForNode.push(inputObject);
-            }
-            return this;
         }
     };
 }

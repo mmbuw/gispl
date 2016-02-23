@@ -1,4 +1,4 @@
-import tuioInput, {tuioObjectStore} from '../../../source/tuio/tuioInput';
+import tuioInput from '../../../source/tuio/tuioInput';
 import gispl from '../../../source/gispl';
 import screenCalibration from '../../../source/tuio/screenCalibration';
 import nodeSearch from '../../../source/tuio/nodeSearch';
@@ -300,25 +300,7 @@ describe('tuioInput', () => {
             expect(pointerOnFirstUpdate).to.equal(pointerOnSecondUpdate);
             asyncDone();
         });
-    });
-    
-    it(`should not store more than the specified number of old tuio objects,
-            removing the older ones once limit reached`, () => {
-        let storedTuioInput = tuioObjectStore({storeLimit: 10}),
-            sessionIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            tuioComponents = sessionIds.map(sessionId => {
-                return buildPointer({sessionId}).finished();
-            });
-        
-        storedTuioInput.store({tuioComponents, calibration});
-        expect(storedTuioInput.objects().length).to.equal(10);
-        
-        let moreTuioComponents = [buildPointer({sessionId: 11}).finished()];
-        storedTuioInput.store({tuioComponents: moreTuioComponents, calibration});
-        expect(storedTuioInput.objects().length).to.equal(10);
-        expect(storedTuioInput.objects()[0].identifier).to.equal(sessionIds[1]);
-    });
-    
+    });    
     
     it('should keep a history of input states per node', (asyncDone) => {
         let tuioPointer1 = {
@@ -401,6 +383,60 @@ describe('tuioInput', () => {
             asyncDone();
         });
     });
+    
+    it(`should remove objects from node history,
+            if not available as a stored object`, (asyncDone) => {
+        let firstSessionId = 1,
+            secondSessionId = 2,
+            lastSessionId = 12,
+            args = [firstSessionId, secondSessionId,
+                        3, 4, 5, 6, 7, 8, 9, 10].map(sessionId => {
+                return {sessionId};
+            }),
+            spy = sinon.spy();
 
+        let input = tuioInput({tuioClient, findNode});
+        args.unshift(server);
+        
+        input.listen(spy);
+
+        coordinatesStub.restore();
+        coordinatesStub = sinon.stub(calibration, 'screenToViewportCoordinates');
+
+        let element = $(`<div style="
+                            position: absolute; top: 0; left: 0;
+                            width: 10px;
+                            height: 10px;"></div>`).appendTo('body')[0];
+        //ensure first and last search find element
+        coordinatesStub.onCall(0).returns({x:0, y:0});
+        coordinatesStub.onCall(11).returns({x:0, y:0});
+        // all others return html root
+        coordinatesStub.returns({x: 11, y: 11});
+
+        setTimeout(() => {
+            sendPointerBundle.apply(undefined, args);
+            
+            let history = spy.getCall(0).args[1],
+                rootHistory = history.get(document.documentElement),
+                elementHistory = history.get(element);
+                
+            expect(rootHistory.length).to.equal(9);
+            expect(elementHistory.length).to.equal(1);
+            expect(rootHistory[0].identifier).to.equal(secondSessionId);
+            expect(elementHistory[0].identifier).to.equal(firstSessionId);
+            
+            let secondInput = [server, {sessionId: 11}];
+            sendPointerBundle.apply(undefined, secondInput);
+            expect(rootHistory.length).to.equal(10);
+            expect(rootHistory[0].identifier).to.equal(secondSessionId);
+            
+            let thirdInput = [server, {sessionId: lastSessionId}];
+            sendPointerBundle.apply(undefined, thirdInput);
+            expect(elementHistory.length).to.equal(1);
+            expect(elementHistory[0].identifier).to.equal(lastSessionId);
+            
+            asyncDone();
+        });
+    });
 
 });
