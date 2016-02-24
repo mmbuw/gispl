@@ -1,6 +1,7 @@
 import TuioPointer from 'tuio/src/TuioPointer';
 import TuioTime from 'tuio/src/TuioTime';
-import {inputObjectFromTuio} from '../../source/tuio/tuioInputObject';
+import {inputObjectFromTuio,
+        tuioObjectUpdate} from '../../source/tuio/tuioInputObject';
 
 export function buildPointer(params = {}) {
     let {x:xp, y:yp, sessionId:si,
@@ -62,20 +63,30 @@ export function buildPointer(params = {}) {
 
 export function buildInputFromPointer(params) {
     let pointerBuilder = buildPointer(params);
+    
+    function tuioInputObject() {
+        return inputObjectFromTuio({
+            tuioComponent: pointerBuilder.finished()
+        });
+    }
+    let inputObject = tuioInputObject();
 
     return {
         moveTo: function(params) {
             pointerBuilder.moveTo(params);
+            tuioObjectUpdate({
+                inputObject,
+                tuioComponent: pointerBuilder.finished()
+            });
             return this;
         },
         newSessionId: function() {
             pointerBuilder.newSessionId();
+            inputObject = tuioInputObject();
             return this;
         },
         finished: function() {
-            return inputObjectFromTuio({
-                tuioComponent: pointerBuilder.finished()
-            });
+            return inputObject;
         }
     }
 }
