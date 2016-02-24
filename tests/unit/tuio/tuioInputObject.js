@@ -215,8 +215,9 @@ describe('tuioInputObject', () => {
             
         expect(inputObject.path[0].startingTime).to.equal(startingTime);
         
-        pointer.moveTo({x: 0.5, y: 0.5});
         let elapsedTime = 100;
+        tuioTime += elapsedTime;
+        pointer.moveTo({x: 0.5, y: 0.5, time: tuioTime});
         clock.tick(elapsedTime);
         
         tuioObjectUpdate({
@@ -227,5 +228,29 @@ describe('tuioInputObject', () => {
         
         clock.restore();
     });
-
+    
+    it('should keep the correct starting time after update', () => {
+        let startingTime = new Date().getTime(),
+            tuioTime = 1000,
+            clock = sinon.useFakeTimers(startingTime),
+            pointer = buildPointer({x: 0, y: 0, time: tuioTime}),
+            inputObject = inputObjectFromTuio({
+                tuioComponent: pointer.finished()
+            });
+        
+        expect(inputObject.startingTime).to.equal(startingTime);
+        
+        let elapsedTime = 100;
+        tuioTime += elapsedTime;
+        pointer.moveTo({x: 0.5, y: 0.5, time: tuioTime});
+        clock.tick(elapsedTime);
+        
+        tuioObjectUpdate({
+            tuioComponent: pointer.finished(),
+            inputObject
+        });
+        
+        expect(inputObject.startingTime).to.equal(startingTime);
+        clock.restore();
+    });
 });

@@ -55,23 +55,26 @@ export function tuioObjectUpdate(params) {
             inputObject} = params;
     // update path
     let startFrom = inputObject.path.length,
-        newPointsInPath = tuioObjectPath(params, startFrom,
-                                inputObject.startingTime,
-                                inputObject.tuioTime);
+        newPointsInPath = tuioObjectPath(params, startFrom);
     inputObject.path.push(...newPointsInPath);
     // update point information (screenX, clientX...)
-    Object.assign(inputObject, pointInformation(tuioComponent, calibration));
+    Object.assign(inputObject, pointInformation(tuioComponent,
+                                                    calibration,
+                                                    inputObject.startingTime));
 }
 
 function tuioObjectPath({tuioComponent, calibration}, startFrom = 0) {
+    // so actually this is always just an array of one point
+    // so it could be simplied to just take the last point
+    // but pointers are in tests often times built as one input with
+    // several points in the path and then converted to tuioInputObject
     return tuioComponent.path.slice(startFrom).map(point => {
         return pointInformation(point, calibration);
     });
 }
 
 function pointInformation(point, calibration,
-                                startingPointerTime = new Date().getTime(),
-                                startingTuioTime) {
+                                startingTime = new Date().getTime()) {
 
     let relativeScreenX = point.getX(),
         relativeScreenY = point.getY(),
@@ -84,12 +87,6 @@ function pointInformation(point, calibration,
         screenY = point.getScreenY(window.screen.height),
         clientX, clientY,
         pageX, pageY;
-    
-    if (typeof startingTuioTime === 'undefined') {
-        startingTuioTime = tuioTime;
-    }
-    let elapsedTime = tuioTime - startingTuioTime,
-        startingTime = startingPointerTime + elapsedTime;
 
     if (typeof calibration !== 'undefined') {
         ({x:clientX,
