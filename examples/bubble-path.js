@@ -7,6 +7,7 @@ $(document).ready(() => {
     gispl.addGesture({
         name: bubbleTrianglePath,
         flags: 'bubble',
+        duration: [2],
         features: [
             {
                 type: "Path",
