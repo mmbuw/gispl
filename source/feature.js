@@ -40,7 +40,7 @@ export function featureBase(params) {
 
         if (typeIdKnown) {
             let typeIdAsBitmask = 1<<(typeId-1);
-            filtersMatch = filters & typeIdAsBitmask;
+            filtersMatch = !!(filters & typeIdAsBitmask);
         }
 
         return hasNoFilters || filtersMatch;
