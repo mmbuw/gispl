@@ -5,9 +5,10 @@ export function inputObjectFromTuio(params) {
         {screenX, screenY,
             relativeScreenX, relativeScreenY,
             clientX, clientY,
-            pageX, pageY} = pointInformation(tuioComponent, calibration),
+            pageX, pageY,
+            tuioTime,
+            startingTime} = pointInformation(tuioComponent, calibration),
         path = tuioObjectPath(params),
-        startingTime = new Date().getTime(),
         type;
 
     if (typeof tuioComponent.getTypeId === 'function') {
@@ -20,6 +21,30 @@ export function inputObjectFromTuio(params) {
         screenX, screenY,
         clientX, clientY,
         pageX, pageY,
+        startingTime,
+        tuioTime
+    };
+}
+
+export function inputObjectFromPath(params = {}) {
+    let {identifier,
+            path} = params;
+            
+    let {screenX, screenY,
+            relativeScreenX, relativeScreenY,
+            clientX, clientY,
+            pageX, pageY,
+            tuioTime,
+            startingTime} = path[0];
+    
+    return {
+        identifier,
+        path,
+        screenX, screenY,
+        relativeScreenX, relativeScreenY,
+        clientX, clientY,
+        pageX, pageY,
+        tuioTime,
         startingTime
     };
 }
@@ -30,7 +55,9 @@ export function tuioObjectUpdate(params) {
             inputObject} = params;
     // update path
     let startFrom = inputObject.path.length,
-        newPointsInPath = tuioObjectPath(params, startFrom);
+        newPointsInPath = tuioObjectPath(params, startFrom,
+                                inputObject.startingTime,
+                                inputObject.tuioTime);
     inputObject.path.push(...newPointsInPath);
     // update point information (screenX, clientX...)
     Object.assign(inputObject, pointInformation(tuioComponent, calibration));
@@ -42,7 +69,9 @@ function tuioObjectPath({tuioComponent, calibration}, startFrom = 0) {
     });
 }
 
-function pointInformation(point, calibration) {
+function pointInformation(point, calibration,
+                                startingPointerTime = new Date().getTime(),
+                                startingTuioTime) {
 
     let relativeScreenX = point.getX(),
         relativeScreenY = point.getY(),
@@ -55,6 +84,12 @@ function pointInformation(point, calibration) {
         screenY = point.getScreenY(window.screen.height),
         clientX, clientY,
         pageX, pageY;
+    
+    if (typeof startingTuioTime === 'undefined') {
+        startingTuioTime = tuioTime;
+    }
+    let elapsedTime = tuioTime - startingTuioTime,
+        startingTime = startingPointerTime + elapsedTime;
 
     if (typeof calibration !== 'undefined') {
         ({x:clientX,
@@ -69,6 +104,7 @@ function pointInformation(point, calibration) {
         screenX, screenY,
         clientX, clientY,
         pageX, pageY,
+        startingTime,
         tuioTime
     };
 }

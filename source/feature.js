@@ -2,9 +2,9 @@ import {vector} from './vector';
 import motion from './features/motion';
 import count from './features/count';
 import path from './features/path';
-import {extractDurationFrom,
-        validDuration} from './gesture';
+import {extractDurationFrom} from './gesture';
 import {DollarRecognizer} from './libs/dollar';
+import {inputObjectFromPath} from './tuio/tuioInputObject';
 
 let singleRecognizerInstance = new DollarRecognizer();
 
@@ -45,11 +45,41 @@ export function featureBase(params) {
 
         return hasNoFilters || filtersMatch;
     }
+    
+    function extractInputObjectsFrom(inputHistory = []) {
+        let inputObjects = [],
+            currentTime = new Date().getTime();
+            
+        inputHistory.forEach(inputObject => {
+            let validInputPath = inputObject.path.filter(point => {
+                let timeDiff = currentTime - point.startingTime;
+                return (timeDiff >= duration.min &&
+                        (typeof duration.max === 'undefined' ||
+                            timeDiff <= duration.max));
+            });
+            if (validInputPath.length !== 0) {
+                let validInputObject = inputObjectFromPath({
+                    inputObject,
+                    path: validInputPath
+                });
+                inputObjects.push(validInputObject);
+            }
+        });
+        
+        return inputObjects;
+    }
 
     return {
+        inputObjectsFrom(inputState) {
+            let {inputObjects,
+                    inputHistory} = inputState;
+            if (typeof duration.definition !== 'undefined') {
+                inputObjects = extractInputObjectsFrom(inputHistory);
+            }
+            return inputObjects;
+        },
         checkAgainstDefinition(inputObject) {
-            return matchFiltersWith(inputObject) &&
-                    validDuration({inputObject, duration});
+            return matchFiltersWith(inputObject);
         }
     };
 }

@@ -192,12 +192,12 @@ describe('gispl', () => {
         }, 0);
     });
 
-    it('should pass the inputstate array as parameter to the callback', (asyncDone) => {
+    it(`should pass the inputstate as argument in the gesture callback`, (asyncDone) => {
         let spy = sinon.spy(),
             motionName = 'motion',
             sessionId = 10,
-            xPos = 0,
-            yPos = 0,
+            xPos = 0.2,
+            yPos = 0.2,
             frameId = 1,
             host = 'test-socket-url';
 
@@ -232,7 +232,6 @@ describe('gispl', () => {
             yPos += 0.5;
             frameId += 1;
             sendPointerBundle(server, {sessionId, xPos, yPos});
-
             let callbackArgs = spy.lastCall.args;
             expect(callbackArgs.length).to.equal(1);
 

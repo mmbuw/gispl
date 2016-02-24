@@ -34,12 +34,15 @@ export default function gispl(selection) {
     return gisplApi;
 }
 
-function handleInput(nodesMap) {
+function handleInput(nodesInput, nodesInputHistory) {
 
-    nodesMap.forEach((inputObjects, node) => {
+    nodesInput.forEach((inputObjects, node) => {
         userDefinedGestures.forEach(gesture => {
 
-            let nodesToEmitOn = gesture.load({inputObjects, node}),
+            let inputHistory = nodesInputHistory.get(node),
+                nodesToEmitOn = gesture.load(
+                    {inputObjects, inputHistory, node}
+                ),
                 eventName = gesture.name();
 
             nodesToEmitOn.forEach(nodeToEmitOn => {
