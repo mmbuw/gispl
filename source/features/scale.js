@@ -3,14 +3,15 @@ import {lowerUpperLimit} from '../feature';
 
 export default function scale(params) {
     
-    let limit = lowerUpperLimit(params.constraints);
+    let constraints = extractContraintsFrom(params),
+        limit = lowerUpperLimit(constraints);
     
-    function pointToPointDistance(point1, point2) {
-        let x = point1.screenX - point2.screenX,
-            y = point1.screenY - point2.screenY,
-            pointToPointVector = vector({x, y});
+    function pointToPointDistance(first, second) {
+        let x = first.screenX - second.screenX,
+            y = first.screenY - second.screenY,
+            directionVector = vector({x, y});
             
-        return pointToPointVector.length();
+        return directionVector.length();
     }
     
     return {
@@ -35,10 +36,26 @@ export default function scale(params) {
                     lastPoint = path[path.length - 1];
                     
                 let originalDistance = pointToPointDistance(centroid, firstPoint),
-                    currentDistance = pointToPointDistance(centroid, lastPoint);
+                    currentDistance = pointToPointDistance(centroid, lastPoint),
+                    scaleFactor = currentDistance / originalDistance;
                                         
-                return (currentDistance / originalDistance) >= limit.lower;
+                return scaleFactor >= limit.lower &&
+                            scaleFactor <= limit.upper;
             });
         }
     };
+}
+
+function extractContraintsFrom(params) {
+    let {constraints} = params,
+        defaultLowerLimit = 0,
+        defaultUpperLimit = Number.POSITIVE_INFINITY;
+        
+    if (!Array.isArray(constraints)) {
+        constraints = [defaultLowerLimit, defaultUpperLimit];
+    }
+    else if (constraints.length === 1) {
+        constraints.push(defaultUpperLimit);
+    }
+    return constraints;
 }
