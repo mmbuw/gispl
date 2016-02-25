@@ -7,6 +7,11 @@ export default function scale(params) {
         limit = lowerUpperLimit(constraints);
     
     function pointToPointDistance(first, second) {
+        // scale helps with floating point inprecision 
+        // without it some edge case in tests will fail
+        // because instead of 2, the scale factor will be 2.00...004
+        // using screenX which is an integer does not always help
+        // also don't change to (first - second) * scale
         let scale = 10000,
             x = (first.relativeScreenX * scale - second.relativeScreenX * scale),
             y = (first.relativeScreenY * scale - second.relativeScreenY * scale),
@@ -17,16 +22,18 @@ export default function scale(params) {
     
     function calculateCentroidFrom(inputObjects) {
         let inputCount = inputObjects.length,
+            // check above scale comment
+            scale = 10000,
             relativeScreenX = 0,
             relativeScreenY = 0;
         
         inputObjects.forEach(inputObject => {
-            relativeScreenX += inputObject.relativeScreenX;
-            relativeScreenY += inputObject.relativeScreenY;
+            relativeScreenX += inputObject.relativeScreenX * scale;
+            relativeScreenY += inputObject.relativeScreenY * scale;
         });
         
-        relativeScreenX /= inputCount;
-        relativeScreenY /= inputCount;
+        relativeScreenX /= inputCount * scale;
+        relativeScreenY /= inputCount * scale;
                                     
         return {relativeScreenX, relativeScreenY};
     }
