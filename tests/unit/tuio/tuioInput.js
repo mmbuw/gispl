@@ -438,5 +438,22 @@ describe('tuioInput', () => {
             asyncDone();
         });
     });
+    
+    it('should not throw if using input outside of the browser', (asyncDone) => {
+        let findNodeStub = sinon.stub(findNode, 'fromPoint').returns(null),
+            pointer = buildPointer().finished(),
+            tuioClientStub = sinon.stub(tuioClient, 'getTuioPointers')
+                                    .returns([pointer]),
+            input = tuioInput({tuioClient, findNode});
+
+        setTimeout(() => {
+            expect(function() {
+                tuioClient.trigger('refresh');
+            }).to.not.throw();
+            tuioClientStub.restore();
+            findNodeStub.restore();
+            asyncDone();
+        });
+    });
 
 });

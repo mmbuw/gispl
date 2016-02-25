@@ -20,11 +20,13 @@ export default function tuioInput(params = {}) {
                     screenY = inputObject.screenY;
             
                 let node = findNode.fromPoint({screenX, screenY});
-                if (!nodesWithInput.has(node)) {
-                    nodesWithInput.set(node, []);
+                if (node) {
+                    if (!nodesWithInput.has(node)) {
+                        nodesWithInput.set(node, []);
+                    }
+                    nodesWithInput.get(node).push(inputObject);
+                    tuioInputHistory.add({node, inputObject});   
                 }
-                nodesWithInput.get(node).push(inputObject);
-                tuioInputHistory.add({node, inputObject});
             });
 
         notify(nodesWithInput, tuioInputHistory.historyData());
