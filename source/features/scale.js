@@ -54,11 +54,13 @@ export default function scale(params) {
                 }, 0);
                 
                 let averageScaleFactor = totalScaleFactor / inputObjects.length;
-                        
+                console.log('total', totalScaleFactor);
+                console.log('count', inputCount);
+                console.log('avg', averageScaleFactor);
+                console.log(window.screen.width, window.screen.height);
                 match = averageScaleFactor !== 1 &&
                             averageScaleFactor >= limit.lower &&
                             averageScaleFactor <= limit.upper;
-                            console.log(averageScaleFactor)
             }
             
             return match;
