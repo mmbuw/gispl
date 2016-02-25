@@ -58,6 +58,7 @@ export default function scale(params) {
                 match = averageScaleFactor !== 1 &&
                             averageScaleFactor >= limit.lower &&
                             averageScaleFactor <= limit.upper;
+                            console.log(averageScaleFactor)
             }
             
             return match;
