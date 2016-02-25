@@ -14,6 +14,21 @@ export default function scale(params) {
         return directionVector.length();
     }
     
+    function calculateCentroidFrom(inputObjects) {
+        let count = inputObjects.length,
+            screenX = 0, screenY = 0;
+        
+        inputObjects.forEach(inputObject => {
+            screenX += inputObject.screenX;
+            screenY += inputObject.screenY;
+        });
+        
+        screenX /= count;
+        screenY /= count;
+                                    
+        return {screenX, screenY};
+    }
+    
     return {
         type() {
             return 'Scale';
@@ -21,14 +36,7 @@ export default function scale(params) {
         load(inputState) {
             let {inputObjects} = inputState;
             
-            let firstInput = inputObjects[0],
-                secondInput = inputObjects[1],
-                centroid = {};
-            
-            centroid.screenX = (firstInput.path[0].screenX +
-                            secondInput.path[0].screenX) / 2;
-            centroid.screenY = (firstInput.path[0].screenY +
-                            secondInput.path[0].screenY) / 2;
+            let centroid = calculateCentroidFrom(inputObjects);
             
             let totalScaleFactor = inputObjects.reduce((totalScaleFactor, inputObject) => {
                 let path = inputObject.path,

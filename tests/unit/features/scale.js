@@ -163,5 +163,28 @@ describe('feature', () => {
                 scaleFeature.load({inputObjects})
             ).to.equal(true);
         });
+        
+        it(`should recognize the feature when valid while using
+                more than two points`, () => {
+            let params = {type},
+                scaleFeature = featureFactory(params),
+                staticFirstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
+                staticSecondInput = buildInputFromPointer({x: 0.4, y: 0.4}),
+                movingThirdInput = buildInputFromPointer({x: 0.6, y: 0.6});
+            
+            staticFirstInput.moveTo({x: 0.4, y: 0.4});
+            staticSecondInput.moveTo({x: 0.4, y: 0.4});
+            movingThirdInput.moveTo({x: 0.8, y: 0.8});
+            
+            let inputObjects = [
+                staticFirstInput.finished(),
+                staticSecondInput.finished(),
+                movingThirdInput.finished()
+            ];
+            
+            expect(
+                scaleFeature.load({inputObjects})
+            ).to.equal(true);
+        });
     });
 });
