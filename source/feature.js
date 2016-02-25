@@ -2,6 +2,7 @@ import {vector} from './vector';
 import motion from './features/motion';
 import count from './features/count';
 import path from './features/path';
+import scale from './features/scale';
 import {extractDurationFrom} from './gesture';
 import {DollarRecognizer} from './libs/dollar';
 import {inputObjectFromPath} from './tuio/tuioInputObject';
@@ -20,6 +21,8 @@ export function featureFactory(params = {}) {
     case 'path':
         params.recognizer = singleRecognizerInstance;
         return path(params);
+    case 'scale':
+        return scale(params);
     default:
         throw new Error(`${featureException.NONEXISTING} ${type}`);
     }
