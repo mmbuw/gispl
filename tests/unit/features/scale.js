@@ -145,6 +145,22 @@ describe('feature', () => {
             ).to.equal(false);
         });
         
+        it('should not recognize the feature when points not moving at all', () => {
+            let params = {type},
+                scaleFeature = featureFactory(params),
+                staticFirstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
+                staticSecondInput = buildInputFromPointer({x: 0.6, y: 0.6});
+            
+            let inputObjects = [
+                staticFirstInput.finished(),
+                staticSecondInput.finished()
+            ];
+            
+            expect(
+                scaleFeature.load({inputObjects})
+            ).to.equal(false);
+        });
+        
         it('should recognize scale even when one input static', () => {
             let params = {type},
                 scaleFeature = featureFactory(params),
@@ -185,6 +201,22 @@ describe('feature', () => {
             expect(
                 scaleFeature.load({inputObjects})
             ).to.equal(true);
+        });
+        
+        it('should not recognize the feature when using just one point', () => {
+            let params = {type},
+                scaleFeature = featureFactory(params),
+                movingInput = buildInputFromPointer({x: 0.6, y: 0.6});
+            
+            movingInput.moveTo({x: 0.8, y: 0.8});
+            
+            let inputObjects = [
+                movingInput.finished()
+            ];
+            
+            expect(
+                scaleFeature.load({inputObjects})
+            ).to.equal(false);
         });
     });
 });

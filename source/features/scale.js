@@ -15,7 +15,7 @@ export default function scale(params) {
     }
     
     function calculateCentroidFrom(inputObjects) {
-        let count = inputObjects.length,
+        let inputCount = inputObjects.length,
             screenX = 0, screenY = 0;
         
         inputObjects.forEach(inputObject => {
@@ -23,8 +23,8 @@ export default function scale(params) {
             screenY += inputObject.screenY;
         });
         
-        screenX /= count;
-        screenY /= count;
+        screenX /= inputCount;
+        screenY /= inputCount;
                                     
         return {screenX, screenY};
     }
@@ -34,27 +34,33 @@ export default function scale(params) {
             return 'Scale';
         },
         load(inputState) {
-            let {inputObjects} = inputState;
+            let {inputObjects} = inputState,
+                inputCount = inputObjects.length,
+                match = false;
+                
+            if (inputCount > 1) {
+                let centroid = calculateCentroidFrom(inputObjects);
+                
+                let totalScaleFactor = inputObjects.reduce((totalScaleFactor, inputObject) => {
+                    let path = inputObject.path,
+                        firstPoint = path[0],
+                        lastPoint = path[path.length - 1];
+                        
+                    let originalDistance = pointToPointDistance(centroid, firstPoint),
+                        currentDistance = pointToPointDistance(centroid, lastPoint),
+                        currentPointScaleFactor = currentDistance / originalDistance;
+                        
+                    return totalScaleFactor + currentPointScaleFactor;
+                }, 0);
+                
+                let averageScaleFactor = totalScaleFactor / inputObjects.length;
+                        
+                match = averageScaleFactor !== 1 &&
+                            averageScaleFactor >= limit.lower &&
+                            averageScaleFactor <= limit.upper;
+            }
             
-            let centroid = calculateCentroidFrom(inputObjects);
-            
-            let totalScaleFactor = inputObjects.reduce((totalScaleFactor, inputObject) => {
-                let path = inputObject.path,
-                    firstPoint = path[0],
-                    lastPoint = path[path.length - 1];
-                    
-                let originalDistance = pointToPointDistance(centroid, firstPoint),
-                    currentDistance = pointToPointDistance(centroid, lastPoint),
-                    currentPointScaleFactor = currentDistance / originalDistance;
-                    
-                return totalScaleFactor + currentPointScaleFactor;
-            }, 0);
-            
-            let averageScaleFactor = totalScaleFactor / inputObjects.length;
-                    
-            return averageScaleFactor != 1 &&
-                        averageScaleFactor >= limit.lower &&
-                        averageScaleFactor <= limit.upper;
+            return match;
         }
     };
 }
