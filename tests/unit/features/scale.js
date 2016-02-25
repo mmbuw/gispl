@@ -60,7 +60,7 @@ describe('feature', () => {
             ).to.equal(false);
         });
         
-        it.only(`should recognize the feature if two points satisfy
+        it(`should recognize the feature if two points satisfy
                 the upper limit constraint`, () => {
             let params = {
                     type,

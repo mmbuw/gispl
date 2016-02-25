@@ -8,8 +8,8 @@ export default function scale(params) {
     
     function pointToPointDistance(first, second) {
         let scale = 10000,
-            x = (first.screenX - second.screenX) * scale,
-            y = (first.screenY - second.screenY) * scale,
+            x = (first.relativeScreenX * scale - second.relativeScreenX * scale),
+            y = (first.relativeScreenY * scale - second.relativeScreenY * scale),
             directionVector = vector({x, y});
             
         return directionVector.length() / scale;
@@ -17,17 +17,18 @@ export default function scale(params) {
     
     function calculateCentroidFrom(inputObjects) {
         let inputCount = inputObjects.length,
-            screenX = 0, screenY = 0;
+            relativeScreenX = 0,
+            relativeScreenY = 0;
         
         inputObjects.forEach(inputObject => {
-            screenX += inputObject.screenX;
-            screenY += inputObject.screenY;
+            relativeScreenX += inputObject.relativeScreenX;
+            relativeScreenY += inputObject.relativeScreenY;
         });
         
-        screenX /= inputCount;
-        screenY /= inputCount;
+        relativeScreenX /= inputCount;
+        relativeScreenY /= inputCount;
                                     
-        return {screenX, screenY};
+        return {relativeScreenX, relativeScreenY};
     }
     
     return {
