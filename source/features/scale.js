@@ -30,18 +30,23 @@ export default function scale(params) {
             centroid.screenY = (firstInput.path[0].screenY +
                             secondInput.path[0].screenY) / 2;
             
-            return inputObjects.every(inputObject => {
+            let totalScaleFactor = inputObjects.reduce((totalScaleFactor, inputObject) => {
                 let path = inputObject.path,
                     firstPoint = path[0],
                     lastPoint = path[path.length - 1];
                     
                 let originalDistance = pointToPointDistance(centroid, firstPoint),
                     currentDistance = pointToPointDistance(centroid, lastPoint),
-                    scaleFactor = currentDistance / originalDistance;
-                                        
-                return scaleFactor >= limit.lower &&
-                            scaleFactor <= limit.upper;
-            });
+                    currentPointScaleFactor = currentDistance / originalDistance;
+                    
+                return totalScaleFactor + currentPointScaleFactor;
+            }, 0);
+            
+            let averageScaleFactor = totalScaleFactor / inputObjects.length;
+                    
+            return averageScaleFactor != 1 &&
+                        averageScaleFactor >= limit.lower &&
+                        averageScaleFactor <= limit.upper;
         }
     };
 }
@@ -54,7 +59,10 @@ function extractContraintsFrom(params) {
     if (!Array.isArray(constraints)) {
         constraints = [defaultLowerLimit, defaultUpperLimit];
     }
-    else if (constraints.length === 1) {
+    if (constraints.length === 0) {
+        constraints.push(defaultLowerLimit);
+    }
+    if (constraints.length === 1) {
         constraints.push(defaultUpperLimit);
     }
     return constraints;

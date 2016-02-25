@@ -105,5 +105,63 @@ describe('feature', () => {
                 scaleFeature.load({inputObjects})
             ).to.equal(false);
         });
+        
+        it('should recognize any scale if no constraints specified', () => {
+            let params = {type},
+                scaleFeature = featureFactory(params),
+                firstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
+                secondInput = buildInputFromPointer({x: 0.6, y: 0.6}),
+                smallValue = 0.001;
+            
+            firstInput.moveTo({x: 0.4 - smallValue, y: 0.4 - smallValue});
+            secondInput.moveTo({x: 0.6 + smallValue, y: 0.6 + smallValue});
+            
+            let inputObjects = [
+                firstInput.finished(),
+                secondInput.finished()
+            ];
+            
+            expect(
+                scaleFeature.load({inputObjects})
+            ).to.equal(true);
+        });
+        
+        it('should not recognize the scale of 1, even when no constraints', () => {
+            let params = {type},
+                scaleFeature = featureFactory(params),
+                staticFirstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
+                staticSecondInput = buildInputFromPointer({x: 0.6, y: 0.6});
+            
+            staticFirstInput.moveTo({x: 0.4, y: 0.4});
+            staticSecondInput.moveTo({x: 0.6, y: 0.6});
+            
+            let inputObjects = [
+                staticFirstInput.finished(),
+                staticSecondInput.finished()
+            ];
+            
+            expect(
+                scaleFeature.load({inputObjects})
+            ).to.equal(false);
+        });
+        
+        it('should recognize scale even when one input static', () => {
+            let params = {type},
+                scaleFeature = featureFactory(params),
+                staticInput = buildInputFromPointer({x: 0.4, y: 0.4}),
+                movingInput = buildInputFromPointer({x: 0.6, y: 0.6});
+            
+            staticInput.moveTo({x: 0.4, y: 0.4});
+            movingInput.moveTo({x: 0.7, y: 0.7});
+            
+            let inputObjects = [
+                staticInput.finished(),
+                movingInput.finished()
+            ];
+            
+            expect(
+                scaleFeature.load({inputObjects})
+            ).to.equal(true);
+        });
     });
 });
