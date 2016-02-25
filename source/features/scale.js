@@ -7,11 +7,12 @@ export default function scale(params) {
         limit = lowerUpperLimit(constraints);
     
     function pointToPointDistance(first, second) {
-        let x = first.screenX - second.screenX,
-            y = first.screenY - second.screenY,
+        let scale = 10000,
+            x = (first.screenX - second.screenX) * scale,
+            y = (first.screenY - second.screenY) * scale,
             directionVector = vector({x, y});
             
-        return directionVector.length();
+        return directionVector.length() / scale;
     }
     
     function calculateCentroidFrom(inputObjects) {
@@ -54,10 +55,7 @@ export default function scale(params) {
                 }, 0);
                 
                 let averageScaleFactor = totalScaleFactor / inputObjects.length;
-                console.log('total', totalScaleFactor);
-                console.log('count', inputCount);
-                console.log('avg', averageScaleFactor);
-                console.log(window.screen.width, window.screen.height);
+                
                 match = averageScaleFactor !== 1 &&
                             averageScaleFactor >= limit.lower &&
                             averageScaleFactor <= limit.upper;
