@@ -2,12 +2,7 @@ export function inputObjectFromTuio(params) {
     let {tuioComponent, calibration} = params;
 
     let identifier = tuioComponent.getSessionId(),
-        {screenX, screenY,
-            relativeScreenX, relativeScreenY,
-            clientX, clientY,
-            pageX, pageY,
-            tuioTime,
-            startingTime} = pointInformation(tuioComponent, calibration),
+        point = pointInformation(tuioComponent, calibration),
         path = tuioObjectPath(params),
         type;
 
@@ -17,12 +12,7 @@ export function inputObjectFromTuio(params) {
 
     return {
         identifier, type, path,
-        relativeScreenX, relativeScreenY,
-        screenX, screenY,
-        clientX, clientY,
-        pageX, pageY,
-        startingTime,
-        tuioTime
+        ...point
     };
 }
 
@@ -32,23 +22,11 @@ export function inputObjectFromPath(params = {}) {
         {identifier,
             type} = inputObject;
             
-    let {screenX, screenY,
-            relativeScreenX, relativeScreenY,
-            clientX, clientY,
-            pageX, pageY,
-            tuioTime,
-            startingTime} = path[0];
+    let firstPointInPath = path[0];
     
     return {
-        identifier,
-        path,
-        type,
-        screenX, screenY,
-        relativeScreenX, relativeScreenY,
-        clientX, clientY,
-        pageX, pageY,
-        tuioTime,
-        startingTime
+        identifier, path, type,
+        ...firstPointInPath
     };
 }
 
