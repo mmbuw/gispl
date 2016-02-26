@@ -1,9 +1,11 @@
 import {vector} from '../vector';
-import {lowerUpperLimit} from '../feature';
+import {featureBase,
+            lowerUpperLimit} from '../feature';
 
 export default function scale(params) {
     
     let constraints = extractContraintsFrom(params),
+        baseFeature = featureBase(params),
         limit = lowerUpperLimit(constraints);
     
     function pointToPointDistance(first, second) {
@@ -44,8 +46,13 @@ export default function scale(params) {
         },
         load(inputState) {
             let {inputObjects} = inputState,
-                inputCount = inputObjects.length,
                 match = false;
+                
+            inputObjects = inputObjects.filter(inputObject => {
+                return baseFeature.checkAgainstDefinition(inputObject);
+            });
+            
+            let inputCount = inputObjects.length;
                 
             if (inputCount > 1) {
                 let centroid = calculateCentroidFrom(inputObjects);
@@ -62,7 +69,7 @@ export default function scale(params) {
                     return totalScaleFactor + currentPointScaleFactor;
                 }, 0);
                 
-                let averageScaleFactor = totalScaleFactor / inputObjects.length;
+                let averageScaleFactor = totalScaleFactor / inputCount;
                 
                 match = averageScaleFactor !== 1 &&
                             averageScaleFactor >= limit.lower &&

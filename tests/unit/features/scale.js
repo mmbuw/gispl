@@ -218,5 +218,64 @@ describe('feature', () => {
                 scaleFeature.load({inputObjects})
             ).to.equal(false);
         });
+
+        it(`should not recognize the feature if the input does not match
+                the defined filter`, () => {
+            let tuioRightThumbFinger = 0b10000,
+                tuioRightIndexFinger = 1,
+                tuioRightMiddleFinger = 2,
+                filteredScale = featureFactory({
+                    type,
+                    filters: tuioRightThumbFinger
+                }),
+                firstInvalidInput = buildInputFromPointer({
+                    x: 0.4, y: 0.4, typeId: tuioRightIndexFinger}),
+                secondInvalidInput = buildInputFromPointer({
+                    x: 0.6, y: 0.6, typeId: tuioRightMiddleFinger});
+            
+            firstInvalidInput.moveTo({x: 0.30, y: 0.30});
+            secondInvalidInput.moveTo({x: 0.7, y: 0.7});
+            
+            let inputObjects = [
+                firstInvalidInput.finished(),
+                secondInvalidInput.finished()
+            ];
+
+            expect(
+                filteredScale.load({inputObjects})
+            ).to.equal(false);
+        });
+
+        it(`should recognize the feature even if not all input matches
+                the defined filter`, () => {
+            let tuioRightThumbAndIndexFinger = 0b10001,
+                tuioRightIndexFinger = 1,
+                tuioRightMiddleFinger = 2,
+                tuioRightThumbFinger = 5,
+                filteredScale = featureFactory({
+                    type,
+                    filters: tuioRightThumbAndIndexFinger
+                }),
+                firstValidInput = buildInputFromPointer({
+                    x: 0.4, y: 0.4, typeId: tuioRightIndexFinger}),
+                invalidFilterInput = buildInputFromPointer({
+                    x: 0.6, y: 0.6, typeId: tuioRightMiddleFinger}),
+                secondValidInput = buildInputFromPointer({
+                    x: 0.6, y: 0.4, typeId: tuioRightThumbFinger});
+            
+            firstValidInput.moveTo({x: 0.30, y: 0.30});
+            invalidFilterInput.moveTo({x: 0.7, y: 0.7});
+            secondValidInput.moveTo({x: 0.7, y: 0.3});
+            
+            let inputObjects = [
+                firstValidInput.finished(),
+                invalidFilterInput.finished(),
+                secondValidInput.finished()
+            ];
+
+            expect(
+                filteredScale.load({inputObjects})
+            ).to.equal(true);
+        });
     });
 });
