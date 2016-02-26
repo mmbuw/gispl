@@ -3,9 +3,9 @@ import motion from './features/motion';
 import count from './features/count';
 import path from './features/path';
 import scale from './features/scale';
-import {extractDurationFrom} from './gesture';
+import {extractDurationFrom,
+        validInputFromDuration} from './gesture';
 import {DollarRecognizer} from './libs/dollar';
-import {inputObjectFromPath} from './tuio/tuioInputObject';
 
 let singleRecognizerInstance = new DollarRecognizer();
 
@@ -48,35 +48,16 @@ export function featureBase(params) {
 
         return hasNoFilters || filtersMatch;
     }
-    
-    function extractInputObjectsFrom(inputHistory = []) {
-        let inputObjects = [],
-            currentTime = new Date().getTime();
-            
-        inputHistory.forEach(inputObject => {
-            let validInputPath = inputObject.path.filter(point => {
-                let timeDiff = currentTime - point.startingTime;
-                return (timeDiff <= duration.start &&
-                            timeDiff >= duration.end);
-            });
-            if (validInputPath.length !== 0) {
-                let validInputObject = inputObjectFromPath({
-                    inputObject,
-                    path: validInputPath
-                });
-                inputObjects.push(validInputObject);
-            }
-        });
-        
-        return inputObjects;
-    }
 
     return {
         inputObjectsFrom(inputState) {
             let {inputObjects,
                     inputHistory} = inputState;
+            // for individual features, take the whole history
+            // when duration defined
+            // allows for features like double tap
             if (duration.definition.length !== 0) {
-                inputObjects = extractInputObjectsFrom(inputHistory);
+                inputObjects = validInputFromDuration(inputHistory, duration);
             }
             return inputObjects;
         },

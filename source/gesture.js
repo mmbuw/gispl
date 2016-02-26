@@ -38,33 +38,14 @@ export function createGesture(gestureDefinition) {
         return features.every(feature => feature.load(inputState));
     }
     
-    function extractInputObjectsFrom(inputState) {
+    function inputObjectsFrom(inputState) {
         let {inputObjects} = inputState;
         
-        if (typeof duration.definition === 'undefined' ||
-                duration.definition.length === 0) {
-            return inputState.inputObjects;
+        if (duration.definition.length !== 0) {
+            inputObjects = validInputFromDuration(inputObjects, duration);
         }
         
-        let validInputObjects = [],
-            currentTime = new Date().getTime();
-            
-        inputObjects.forEach(inputObject => {
-            let validInputPath = inputObject.path.filter(point => {
-                let timeDiff = currentTime - point.startingTime;
-                return (timeDiff <= duration.start &&
-                            timeDiff >= duration.end);
-            });
-            if (validInputPath.length !== 0) {
-                let validInputObject = inputObjectFromPath({
-                    inputObject,
-                    path: validInputPath
-                });
-                validInputObjects.push(validInputObject);
-            }
-        });
-        
-        return validInputObjects;
+        return inputObjects;
     }
     
     function resultingNodes() {
@@ -111,7 +92,7 @@ export function createGesture(gestureDefinition) {
         // and returns nodes to emit gestures on (based on which flags are set)
         load(inputState = {}) {
             
-            inputState.inputObjects = extractInputObjectsFrom(inputState);
+            inputState.inputObjects = inputObjectsFrom(inputState);
             
             let {node,
                     inputObjects} = inputState;
@@ -327,4 +308,26 @@ function initializeFlagsFrom(gestureDefinition) {
             return flags;
         }
     };
+}
+
+export function validInputFromDuration(inputObjects = [], duration) {
+    let validInputObjects = [],
+        currentTime = new Date().getTime();
+        
+    inputObjects.forEach(inputObject => {
+        let validInputPath = inputObject.path.filter(point => {
+            let timeDiff = currentTime - point.startingTime;
+            return (timeDiff <= duration.start &&
+                        timeDiff >= duration.end);
+        });
+        if (validInputPath.length !== 0) {
+            let validInputObject = inputObjectFromPath({
+                inputObject,
+                path: validInputPath
+            });
+            validInputObjects.push(validInputObject);
+        }
+    });
+    
+    return validInputObjects;
 }
