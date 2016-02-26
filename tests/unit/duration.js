@@ -216,10 +216,10 @@ describe('gesture with duration', () => {
         let doubleTapDefinition = {
             name: 'doubletap',
             features:[
-                { type: 'Count', constraints:[0,0], duration: [0.2, 0.3]},
-                { type: 'Count', constraints:[1,1], duration: [0.1, 0.2]},
-                { type: 'Count', constraints:[0,0], duration: [0.01, 0.1]},
-                { type: 'Count', constraints:[1,1], duration: [0, 0.01]}
+                {type: 'Count', constraints:[0,0], duration: [0.2, 0.3]},
+                {type: 'Count', constraints:[1,1], duration: [0.1, 0.2]},
+                {type: 'Count', constraints:[0,0], duration: [0.01, 0.1]},
+                {type: 'Count', constraints:[1,1], duration: [0, 0.01]}
             ]
         },
         doubleTapGesture = createGesture(doubleTapDefinition);
@@ -235,6 +235,73 @@ describe('gesture with duration', () => {
                 
         expect(
             doubleTapGesture.load({
+                node, inputObjects, inputHistory
+            })
+        ).to.deep.equal([node]);
+    });
+        
+    it(`should not recognize scale if it is not within the specified
+            duration window`, () => {
+        let scaleOfAtLeastOneSecondDefinition = {
+            name: 'any-scale',
+            features: [
+                {type: 'Scale', duration: [1]}
+            ] 
+        },
+        oneSecondScaleGesture = createGesture(scaleOfAtLeastOneSecondDefinition);
+        
+        let firstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
+            secondInput = buildInputFromPointer({x: 0.6, y: 0.6});
+        
+        clock.tick(500);
+        
+        firstInput.moveTo({x: 0.3, y: 0.3});
+        secondInput.moveTo({x: 0.7, y: 0.7});
+        
+        clock.tick(999);
+        
+        let inputObjects = [
+            firstInput.finished(),
+            secondInput.finished()
+        ],
+            inputHistory = inputObjects,
+            node = 'current-node';
+            
+        expect(
+            oneSecondScaleGesture.load({
+                node, inputObjects, inputHistory
+            })
+        ).to.deep.equal([]);
+    });
+        
+    it(`should recognize scale if it is within the specified duration window`, () => {
+        let scaleOfAtLeastOneSecondDefinition = {
+            name: 'any-scale',
+            features: [
+                {type: 'Scale', duration: [1]}
+            ] 
+        },
+        oneSecondScaleGesture = createGesture(scaleOfAtLeastOneSecondDefinition);
+        
+        let firstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
+            secondInput = buildInputFromPointer({x: 0.6, y: 0.6});
+        
+        clock.tick(500);
+        
+        firstInput.moveTo({x: 0.3, y: 0.3});
+        secondInput.moveTo({x: 0.7, y: 0.7});
+        
+        clock.tick(1000);
+        
+        let inputObjects = [
+            firstInput.finished(),
+            secondInput.finished()
+        ],
+            inputHistory = inputObjects,
+            node = 'current-node';
+            
+        expect(
+            oneSecondScaleGesture.load({
                 node, inputObjects, inputHistory
             })
         ).to.deep.equal([node]);

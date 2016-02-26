@@ -45,12 +45,10 @@ export default function scale(params) {
             return 'Scale';
         },
         load(inputState) {
-            let {inputObjects} = inputState,
-                match = false;
-                
-            inputObjects = inputObjects.filter(inputObject => {
-                return baseFeature.checkAgainstDefinition(inputObject);
-            });
+            let match = false,
+                inputObjects = baseFeature
+                                .inputObjectsFrom(inputState)
+                                .filter(inputObject => baseFeature.checkAgainstDefinition(inputObject));
             
             let inputCount = inputObjects.length;
                 
