@@ -76,7 +76,7 @@ export function featureBase(params) {
         inputObjectsFrom(inputState) {
             let {inputObjects,
                     inputHistory} = inputState;
-            if (typeof duration.definition !== 'undefined') {
+            if (duration.definition.length !== 0) {
                 inputObjects = extractInputObjectsFrom(inputHistory);
             }
             return inputObjects;

@@ -1,4 +1,5 @@
 import {featureFactory} from './feature';
+import {inputObjectFromPath} from './tuio/tuioInputObject';
 
 export let userDefinedGestures = new Map();
 
@@ -33,30 +34,37 @@ export function createGesture(gestureDefinition) {
     // as with native event propagation
         {propagation = true} = gestureDefinition;
         
-    function validateEveryFeatureFrom(inputState) {
+    function validateEveryFeatureFor(inputState) {
         return features.every(feature => feature.load(inputState));
     }
     
-    function validGestureDuration(inputObjects) {
-        return inputObjects.every(inputObject => {
-            let validDuration = true;
+    function extractInputObjectsFrom(inputState) {
+        let {inputObjects} = inputState;
+        
+        if (typeof duration.definition === 'undefined' ||
+                duration.definition.length === 0) {
+            return inputState.inputObjects;
+        }
+        
+        let validInputObjects = [],
+            currentTime = new Date().getTime();
             
-            if (typeof duration.min !== 'undefined') {
-                let currentTime = new Date().getTime(), 
-                    timeDiff = currentTime - inputObject.startingTime;
-                    
-                if (timeDiff < duration.min) {
-                    validDuration = false;
-                }
-                // max can't be defined if min undefined
-                if (validDuration && (typeof duration.max !== 'undefined')) {
-                    if (timeDiff > duration.max) {
-                        validDuration = false;
-                    }
-                }
+        inputObjects.forEach(inputObject => {
+            let validInputPath = inputObject.path.filter(point => {
+                let timeDiff = currentTime - point.startingTime;
+                return (timeDiff <= duration.start &&
+                            timeDiff >= duration.end);
+            });
+            if (validInputPath.length !== 0) {
+                let validInputObject = inputObjectFromPath({
+                    inputObject,
+                    path: validInputPath
+                });
+                validInputObjects.push(validInputObject);
             }
-            return validDuration;
         });
+        
+        return validInputObjects;
     }
     
     function resultingNodes() {
@@ -102,8 +110,11 @@ export function createGesture(gestureDefinition) {
         // checks if the gesture is valid by validating every feature
         // and returns nodes to emit gestures on (based on which flags are set)
         load(inputState = {}) {
-            let {inputObjects,
-                    node} = inputState;
+            
+            inputState.inputObjects = extractInputObjectsFrom(inputState);
+            
+            let {node,
+                    inputObjects} = inputState;
 
             if (validInput(inputObjects)) {
                 // boils down to
@@ -121,9 +132,8 @@ export function createGesture(gestureDefinition) {
                 previousInputIds = currentInputIds;
                 // the gesture should not match if it is oneshot
                 // and already triggered
-                if (!oneshotFlagFulfilled &&
-                        validGestureDuration(inputObjects)) {
-                    everyFeatureMatches = validateEveryFeatureFrom(inputState);
+                if (!oneshotFlagFulfilled) {
+                    everyFeatureMatches = validateEveryFeatureFor(inputState);
                 }
                 if (flags.hasBubble()) {
                     if (!isSameAsPreviousInput) {
@@ -253,19 +263,19 @@ function extractIdentifiersFrom(inputObjects = []) {
 export function extractDurationFrom(definitionObject) {
     let duration = {
         // original definition
-        definition: undefined,
+        definition: [],
         // in milliseconds
-        min: undefined,
-        max: undefined
+        start: Infinity,
+        end: 0
     };
     if (typeof definitionObject.duration !== 'undefined') {
         let definition = duration.definition = definitionObject.duration;
         // transfrom from seconds to milliseconds
         if (typeof definition[0] !== 'undefined') {
-            duration.min = definition[0] * 1000;   
+            duration.start = definition[0] * 1000;   
         }
         if (typeof definition[1] !== 'undefined') {
-            duration.max = definition[1] * 1000;   
+            duration.end = definition[1] * 1000;   
         }
     }
     return duration;
