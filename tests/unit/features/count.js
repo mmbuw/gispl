@@ -99,17 +99,21 @@ describe('feature', () => {
         it(`should not recognize the feature if the input does not match
                 the defined filter`, () => {
             let tuioRightThumbFinger = 0b10000,
-                tuioRightIndexFinger = 0b1,
-                count: 1,
+                tuioRightIndexFinger = 1,
+                count = 1,
                 filteredCount = featureFactory({
                     type,
                     constraints: [count, count],
                     filters: tuioRightThumbFinger
                 });
+                
+            let inputState = buildInputState({
+                count, typeId: tuioRightIndexFinger
+            });
 
-            expect(filteredCount.load(buildInputState({
-                count
-            }))).to.equal(false);
+            expect(
+                filteredCount.load(inputState)
+            ).to.equal(false);
         });
 
         it('should allow multiple filters to be set as bitmask', () => {
