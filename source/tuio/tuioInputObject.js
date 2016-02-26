@@ -27,8 +27,9 @@ export function inputObjectFromTuio(params) {
 }
 
 export function inputObjectFromPath(params = {}) {
-    let {identifier,
-            path} = params;
+    let {inputObject,
+            path} = params,
+        {identifier} = inputObject;
             
     let {screenX, screenY,
             relativeScreenX, relativeScreenY,
