@@ -56,9 +56,8 @@ export function featureBase(params) {
         inputHistory.forEach(inputObject => {
             let validInputPath = inputObject.path.filter(point => {
                 let timeDiff = currentTime - point.startingTime;
-                return (timeDiff >= duration.min &&
-                        (typeof duration.max === 'undefined' ||
-                            timeDiff <= duration.max));
+                return (timeDiff <= duration.start &&
+                            timeDiff >= duration.end);
             });
             if (validInputPath.length !== 0) {
                 let validInputObject = inputObjectFromPath({

@@ -152,150 +152,140 @@ describe('gesture with duration', () => {
         ).to.deep.equal(nodesToEmitOn);
     });
     
-    // it('should not recognize gesture if path time less than lower duration bound of a feature', () => {
-    //     let oneSecondDuration = [1],
-    //         elapsedTotal500ms = 500,
-    //         elapsedTotal999ms = 9999,
-    //         oneSecondDurationMotionDefinition = addDurationToFeature(oneSecondDuration),
-    //         oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
+    it(`should not recognize motion gesture if partial path within the
+            feature timeframe specified by the start point `, () => {
+        let checkLastSecondOnly = [1],
+            elapsedTotal500ms = 500,
+            elapsedTotal1001ms = 501,
+            oneSecondDurationMotionDefinition = addDurationToFeature(checkLastSecondOnly),
+            oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-    //    let pointerMoving = buildInputFromPointer({x: 0, y: 0});
-    //    clock.tick(elapsedTotal500ms);
-    //    pointerMoving.moveTo({x: 0.1, y: 0.1})
-    //    clock.tick(elapsedTotal999ms);
+       let pointerMoving = buildInputFromPointer({x: 0, y: 0});
+       clock.tick(elapsedTotal500ms);
+       pointerMoving.moveTo({x: 0.1, y: 0.1})
+       clock.tick(elapsedTotal1001ms);
        
-    //    expect(
-    //        oneSecondDurationMotionGesture.load({
-    //            node,
-    //            inputObjects: [pointerMoving.finished()]
-    //        })
-    //    ).to.deep.equal([]);
-    // });
+       expect(
+           oneSecondDurationMotionGesture.load({
+               node,
+               inputObjects: [pointerMoving.finished()]
+           })
+       ).to.deep.equal([]);
+    });
     
-    // it(`should recognize gesture if path time more than or equal to lower duration bound
-    //         of feature and other parameters valid`, () => {
-    //     let minimumOneSecondDuration = [1],
-    //         elapsedTotal500ms = 500,
-    //         elapsedTotal1000ms = 500,
-    //         elapsedTotal1500ms = 500,
-    //         oneSecondDurationMotionDefinition = addDurationToFeature(minimumOneSecondDuration),
-    //         oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
+    it(`should recognize gesture if path time more than or equal to lower duration bound
+            of feature and other parameters valid`, () => {
+        let checkLastSecondOnly = [1],
+            elapsedTotal500ms = 500,
+            elapsedTotal1000ms = 500,
+            oneSecondDurationMotionDefinition = addDurationToFeature(checkLastSecondOnly),
+            oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
 
-    //     let pointerMoving = buildInputFromPointer({x: 0, y: 0});
-    //     clock.tick(elapsedTotal500ms);
-    //     pointerMoving.moveTo({x: 0.5, y: 0.5});
-    //     clock.tick(elapsedTotal1000ms);            
-    //     expect(
-    //         oneSecondDurationMotionGesture.load({
-    //             node,
-    //             inputObjects: [pointerMoving.finished()],
-    //             inputHistory: [pointerMoving.finished()]
-    //         })
-    //     ).to.deep.equal([]); // second point is not at least 1s old
+        let pointerMoving = buildInputFromPointer({x: 0, y: 0});
+        clock.tick(elapsedTotal500ms);
+        pointerMoving.moveTo({x: 0.5, y: 0.5});
+        clock.tick(elapsedTotal1000ms);            
+        expect(
+            oneSecondDurationMotionGesture.load({
+                node,
+                inputObjects: [pointerMoving.finished()],
+                inputHistory: [pointerMoving.finished()]
+            })
+        ).to.deep.equal([node]);
+    });
         
-    //     clock.tick(elapsedTotal1500ms);            
-    //     expect(
-    //         oneSecondDurationMotionGesture.load({
-    //             node,
-    //             inputObjects: [pointerMoving.finished()],
-    //             inputHistory: [pointerMoving.finished()]
-    //         })
-    //     ).to.deep.equal(nodesToEmitOn);
-    // });
+    it('should check input history when feature duration set', () => {
         
-    // it('should check input history when feature duration set', () => {
+        let doubleTapDefinition = {
+            name: 'doubletap',
+            features:[
+                {type: 'Count', constraints:[1,1], duration: [0.2, 0.1]},
+                {type: 'Count', constraints:[0,0], duration: [0.1, 0.01]},
+                {type: 'Count', constraints:[1,1], duration: [0.01]}
+            ]
+        },
+        doubleTapGesture = createGesture(doubleTapDefinition);
         
-    //     let doubleTapDefinition = {
-    //         name: 'doubletap',
-    //         features:[
-    //             {type: 'Count', constraints:[0,0], duration: [0.2, 0.3]},
-    //             {type: 'Count', constraints:[1,1], duration: [0.1, 0.2]},
-    //             {type: 'Count', constraints:[0,0], duration: [0.01, 0.1]},
-    //             {type: 'Count', constraints:[1,1], duration: [0, 0.01]}
-    //         ]
-    //     },
-    //     doubleTapGesture = createGesture(doubleTapDefinition);
+        let firstTap = buildInputFromPointer({x: 0, y: 0}).finished();
         
-    //     let firstTap = buildInputFromPointer({x: 0, y: 0}).finished();
+        clock.tick(150);
         
-    //     clock.tick(150);
-        
-    //     let secondTap = buildInputFromPointer({x: 0, y: 0}).finished(),
-    //         inputObjects = [secondTap],
-    //         inputHistory = [firstTap, secondTap],
-    //         node = 'node';
+        let secondTap = buildInputFromPointer({x: 0, y: 0}).finished(),
+            inputObjects = [secondTap],
+            inputHistory = [firstTap, secondTap],
+            node = 'node';
                 
-    //     expect(
-    //         doubleTapGesture.load({
-    //             node, inputObjects, inputHistory
-    //         })
-    //     ).to.deep.equal([node]);
-    // });
+        expect(
+            doubleTapGesture.load({
+                node, inputObjects, inputHistory
+            })
+        ).to.deep.equal([node]);
+    });
         
-    // it(`should not recognize scale if it is not within the specified
-    //         duration window`, () => {
-    //     let scaleOfAtLeastOneSecondDefinition = {
-    //         name: 'any-scale',
-    //         features: [
-    //             {type: 'Scale', duration: [1]}
-    //         ] 
-    //     },
-    //     oneSecondScaleGesture = createGesture(scaleOfAtLeastOneSecondDefinition);
+    it(`should not recognize scale if it is not within the specified
+            duration window`, () => {
+        let scaleInTheLastSecondOnly = {
+            name: 'any-scale',
+            features: [
+                {type: 'Scale', duration: [1]}
+            ] 
+        },
+        oneSecondScaleGesture = createGesture(scaleInTheLastSecondOnly);
         
-    //     let firstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
-    //         secondInput = buildInputFromPointer({x: 0.6, y: 0.6});
+        let firstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
+            secondInput = buildInputFromPointer({x: 0.6, y: 0.6});
         
-    //     clock.tick(500);
+        clock.tick(500);
         
-    //     firstInput.moveTo({x: 0.3, y: 0.3});
-    //     secondInput.moveTo({x: 0.7, y: 0.7});
+        firstInput.moveTo({x: 0.3, y: 0.3});
+        secondInput.moveTo({x: 0.7, y: 0.7});
         
-    //     clock.tick(999);
+        clock.tick(501);
         
-    //     let inputObjects = [
-    //         firstInput.finished(),
-    //         secondInput.finished()
-    //     ],
-    //         inputHistory = inputObjects,
-    //         node = 'current-node';
+        let inputObjects = [
+            firstInput.finished(),
+            secondInput.finished()
+        ],
+            inputHistory = inputObjects,
+            node = 'current-node';
             
-    //     expect(
-    //         oneSecondScaleGesture.load({
-    //             node, inputObjects, inputHistory
-    //         })
-    //     ).to.deep.equal([]);
-    // });
+        expect(
+            oneSecondScaleGesture.load({
+                node, inputObjects, inputHistory
+            })
+        ).to.deep.equal([]);
+    });
         
-    // it(`should recognize scale if it is within the specified duration window`, () => {
-    //     let scaleOfAtLeastOneSecondDefinition = {
-    //         name: 'any-scale',
-    //         features: [
-    //             {type: 'Scale', duration: [1]}
-    //         ] 
-    //     },
-    //     oneSecondScaleGesture = createGesture(scaleOfAtLeastOneSecondDefinition);
+    it(`should recognize scale if it is within the specified duration window`, () => {
+        let scaleInTheLastSecondOnly = {
+            name: 'any-scale',
+            features: [
+                {type: 'Scale', duration: [1]}
+            ] 
+        },
+        oneSecondScaleGesture = createGesture(scaleInTheLastSecondOnly);
         
-    //     let firstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
-    //         secondInput = buildInputFromPointer({x: 0.6, y: 0.6});
+        let firstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
+            secondInput = buildInputFromPointer({x: 0.6, y: 0.6});
         
-    //     clock.tick(500);
+        clock.tick(500);
         
-    //     firstInput.moveTo({x: 0.3, y: 0.3});
-    //     secondInput.moveTo({x: 0.7, y: 0.7});
+        firstInput.moveTo({x: 0.3, y: 0.3});
+        secondInput.moveTo({x: 0.7, y: 0.7});
         
-    //     clock.tick(1000);
+        clock.tick(500);
         
-    //     let inputObjects = [
-    //         firstInput.finished(),
-    //         secondInput.finished()
-    //     ],
-    //         inputHistory = inputObjects,
-    //         node = 'current-node';
+        let inputObjects = [
+            firstInput.finished(),
+            secondInput.finished()
+        ],
+            inputHistory = inputObjects,
+            node = 'current-node';
             
-    //     expect(
-    //         oneSecondScaleGesture.load({
-    //             node, inputObjects, inputHistory
-    //         })
-    //     ).to.deep.equal([node]);
-    // });
+        expect(
+            oneSecondScaleGesture.load({
+                node, inputObjects, inputHistory
+            })
+        ).to.deep.equal([node]);
+    });
 });
