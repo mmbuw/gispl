@@ -277,5 +277,29 @@ describe('feature', () => {
                 filteredScale.load({inputObjects})
             ).to.equal(true);
         });
+        
+        it('should be able to set its last known value in the feature values object', () => {
+            let params = {
+                    type,
+                    constraints: [2]
+                },
+                scaleFeature = featureFactory(params),
+                firstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
+                secondInput = buildInputFromPointer({x: 0.6, y: 0.6});
+            
+            firstInput.moveTo({x: 0.30, y: 0.30});
+            secondInput.moveTo({x: 0.7, y: 0.7});
+            
+            let inputObjects = [
+                firstInput.finished(),
+                secondInput.finished()
+            ],
+                featureValues = {},
+                expectedScaleValue = 2;
+            
+            scaleFeature.load({inputObjects}); // valid feature
+            scaleFeature.setValueToObject(featureValues);
+            expect(featureValues.scale).to.equal(expectedScaleValue);
+        });
     });
 });

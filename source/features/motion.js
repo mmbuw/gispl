@@ -5,7 +5,8 @@ import {vector} from '../vector';
 export default function motion(params) {
     let baseFeature = featureBase(params),
         {constraints} = params,
-        limit = false;
+        limit = false,
+        calculatedValue;
 
     if (typeof constraints !== 'undefined') {
         limit = lowerUpperVectorLimit(constraints);
@@ -19,7 +20,8 @@ export default function motion(params) {
         load(inputState) {
             let inputObjects = baseFeature.inputObjectsFrom(inputState),
                 directionVectorAllInputs = vector(),
-                inputCount = 0;
+                inputCount = 0,
+                match = false;
 
             inputObjects.forEach(inputObject => {
                 let path = inputObject.path;
@@ -43,25 +45,38 @@ export default function motion(params) {
                 }
             });
 
-            if (inputCount === 0) {
-                return false;
+            if (inputCount !== 0) {
+                
+                directionVectorAllInputs.scaleWith(1/inputCount);
+                
+                if (limit) {
+                    let screen = window.screen;
+                    // normalize the resulting vector with inputCount
+                    // (take the average motion of all input points)
+                    // and blow it up from relative screen coordinates to actual screen size
+                    directionVectorAllInputs.scaleX(screen.width);
+                    directionVectorAllInputs.scaleY(screen.height);
+
+                    match = directionVectorAllInputs.x > limit.lower.x &&
+                            directionVectorAllInputs.y > limit.lower.y &&
+                            directionVectorAllInputs.x < limit.upper.x &&
+                            directionVectorAllInputs.y < limit.upper.y;
+                }
+                else {
+                    match = directionVectorAllInputs.length() !== 0;
+                }
+                
+                let {x, y} = directionVectorAllInputs;
+                calculatedValue = {x, y};
             }
 
-            if (limit) {
-                let screen = window.screen;
-                // normalize the resulting vector with inputCount
-                // (take the average motion of all input points)
-                // and blow it up from relative screen coordinates to actual screen size
-                directionVectorAllInputs.scaleX(screen.width/inputCount);
-                directionVectorAllInputs.scaleY(screen.height/inputCount);
-
-                return directionVectorAllInputs.x > limit.lower.x &&
-                        directionVectorAllInputs.y > limit.lower.y &&
-                        directionVectorAllInputs.x < limit.upper.x &&
-                        directionVectorAllInputs.y < limit.upper.y;
+            return match;
+        },
+        
+        setValueToObject(featureValues) {
+            if (typeof featureValues === 'object') {
+                featureValues.motion = calculatedValue;
             }
-
-            return directionVectorAllInputs.length() !== 0;
         }
     };
 }

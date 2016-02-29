@@ -185,5 +185,22 @@ describe('feature', () => {
             ];
             expect(constrainedMotion.load({inputObjects})).to.equal(true);
         });
+        
+        it('should be able to set its last known value in the feature values object', () => {
+            let movingPointer = buildInputFromPointer({x: 0.5, y: 0.5})
+                                                        .moveTo({x: 0.5, y: 1})
+                                                        .finished();
+
+            let inputObjects = [movingPointer],
+                // tuio uses top left origin
+                // gispl contraints and result are with bottom left
+                // so the result for y is -0.5
+                expectedValue = {x: 0, y: -0.5},
+                featureValues = {};
+            
+            motion.load({inputObjects});
+            motion.setValueToObject(featureValues);
+            expect(featureValues.motion).to.deep.equal(expectedValue);
+        });
     });
 });
