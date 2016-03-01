@@ -1,6 +1,7 @@
 import {createGesture, gestureException} from '../../source/gesture';
 import {clearUserDefinedPaths} from '../../source/feature';
 import $ from 'jquery';
+import {buildInputFromPointer} from '../helpers/pointer';
 
 describe('gesture', () => {
 
@@ -238,5 +239,29 @@ describe('gesture', () => {
             inputObjects: mockInput,
             node
         })).to.deep.equal([node]);
+    });
+    
+    it('should update an object with current values by calling all of its features', () => {
+        let gesture = createGesture({
+                name: 'gesture',
+                features: [
+                    {type: 'Motion'},
+                    {type: 'Count', constraints: [1,1]},
+                ]
+            }),
+            expectedMotionValue = {x: 1, y: -1},
+            expectedCountValue = 1;
+            
+        let inputObjects = [buildInputFromPointer({x: 0, y: 0})
+                                .moveTo({x: 1, y: 1})
+                                .finished()];
+        
+        gesture.load({inputObjects});
+        
+        let data = {};
+        gesture.featureValuesTo(data);
+        
+        expect(data.count).to.equal(expectedCountValue);
+        expect(data.motion).to.deep.equal(expectedMotionValue);
     });
 });
