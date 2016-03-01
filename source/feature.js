@@ -29,8 +29,10 @@ export function featureFactory(params = {}) {
 }
 
 export function featureBase(params) {
-    let {filters} = params,
-        duration = extractDurationFrom(params);
+    let {filters,
+            type} = params,
+        duration = extractDurationFrom(params),
+        calculatedValue;
     
     
     function matchFiltersWith(inputObject) {
@@ -63,6 +65,14 @@ export function featureBase(params) {
         },
         checkAgainstDefinition(inputObject) {
             return matchFiltersWith(inputObject);
+        },
+        setValue(value) {
+            calculatedValue = value;
+        },
+        setValueToObject(featureValues) {
+            if (typeof featureValues === 'object') {
+                featureValues[type.toLowerCase()] = calculatedValue;
+            }
         }
     };
 }

@@ -5,8 +5,7 @@ import {vector} from '../vector';
 export default function motion(params) {
     let baseFeature = featureBase(params),
         {constraints} = params,
-        limit = false,
-        calculatedValue;
+        limit = false;
 
     if (typeof constraints !== 'undefined') {
         limit = lowerUpperVectorLimit(constraints);
@@ -67,16 +66,12 @@ export default function motion(params) {
                 }
                 
                 let {x, y} = directionVectorAllInputs;
-                calculatedValue = {x, y};
+                baseFeature.setValue({x, y});
             }
 
             return match;
         },
         
-        setValueToObject(featureValues) {
-            if (typeof featureValues === 'object') {
-                featureValues.motion = calculatedValue;
-            }
-        }
+        setValueToObject: baseFeature.setValueToObject
     };
 }

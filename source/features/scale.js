@@ -6,8 +6,7 @@ export default function scale(params) {
     
     let constraints = extractContraintsFrom(params),
         baseFeature = featureBase(params),
-        limit = lowerUpperLimit(constraints),
-        calculatedValue;
+        limit = lowerUpperLimit(constraints);
     
     function pointToPointDistance(first, second) {
         // scale helps with floating point inprecision 
@@ -75,18 +74,14 @@ export default function scale(params) {
                             averageScaleFactor <= limit.upper;
                             
                 if (match) {
-                    calculatedValue = averageScaleFactor;
+                    baseFeature.setValue(averageScaleFactor);
                 }
             }
             
             return match;
         },
         
-        setValueToObject(featureValues) {
-            if (typeof featureValues === 'object') {
-                featureValues.scale = calculatedValue;
-            }
-        }
+        setValueToObject: baseFeature.setValueToObject
     };
 }
 
