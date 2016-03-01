@@ -183,5 +183,40 @@ describe('feature', () => {
 
             expect(filteredPath.load({inputObjects})).to.equal(false);
         });
+        
+        it('should be able to set its last known value in the feature values object', () => {
+            // origin is bottom left
+            let drawRectangleFromTopLeftCounterClockwise = [
+                [0, 100],
+                [0, 0],
+                [100, 0],
+                [100, 100],
+                [0, 100]
+            ],
+                rectanglePath = featureFactory({
+                    type,
+                    constraints: drawRectangleFromTopLeftCounterClockwise
+                }),
+                // tuio is with origin top left
+                rectangleMovingPointersCounterClockwise = buildInputFromPointer({
+                    x: 0.5, y: 0.5
+                }).moveTo({
+                    x: 0.49, y: 0.78
+                }).moveTo({
+                    x: 0.66, y: 0.81
+                }).moveTo({
+                    x: 0.64, y: 0.52
+                }).moveTo({
+                    x: 0.53, y: 0.51
+                }).finished();
+
+            let inputObjects = [rectangleMovingPointersCounterClockwise],
+                expectedValue = 6,
+                featureValues = {};
+
+            rectanglePath.load({inputObjects});
+            rectanglePath.setValueToObject(featureValues);
+            expect(featureValues.path).to.be.above(expectedValue);
+        });
     });
 });

@@ -27,9 +27,15 @@ export default function count(params) {
             if (typeof limit.upper !== 'undefined') {
                 match = match && (count <= limit.upper);
             }
+            
+            if (match) {
+                baseFeature.setCalculatedValue(count);
+            }
 
             return match;
-        }
+        },
+        
+        setValueToObject: baseFeature.setValueToObject
     };
 }
 

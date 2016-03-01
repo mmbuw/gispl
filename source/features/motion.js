@@ -66,7 +66,7 @@ export default function motion(params) {
                 }
                 
                 let {x, y} = directionVectorAllInputs;
-                baseFeature.setValue({x, y});
+                baseFeature.setCalculatedValue({x, y});
             }
 
             return match;

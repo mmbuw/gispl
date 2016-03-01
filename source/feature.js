@@ -66,7 +66,7 @@ export function featureBase(params) {
         checkAgainstDefinition(inputObject) {
             return matchFiltersWith(inputObject);
         },
-        setValue(value) {
+        setCalculatedValue(value) {
             calculatedValue = value;
         },
         setValueToObject(featureValues) {

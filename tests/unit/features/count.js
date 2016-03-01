@@ -151,5 +151,20 @@ describe('feature', () => {
 
             expect(filteredCount.load(inputState)).to.equal(false);
         });
+        
+        it('should be able to set its last known value in the feature values object', () => {
+            let expectedValue = 2,
+                twoMinInputConstraint = [expectedValue];
+
+            let atLeastTwoInput = featureFactory({type, constraints: twoMinInputConstraint});
+            
+            atLeastTwoInput.load(buildInputState({
+                count: expectedValue
+            }));
+            
+            let featureValues = {};
+            atLeastTwoInput.setValueToObject(featureValues);
+            expect(featureValues.count).to.equal(expectedValue);
+        });
     });
 });

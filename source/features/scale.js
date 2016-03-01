@@ -74,7 +74,7 @@ export default function scale(params) {
                             averageScaleFactor <= limit.upper;
                             
                 if (match) {
-                    baseFeature.setValue(averageScaleFactor);
+                    baseFeature.setCalculatedValue(averageScaleFactor);
                 }
             }
             

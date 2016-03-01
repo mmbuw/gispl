@@ -20,10 +20,11 @@ export default function path(params) {
         },
 
         load(inputState) {
-            let inputObjects = baseFeature.inputObjectsFrom(inputState);
+            let inputObjects = baseFeature.inputObjectsFrom(inputState),
+                totalScore = 0;
 
-            return inputObjects.every(inputObject => {
-                let match = false;
+            let match = inputObjects.every(inputObject => {
+                let inputObjectMatch = false;
 
                 if (baseFeature.checkAgainstDefinition(inputObject)) {
                     let $points = inputObject.path.map(point => {
@@ -31,16 +32,24 @@ export default function path(params) {
                     });
 
                     let result = recognizer.Recognize($points, true);
-
-                    match = (result.Name === name &&
+                    
+                    totalScore += result.Score;
+                    inputObjectMatch = (result.Name === name &&
                                 // value is empirical
                                 // TODO allow it to be user defined
                                 result.Score > 1.9);
                 }
 
-                return match;
+                return inputObjectMatch;
             });
-        }
+            
+            if (match) {
+                baseFeature.setCalculatedValue(totalScore / inputObjects.length);
+            }
+            
+            return match;
+        },
+        setValueToObject: baseFeature.setValueToObject
     };
 }
 
