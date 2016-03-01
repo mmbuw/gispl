@@ -16,7 +16,8 @@ describe('event object', () => {
     
     it('should contain valid current input state information', () => {
         let inputObjects = {},
-            event = createEventObject({inputObjects});
+            inputState = {inputObjects},
+            event = createEventObject({inputState});
         expect(event.input).to.equal(inputObjects);
     });
     
@@ -52,5 +53,16 @@ describe('event object', () => {
         expect(
             defaultEvent.featureValues.hasOwnProperty('rotation')
         ).to.equal(true);
+    });
+    
+    it('should call the gesture object in order to set the feature values', () => {
+        let featureValuesToObject = sinon.spy(),
+            gesture = {featureValuesToObject},
+            eventObject = createEventObject({gesture});
+        
+        expect(featureValuesToObject.callCount).to.equal(1);
+        let args = featureValuesToObject.firstCall.args;
+        expect(args.length).to.equal(1);
+        expect(args[0].hasOwnProperty('scale')).to.equal(true);
     });
 });

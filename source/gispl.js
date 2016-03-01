@@ -7,6 +7,7 @@ import TuioClient from 'tuio/src/TuioClient';
 import nodeSearch from './tuio/nodeSearch';
 import tuioInput from './tuio/tuioInput';
 import screenCalibration from './tuio/screenCalibration';
+import {createEventObject} from './eventObject';
 
 export default function gispl(selection) {
 
@@ -40,14 +41,19 @@ function handleInput(nodesInput, nodesInputHistory) {
         userDefinedGestures.forEach(gesture => {
 
             let inputHistory = nodesInputHistory.get(node),
-                nodesToEmitOn = gesture.load(
-                    {inputObjects, inputHistory, node}
-                ),
-                eventName = gesture.name();
-
-            nodesToEmitOn.forEach(nodeToEmitOn => {
-                events.emit(nodeToEmitOn, eventName, inputObjects);
-            });
+                inputState = {inputObjects, inputHistory, node},
+                nodesToEmitOn = gesture.load(inputState);
+            
+            if (nodesToEmitOn.length !== 0) {
+                let eventName = gesture.name(),
+                    eventObject = createEventObject({
+                        inputState, gesture
+                    });
+                                    
+                nodesToEmitOn.forEach(nodeToEmitOn => {
+                    events.emit(nodeToEmitOn, eventName, eventObject);
+                });   
+            }
         });
     });
 }

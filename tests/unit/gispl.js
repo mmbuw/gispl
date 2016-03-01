@@ -192,7 +192,7 @@ describe('gispl', () => {
         }, 0);
     });
 
-    it(`should pass the inputstate as argument in the gesture callback`, (asyncDone) => {
+    it(`should pass the input state as argument in the gesture callback`, (asyncDone) => {
         let spy = sinon.spy(),
             motionName = 'motion',
             sessionId = 10,
@@ -235,11 +235,66 @@ describe('gispl', () => {
             let callbackArgs = spy.lastCall.args;
             expect(callbackArgs.length).to.equal(1);
 
-            let inputState = callbackArgs[0];
-            expect(inputState.length).to.equal(1);
+            let eventObject = callbackArgs[0],
+                {input} = eventObject;
+            expect(input.length).to.equal(1);
 
-            let pointer = inputState[0];
+            let pointer = input[0];
             expect(pointer.identifier).to.equal(sessionId);
+
+            server.close();
+            asyncDone();
+        }, 0);
+    });
+
+    it(`should pass the feature values in the gesture callback`, (asyncDone) => {
+        let spy = sinon.spy(),
+            motionName = 'motion',
+            sessionId = 10,
+            xPos = 0.2,
+            yPos = 0.2,
+            frameId = 1,
+            host = 'test-socket-url';
+
+        gispl.addGesture({
+            name: motionName,
+            features: [
+                {type:"Motion"}
+            ]
+        });
+        gispl(document).on(motionName, spy);
+        window.WebSocket = WebMocket;
+
+        let calibration = {
+            screenToViewportCoordinates: function() {
+                return {
+                    x: 0,
+                    y: 0
+                };
+            },
+            isScreenUsable: function() {
+                return true;
+            }
+        };
+        gispl.initTuio({host, calibration});
+
+        let server = new MocketServer(host);
+
+        setTimeout(() => {
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            //move pointer
+            xPos += 0.5;
+            yPos += 0.5;
+            frameId += 1;
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            let callbackArgs = spy.lastCall.args;
+            expect(callbackArgs.length).to.equal(1);
+
+            let eventObject = callbackArgs[0],
+                {featureValues} = eventObject;
+            
+            expect(featureValues).to.be.an('object');
+            expect(featureValues.motion).to.be.an('object');
 
             server.close();
             asyncDone();
