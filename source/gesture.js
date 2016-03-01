@@ -152,7 +152,7 @@ export function createGesture(gestureDefinition) {
             // will also include parent nodes of all nodes, if enabled 
             return resultingNodes();
         },
-        featureValuesTo(data) {
+        featureValuesToObject(data) {
             features.forEach(feature => {
                 feature.setValueToObject(data);
             });

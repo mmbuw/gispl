@@ -259,7 +259,7 @@ describe('gesture', () => {
         gesture.load({inputObjects});
         
         let data = {};
-        gesture.featureValuesTo(data);
+        gesture.featureValuesToObject(data);
         
         expect(data.count).to.equal(expectedCountValue);
         expect(data.motion).to.deep.equal(expectedMotionValue);
