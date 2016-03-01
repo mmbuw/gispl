@@ -211,7 +211,7 @@ describe('feature', () => {
                 }).finished();
 
             let inputObjects = [rectangleMovingPointersCounterClockwise],
-                expectedValue = 6,
+                expectedValue = 2,
                 featureValues = {};
 
             rectanglePath.load({inputObjects});
