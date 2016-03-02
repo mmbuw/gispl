@@ -1,6 +1,11 @@
 import {inputObjectFromTuio,
+            inputType,
             tuioObjectUpdate} from '../../../source/tuio/tuioInputObject';
 import {buildPointer} from '../../helpers/pointer';
+import TuioPointer from 'tuio/src/TuioPointer';
+import TuioCursor from 'tuio/src/TuioCursor';
+import TuioToken from 'tuio/src/TuioToken';
+import TuioObject from 'tuio/src/TuioObject';
 
 describe('tuioInputObject', () => {
 
@@ -253,4 +258,30 @@ describe('tuioInputObject', () => {
         expect(inputObject.startingTime).to.equal(startingTime);
         clock.restore();
     });
-});
+    
+    it('should contain tuio component information', () => {
+        let pointer = new TuioPointer(),
+            objectFromPointer = inputObjectFromTuio({
+                tuioComponent: pointer
+            });
+        expect(objectFromPointer.componentType).to.equal(inputType.POINTER);
+        
+        let cursor = new TuioCursor({}),
+            objectFromCursor = inputObjectFromTuio({
+                tuioComponent: cursor
+            });
+        expect(objectFromCursor.componentType).to.equal(inputType.CURSOR);
+        
+        let object = new TuioObject({}),
+            objectFromObject = inputObjectFromTuio({
+                tuioComponent: object
+            });
+        expect(objectFromObject.componentType).to.equal(inputType.OBJECT);
+        
+        let token = new TuioToken(),
+            objectFromToken = inputObjectFromTuio({
+                tuioComponent: token
+            });
+        expect(objectFromToken.componentType).to.equal(inputType.TOKEN);
+    });
+}); 

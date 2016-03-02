@@ -1,10 +1,16 @@
+import TuioPointer from 'tuio/src/TuioPointer';
+import TuioCursor from 'tuio/src/TuioCursor';
+import TuioToken from 'tuio/src/TuioToken';
+import TuioObject from 'tuio/src/TuioObject';
+
 export function inputObjectFromTuio(params) {
     let {tuioComponent, calibration} = params;
 
     let identifier = tuioComponent.getSessionId(),
         point = pointInformation(tuioComponent, calibration),
         path = tuioObjectPath(params),
-        type;
+        type,
+        componentType = componentTypeInformation(tuioComponent);
 
     if (typeof tuioComponent.getTypeId === 'function') {
         type = tuioComponent.getTypeId();
@@ -12,6 +18,7 @@ export function inputObjectFromTuio(params) {
 
     return {
         identifier, type, path,
+        componentType,
         ...point
     };
 }
@@ -85,4 +92,22 @@ function pointInformation(point, calibration,
         startingTime,
         tuioTime
     };
+}
+
+export const inputType = {
+    POINTER: 'pointer',
+    CURSOR: 'cursor',
+    OBJECT: 'object',
+    TOKEN: 'token'
+};
+
+function componentTypeInformation(tuioComponent) {
+    if (tuioComponent instanceof TuioPointer)
+        return inputType.POINTER;
+    if (tuioComponent instanceof TuioCursor)
+        return inputType.CURSOR;
+    if (tuioComponent instanceof TuioObject)
+        return inputType.OBJECT;
+    if (tuioComponent instanceof TuioToken)
+        return inputType.TOKEN;
 }
