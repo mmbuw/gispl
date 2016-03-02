@@ -31,13 +31,13 @@ export default function motion(params) {
 
                     // use relative position because for very small movements
                     // different relative position will translate to the same screen pixel
-                    let x = lastPoint.relativeScreenX - beforeLastPoint.relativeScreenX,
+                    let x = lastPoint.screenX - beforeLastPoint.screenX,
                         // not a bug
                         // tuio coordinates are with top left origin
                         // so last - beforeLast, is actually (1-last) - (1-beforeLast)
                         // if we want a vector with bottom left origin
                         // which equals beforeLast - last
-                        y = beforeLastPoint.relativeScreenY - lastPoint.relativeScreenY;
+                        y = beforeLastPoint.screenY - lastPoint.screenY;
                     directionVectorAllInputs.add(vector({x, y}));
 
                     inputCount += 1;
@@ -46,16 +46,9 @@ export default function motion(params) {
 
             if (inputCount !== 0) {
                 
-                directionVectorAllInputs.scaleWith(1/inputCount);
+                //directionVectorAllInputs.scaleWith(1/inputCount);
                 
                 if (limit) {
-                    let screen = window.screen;
-                    // normalize the resulting vector with inputCount
-                    // (take the average motion of all input points)
-                    // and blow it up from relative screen coordinates to actual screen size
-                    directionVectorAllInputs.scaleX(screen.width);
-                    directionVectorAllInputs.scaleY(screen.height);
-
                     match = directionVectorAllInputs.x > limit.lower.x &&
                             directionVectorAllInputs.y > limit.lower.y &&
                             directionVectorAllInputs.x < limit.upper.x &&
@@ -64,9 +57,10 @@ export default function motion(params) {
                 else {
                     match = directionVectorAllInputs.length() !== 0;
                 }
-                
-                let {x, y} = directionVectorAllInputs;
-                baseFeature.setCalculatedValue({x, y});
+                if (match) {
+                    let {x, y} = directionVectorAllInputs;
+                    baseFeature.setCalculatedValue({x, y});
+                }
             }
 
             return match;
