@@ -249,7 +249,8 @@ describe('gesture', () => {
                     {type: 'Count', constraints: [1,1]},
                 ]
             }),
-            expectedMotionValue = {x: 1, y: -1},
+            expectedMotionValue = {x: 1 * window.screen.width,
+                                    y: -1 * window.screen.height},
             expectedCountValue = 1;
             
         let inputObjects = [buildInputFromPointer({x: 0, y: 0})
