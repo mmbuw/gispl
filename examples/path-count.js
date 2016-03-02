@@ -77,7 +77,7 @@ $(document).ready(() => {
         });
     });
     
-    function onTriangle(inputState) {
+    function onTriangle(event) {
         let image$ = $(this);
         
         image$.fadeOut(() => {
@@ -86,7 +86,7 @@ $(document).ready(() => {
     }
     gispl(images$).on(triangle, onTriangle);
     
-    function onTwoTouchTriangle(inputState) {
+    function onTwoTouchTriangle(event) {
         let image$ = $(this),
             offset = image$.offset();
 
@@ -97,12 +97,11 @@ $(document).ready(() => {
                     left: offset.left + image$.width(),
                     top: offset.top
                 }).fadeIn();
-                console.log(newImage$);
         gispl(newImage$).on(triangle, onTriangle);
     }
     gispl(images$).on(twoTouchTriangle, onTwoTouchTriangle);
     
-    gispl('html').on(cross, function(inputState) {
+    gispl('html').on(cross, function(event) {
         images$.fadeOut(() => {
             images$.remove();
         });

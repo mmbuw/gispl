@@ -42,7 +42,7 @@ $(document).ready(() => {
         });
     });
     
-    gispl(images$).on(bubbleTrianglePath, function(inputState) {
+    gispl(images$).on(bubbleTrianglePath, function(event) {
         let image$ = $(this);
         
         image$.fadeOut(() => {

@@ -47,8 +47,9 @@ $(document).ready(() => {
         currentIdentifiers = [],
         inImagePositions = {};
 
-    gispl(images$).on(anyMotion, function(inputState) {
+    gispl(images$).on(anyMotion, function(event) {
         let this$ = $(this),
+            {input:inputState} = event,
             input = inputState[0],
             {identifier,
                 clientX,
@@ -73,9 +74,10 @@ $(document).ready(() => {
     
     let originalPositions = {};
     
-    gispl(images$).on(stickyMotion, function(inputState) {
+    gispl(images$).on(stickyMotion, function(event) {
         let this$ = $(this),
             imageKey = this$.attr('src'),
+            {input:inputState} = event,
             input = inputState[0],
             {identifier,
                 clientX,
