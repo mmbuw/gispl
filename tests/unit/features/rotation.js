@@ -59,7 +59,7 @@ describe('feature', () => {
             expect(anyRotation.load({inputObjects})).to.equal(true);
         });
         
-        it('should reconize the rotation of points even if one is static', () => {
+        it('should recognize the rotation of points even if one is static', () => {
             // centroid is 0.5
             let staticPointer = buildInputFromPointer({x: 0.4, y: 0.4}),
                 movingPointer = buildInputFromPointer({x: 0.6, y: 0.6});
@@ -122,6 +122,8 @@ describe('feature', () => {
             invalidFilterInput.moveTo({x: 0.7, y: 0.7});
             secondValidInput.moveTo({x: 0.4, y: 0.6});
             
+            let expectedValue = Math.PI / 2;
+            
             let inputObjects = [
                 firstValidInput.finished(),
                 invalidFilterInput.finished(),
@@ -134,9 +136,9 @@ describe('feature', () => {
             
             let featureValues = {};
             filteredRotation.setValueToObject(featureValues);
-            // pi/2 is 1.57
-            expect(featureValues.rotation).to.be.above(1.55);
-            expect(featureValues.rotation).to.be.below(1.6);
+            
+            expect(featureValues.rotation).to.be.above(expectedValue - 0.01);
+            expect(featureValues.rotation).to.be.below(expectedValue + 0.01);
         });
         
         it('should be able to set its last known value in the feature values object', () => {
@@ -150,6 +152,8 @@ describe('feature', () => {
             firstPointer.moveTo({x: 0.6, y: 0.4});
             secondPointer.moveTo({x: 0.4, y: 0.6});
             
+            let expectedValue = Math.PI / 2;
+            
             let inputObjects = [
                 firstPointer.finished(),
                 secondPointer.finished(),
@@ -162,12 +166,34 @@ describe('feature', () => {
             anyRotation.setValueToObject(featureValues);
             
             // pi/2 is 1.57
-            expect(featureValues.rotation).to.be.above(1.55);
-            expect(featureValues.rotation).to.be.below(1.6);
+            expect(featureValues.rotation).to.be.above(expectedValue - 0.01);
+            expect(featureValues.rotation).to.be.below(expectedValue + 0.01);
         });
         
-        it('should not recognize rotation if pointers moving in opposite directions', () => {
+        it('should calculate a signed angle of rotation', () => {
+            // centroid is 0.5
+            let firstPointer = buildInputFromPointer({x: 0.4, y: 0.4}),
+                secondPointer = buildInputFromPointer({x: 0.6, y: 0.6});
             
+            //rotate -90 degrees (counter-clockwise) 
+            firstPointer.moveTo({x: 0.4, y: 0.6});
+            secondPointer.moveTo({x: 0.6, y: 0.4});
+            
+            // -90deg = 270deg
+            // -1.57rad = 4.71rad
+            let expectedValue = Math.PI * 3/2;
+            
+            let inputObjects = [
+                firstPointer.finished(),
+                secondPointer.finished()
+            ];
+            anyRotation.load({inputObjects});
+            
+            let featureValues = {};
+            anyRotation.setValueToObject(featureValues);
+            
+            expect(featureValues.rotation).to.be.above(expectedValue - 0.01);
+            expect(featureValues.rotation).to.be.below(expectedValue + 0.01);
         });
     });
 });

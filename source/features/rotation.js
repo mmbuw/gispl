@@ -26,8 +26,21 @@ export default function rotation(params) {
     function directionVector(first, second) {
         return vector({
             x: second.relativeScreenX - first.relativeScreenX,
-            y: second.relativeScreenY - first.relativeScreenY
+            // tuio has origin top left, convert to bottom left
+            y: first.relativeScreenY - second.relativeScreenY
         });
+    }
+    
+    function directedAngleBetweenVectors(first, second) {
+        // first minus second gives positive values moving clockwise
+        let angle = Math.atan2(first.y, first.x) -
+                    Math.atan2(second.y, second.x);
+        // tuio uses values 3.14 - 6.28 for objects/tokens
+        // stick to that instead of negative numbers for counter clockwise
+        if (angle < 0) {
+            angle += Math.PI * 2;
+        }
+        return angle;
     }
     
     return {
@@ -38,39 +51,39 @@ export default function rotation(params) {
             let inputObjects = baseFeature
                                 .inputObjectsFrom(inputState)
                                 .filter(baseFeature.checkAgainstDefinition),
-                centroid = calculateCentroidFrom(inputObjects),
-                inputCount = 0,
                 match = false;
+            
+            if (inputObjects.length > 1) {
+                let centroid = calculateCentroidFrom(inputObjects),
+                    inputCount = 0;
                 
-            let totalCosine = inputObjects.reduce((cosineSum, inputObject) => {
-                let path = inputObject.path;
-                if (path.length > 1) {
-                    let firstPoint = path[0],
-                        lastPoint = path[path.length-1];
-                
-                    let centroidToFirst = directionVector(centroid, firstPoint),
-                        centroidToLast = directionVector(centroid, lastPoint);
-                        
-                    let dotProduct = centroidToFirst.dot(centroidToLast),
-                        lengths = centroidToFirst.length() * centroidToLast.length(),
-                        angleCosine = dotProduct / lengths;
+                let totalAngle = inputObjects.reduce((angleSum, inputObject) => {
+                    let path = inputObject.path;
+                    if (path.length > 1) {
+                        let firstPoint = path[0],
+                            lastPoint = path[path.length-1];
                     
-                    if (isFinite(angleCosine)) {
-                        cosineSum += angleCosine;
+                        let centroidToFirst = directionVector(centroid, firstPoint),
+                            centroidToLast = directionVector(centroid, lastPoint);
+                            
+                        let angle = directedAngleBetweenVectors(
+                                            centroidToFirst,
+                                            centroidToLast
+                                    );
+                                    
+                        angleSum += angle;
                         inputCount += 1;
                     }
-                }
-                return cosineSum;
-            }, 0);
-            
-            if (inputCount !== 0) {
-                let averageCosine = totalCosine / inputCount,
-                    averageAngle = Math.acos(averageCosine);
-                    
-                match = averageAngle !== 0;
-            
-                if (match) {
-                    baseFeature.setCalculatedValue(averageAngle);
+                    return angleSum;
+                }, 0);
+                
+                if (inputCount !== 0) {
+                    let averageAngle = totalAngle / inputCount;
+                        
+                    match = averageAngle !== 0;
+                    if (match) {
+                        baseFeature.setCalculatedValue(averageAngle);
+                    }
                 }
             }
             
