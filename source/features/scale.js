@@ -48,7 +48,7 @@ export default function scale(params) {
             let match = false,
                 inputObjects = baseFeature
                                 .inputObjectsFrom(inputState)
-                                .filter(inputObject => baseFeature.checkAgainstDefinition(inputObject));
+                                .filter(baseFeature.checkAgainstDefinition);
             
             let inputCount = inputObjects.length;
                 

@@ -37,7 +37,7 @@ export default function rotation(params) {
         load(inputState) {
             let inputObjects = baseFeature
                                 .inputObjectsFrom(inputState)
-                                .filter(inputObject => baseFeature.checkAgainstDefinition(inputObject)),
+                                .filter(baseFeature.checkAgainstDefinition),
                 centroid = calculateCentroidFrom(inputObjects),
                 inputCount = 0,
                 match = false;
