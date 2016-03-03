@@ -139,4 +139,16 @@ describe('vector', () => {
         let vectorOfLength5 = vector({x: 3, y: 4});
         expect(vectorOfLength5.length()).to.equal(5);
     });
+    
+    it('should support dot product', () => {
+        let first = vector({x: 1, y: 1}),
+            second = vector({x: 10, y: 10});
+        
+        expect(first.dot(second)).to.equal(20);
+        
+        expect(function () {
+            let invalidVector = {};
+            first.dot(invalidVector);
+        }).to.throw(Error, new RegExp(vectorException.INVALID_VECTOR));
+    });
 });

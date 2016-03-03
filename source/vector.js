@@ -47,6 +47,14 @@ export function vector(params = {}) {
             Math.pow(_x, 2) + Math.pow(_y, 2)
         );
     };
+    
+    _vector.dot = function vectorDot(vector = {}) {
+        if (!validVector(vector.x, vector.y)) {
+            throw new Error(`${vectorException.INVALID_VECTOR}.
+                        Expecting {x: Number, y: Number}. Received ${vector}`);
+        }
+        return _x * vector.x + _y * vector.y;
+    };
 
     return _vector;
 }
@@ -75,5 +83,6 @@ function gettableEnumerableProperty(get) {
 export let vectorException = {
     ILLEGAL_COORDINATES: `Initializing a vector with incorrect coordinates`,
     ILLEGAL_ADD: `Adding to a vector with a non-vector value`,
-    ILLEGAL_SCALAR: `Multiplying a vector with a non-scalar value`
+    ILLEGAL_SCALAR: `Multiplying a vector with a non-scalar value`,
+    INVALID_VECTOR: `Invalid vector`
 };
