@@ -30,8 +30,8 @@ export default function scale(params) {
             relativeScreenY = 0;
         
         inputObjects.forEach(inputObject => {
-            relativeScreenX += inputObject.relativeScreenX * scale;
-            relativeScreenY += inputObject.relativeScreenY * scale;
+            relativeScreenX += inputObject.path[0].relativeScreenX * scale;
+            relativeScreenY += inputObject.path[0].relativeScreenY * scale;
         });
         
         relativeScreenX /= inputCount * scale;
