@@ -73,6 +73,71 @@ describe('feature', () => {
             ];
             expect(anyRotation.load({inputObjects})).to.equal(true);
         });
+
+        it(`should not recognize the feature if the input does not match
+                the defined filter`, () => {
+            let tuioRightThumbFinger = 0b10000,
+                tuioRightIndexFinger = 1,
+                tuioRightMiddleFinger = 2,
+                filteredRotation = featureFactory({
+                    type,
+                    filters: tuioRightThumbFinger
+                }),
+                firstInvalidInput = buildInputFromPointer({
+                    x: 0.4, y: 0.4, typeId: tuioRightIndexFinger}),
+                secondInvalidInput = buildInputFromPointer({
+                    x: 0.6, y: 0.6, typeId: tuioRightMiddleFinger});
+            
+            firstInvalidInput.moveTo({x: 0.6, y: 0.4});
+            secondInvalidInput.moveTo({x: 0.4, y: 0.6});
+            
+            let inputObjects = [
+                firstInvalidInput.finished(),
+                secondInvalidInput.finished()
+            ];
+
+            expect(
+                filteredRotation.load({inputObjects})
+            ).to.equal(false);
+        });
+
+        it(`should recognize the feature even if not all input matches
+                the defined filter`, () => {
+            let tuioRightThumbAndIndexFinger = 0b10001,
+                tuioRightIndexFinger = 1,
+                tuioRightMiddleFinger = 2,
+                tuioRightThumbFinger = 5,
+                filteredRotation = featureFactory({
+                    type,
+                    filters: tuioRightThumbAndIndexFinger
+                }),
+                firstValidInput = buildInputFromPointer({
+                    x: 0.4, y: 0.4, typeId: tuioRightIndexFinger}),
+                invalidFilterInput = buildInputFromPointer({
+                    x: 0.6, y: 0.4, typeId: tuioRightMiddleFinger}),
+                secondValidInput = buildInputFromPointer({
+                    x: 0.6, y: 0.6, typeId: tuioRightThumbFinger});
+            
+            firstValidInput.moveTo({x: 0.6, y: 0.4});
+            invalidFilterInput.moveTo({x: 0.7, y: 0.7});
+            secondValidInput.moveTo({x: 0.4, y: 0.6});
+            
+            let inputObjects = [
+                firstValidInput.finished(),
+                invalidFilterInput.finished(),
+                secondValidInput.finished()
+            ];
+
+            expect(
+                filteredRotation.load({inputObjects})
+            ).to.equal(true);
+            
+            let featureValues = {};
+            filteredRotation.setValueToObject(featureValues);
+            // pi/2 is 1.57
+            expect(featureValues.rotation).to.be.above(1.55);
+            expect(featureValues.rotation).to.be.below(1.6);
+        });
         
         it('should be able to set its last known value in the feature values object', () => {
             // centroid is 0.5
@@ -99,6 +164,10 @@ describe('feature', () => {
             // pi/2 is 1.57
             expect(featureValues.rotation).to.be.above(1.55);
             expect(featureValues.rotation).to.be.below(1.6);
+        });
+        
+        it('should not recognize rotation if pointers moving in opposite directions', () => {
+            
         });
     });
 });
