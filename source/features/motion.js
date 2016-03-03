@@ -5,10 +5,24 @@ import {vector} from '../vector';
 export default function motion(params) {
     let baseFeature = featureBase(params),
         {constraints} = params,
-        limit = false;
+        limit;
 
     if (typeof constraints !== 'undefined') {
         limit = lowerUpperVectorLimit(constraints);
+    }
+    
+    function matchWithValue(motionVector) {
+        let match;
+        if (typeof limit !== 'undefined') {
+            match = motionVector.x > limit.lower.x &&
+                    motionVector.y > limit.lower.y &&
+                    motionVector.x < limit.upper.x &&
+                    motionVector.y < limit.upper.y;
+        }
+        else {
+            match = motionVector.length() !== 0;
+        }
+        return match;
     }
 
     return {
@@ -45,18 +59,7 @@ export default function motion(params) {
             });
 
             if (inputCount !== 0) {
-                
-                //directionVectorAllInputs.scaleWith(1/inputCount);
-                
-                if (limit) {
-                    match = directionVectorAllInputs.x > limit.lower.x &&
-                            directionVectorAllInputs.y > limit.lower.y &&
-                            directionVectorAllInputs.x < limit.upper.x &&
-                            directionVectorAllInputs.y < limit.upper.y;
-                }
-                else {
-                    match = directionVectorAllInputs.length() !== 0;
-                }
+                match = matchWithValue(directionVectorAllInputs);
                 if (match) {
                     let {x, y} = directionVectorAllInputs;
                     baseFeature.setCalculatedValue({x, y});

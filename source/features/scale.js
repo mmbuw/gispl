@@ -40,6 +40,12 @@ export default function scale(params) {
         return {relativeScreenX, relativeScreenY};
     }
     
+    function matchWithValue(scale) {
+        return scale !== 1 &&
+                scale >= limit.lower &&
+                scale <= limit.upper;
+    }
+    
     return {
         type() {
             return 'Scale';
@@ -69,9 +75,7 @@ export default function scale(params) {
                 
                 let averageScaleFactor = totalScaleFactor / inputCount;
                 
-                match = averageScaleFactor !== 1 &&
-                            averageScaleFactor >= limit.lower &&
-                            averageScaleFactor <= limit.upper;
+                match = matchWithValue(averageScaleFactor);
                             
                 if (match) {
                     baseFeature.setCalculatedValue(averageScaleFactor);
