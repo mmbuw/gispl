@@ -1,9 +1,12 @@
 import {vector} from '../vector';
-import {featureBase} from '../feature';
+import {featureBase,
+            lowerUpperLimit} from '../feature';
 
 export default function rotation(params) {
     
-    let baseFeature = featureBase(params); 
+    let constraints = extractContraintsFrom(params),
+        baseFeature = featureBase(params),
+        limit = lowerUpperLimit(constraints);
     
     function calculateCentroidFrom(inputObjects) {
         let inputCount = inputObjects.length,
@@ -43,6 +46,12 @@ export default function rotation(params) {
         return angle;
     }
     
+    function matchWithValue(angle) {
+        return angle !== 0 &&
+                    angle >= limit.lower &&
+                    angle <= limit.upper;
+    }
+    
     return {
         type() {
             return 'Rotation';
@@ -80,7 +89,7 @@ export default function rotation(params) {
                 if (inputCount !== 0) {
                     let averageAngle = totalAngle / inputCount;
                         
-                    match = averageAngle !== 0;
+                    match = matchWithValue(averageAngle);
                     if (match) {
                         baseFeature.setCalculatedValue(averageAngle);
                     }
@@ -92,4 +101,21 @@ export default function rotation(params) {
         
         setValueToObject: baseFeature.setValueToObject
     };
+}
+
+function extractContraintsFrom(params) {
+    let {constraints} = params,
+        defaultLowerLimit = 0,
+        defaultUpperLimit = Number.POSITIVE_INFINITY;
+        
+    if (!Array.isArray(constraints)) {
+        constraints = [defaultLowerLimit, defaultUpperLimit];
+    }
+    if (constraints.length === 0) {
+        constraints.push(defaultLowerLimit);
+    }
+    if (constraints.length === 1) {
+        constraints.push(defaultUpperLimit);
+    }
+    return constraints;
 }

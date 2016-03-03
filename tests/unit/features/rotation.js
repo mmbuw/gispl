@@ -170,7 +170,7 @@ describe('feature', () => {
             expect(featureValues.rotation).to.be.below(expectedValue + 0.01);
         });
         
-        it('should calculate a signed angle of rotation', () => {
+        it('should calculate a directed angle of rotation', () => {
             // centroid is 0.5
             let firstPointer = buildInputFromPointer({x: 0.4, y: 0.4}),
                 secondPointer = buildInputFromPointer({x: 0.6, y: 0.6});
@@ -194,6 +194,86 @@ describe('feature', () => {
             
             expect(featureValues.rotation).to.be.above(expectedValue - 0.01);
             expect(featureValues.rotation).to.be.below(expectedValue + 0.01);
+        });
+        
+        it(`should not recognize rotation if input is not above the lower limit`, () => {
+            // centroid is 0.5
+            let firstPointer = buildInputFromPointer({x: 0.4, y: 0.4}),
+                secondPointer = buildInputFromPointer({x: 0.6, y: 0.6}),
+                rotateMin91degClockwise = featureFactory({
+                    type,
+                    constraints: [91/180 * Math.PI]
+                });
+            
+            //rotate +90 degrees (clockwise) 
+            firstPointer.moveTo({x: 0.6, y: 0.4});
+            secondPointer.moveTo({x: 0.4, y: 0.6});
+            
+            let inputObjects = [
+                firstPointer.finished(),
+                secondPointer.finished()
+            ];
+            expect(rotateMin91degClockwise.load({inputObjects})).to.equal(false);
+        });
+        
+        it(`should recognize rotation if input is above/equal to lower limit`, () => {
+            // centroid is 0.5
+            let firstPointer = buildInputFromPointer({x: 0.4, y: 0.4}),
+                secondPointer = buildInputFromPointer({x: 0.6, y: 0.6}),
+                rotateMin90degClockwise = featureFactory({
+                    type,
+                    constraints: [90/180 * Math.PI]
+                });
+            
+            //rotate +90 degrees (clockwise) 
+            firstPointer.moveTo({x: 0.6, y: 0.4});
+            secondPointer.moveTo({x: 0.4, y: 0.6});
+            
+            let inputObjects = [
+                firstPointer.finished(),
+                secondPointer.finished()
+            ];
+            expect(rotateMin90degClockwise.load({inputObjects})).to.equal(true);
+        });
+        
+        it(`should not recognize rotation if input is not below the upper limit`, () => {
+            // centroid is 0.5
+            let firstPointer = buildInputFromPointer({x: 0.4, y: 0.4}),
+                secondPointer = buildInputFromPointer({x: 0.6, y: 0.6}),
+                rotateMax89degClockwise = featureFactory({
+                    type,
+                    constraints: [0, 89/180 * Math.PI]
+                });
+            
+            //rotate +90 degrees (clockwise) 
+            firstPointer.moveTo({x: 0.6, y: 0.4});
+            secondPointer.moveTo({x: 0.4, y: 0.6});
+            
+            let inputObjects = [
+                firstPointer.finished(),
+                secondPointer.finished()
+            ];
+            expect(rotateMax89degClockwise.load({inputObjects})).to.equal(false);
+        });
+        
+        it(`should recognize rotation if input is below the upper limit`, () => {
+            // centroid is 0.5
+            let firstPointer = buildInputFromPointer({x: 0.4, y: 0.4}),
+                secondPointer = buildInputFromPointer({x: 0.6, y: 0.6}),
+                rotateMax90degClockwise = featureFactory({
+                    type,
+                    constraints: [0, 90/180 * Math.PI]
+                });
+            
+            //rotate +90 degrees (clockwise) 
+            firstPointer.moveTo({x: 0.6, y: 0.4});
+            secondPointer.moveTo({x: 0.4, y: 0.6});
+            
+            let inputObjects = [
+                firstPointer.finished(),
+                secondPointer.finished()
+            ];
+            expect(rotateMax90degClockwise.load({inputObjects})).to.equal(true);
         });
     });
 });
