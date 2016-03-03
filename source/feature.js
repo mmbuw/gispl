@@ -3,6 +3,7 @@ import motion from './features/motion';
 import count from './features/count';
 import path from './features/path';
 import scale from './features/scale';
+import rotation from './features/rotation';
 import {extractDurationFrom,
         validInputFromDuration} from './gesture';
 import {DollarRecognizer} from './libs/dollar';
@@ -23,6 +24,8 @@ export function featureFactory(params = {}) {
         return path(params);
     case 'scale':
         return scale(params);
+    case 'rotation':
+        return rotation(params);
     default:
         throw new Error(`${featureException.NONEXISTING} ${type}`);
     }

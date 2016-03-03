@@ -142,9 +142,11 @@ describe('vector', () => {
     
     it('should support dot product', () => {
         let first = vector({x: 1, y: 1}),
-            second = vector({x: 10, y: 10});
+            second = vector({x: 10, y: 10}),
+            expectedValue = 20;
         
-        expect(first.dot(second)).to.equal(20);
+        expect(first.dot(second)).to.equal(expectedValue);
+        expect(second.dot(first)).to.equal(expectedValue);
         
         expect(function () {
             let invalidVector = {};
