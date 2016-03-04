@@ -7,8 +7,8 @@ export function inputObjectFromTuio(params) {
     let {tuioComponent, calibration} = params;
 
     let identifier = tuioComponent.getSessionId(),
-        point = pointInformation(tuioComponent, calibration, new Date().getTime(), tuioComponent.getAngle()),
-        path = tuioObjectPath(params),
+        point = pointInformation(tuioComponent, calibration, new Date().getTime()),
+        path = [point],
         componentType = componentTypeInformation(tuioComponent),
         type;
 
@@ -43,32 +43,19 @@ export function tuioObjectUpdate(params) {
             calibration,
             inputObject} = params;
     // update path
-    let startFrom = inputObject.path.length,
-        newPointsInPath = tuioObjectPath(params, startFrom);
-    inputObject.path.push(...newPointsInPath);
+    let lastPoint = pointInformation(tuioComponent, calibration, new Date().getTime());
+    inputObject.path.push(lastPoint);
     // update point information (screenX, clientX...)
+    // but keep the original starting time
     Object.assign(inputObject, pointInformation(tuioComponent,
                                                     calibration,
-                                                    inputObject.startingTime,
-                                                    tuioComponent.getAngle()));
+                                                    inputObject.startingTime));
 }
 
-function tuioObjectPath({tuioComponent, calibration}, startFrom = 0) {
-    // so actually this is always just an array of one point
-    // so it could be simplied to just take the last point
-    // but pointers are in tests often times built as one input with
-    // several points in the path and then converted to tuioInputObject
-    return tuioComponent.path.slice(startFrom).map(point => {
-        return pointInformation(point, calibration, new Date().getTime(), tuioComponent.getAngle());
-    });
-}
-
-function pointInformation(point, calibration, startingTime, currentAngle) {
+function pointInformation(point, calibration, startingTime) {
 
     let relativeScreenX = point.getX(),
         relativeScreenY = point.getY(),
-        // does tuio not have a normal time converter?
-        // I don't know. kill me
         // this is time in milliseconds
         tuioTime = (point.getTuioTime().seconds * 1e6 +
                     point.getTuioTime().microSeconds) * 1e-3,
@@ -86,8 +73,8 @@ function pointInformation(point, calibration, startingTime, currentAngle) {
         pageY = clientY + window.pageYOffset;
     }
     
-    if (!isNaN(currentAngle)) {
-        angle = currentAngle;
+    if (!isNaN(point.getAngle())) {
+        angle = point.getAngle();
     }
 
     return {

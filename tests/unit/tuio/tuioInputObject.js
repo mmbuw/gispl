@@ -114,12 +114,9 @@ describe('tuioInputObject', () => {
 
     it('should have a path property of all the previous points', () => {
 
-        let movingPointer = buildPointer({x: 0, y: 0})
-                                            .moveTo({x: 0.5, y: 0.5})
-                                            .finished(),
+        let movingPointer = buildPointer({x: 0, y: 0}),
             path = [
-                {screenX: 0, screenY: 0},
-                {screenX: 0.5*window.screen.width, screenY: 0.5*window.screen.height}
+                {screenX: 0, screenY: 0}
             ],
             clientX = 100,
             clientY = 100,
@@ -130,7 +127,7 @@ describe('tuioInputObject', () => {
                 })
             },
             inputWithHistory = inputObjectFromTuio({
-                tuioComponent: movingPointer,
+                tuioComponent: movingPointer.finished(),
                 calibration});
 
         expect(inputWithHistory.path.length).to.deep.equal(path.length);
@@ -138,6 +135,18 @@ describe('tuioInputObject', () => {
         expect(inputWithHistory.path[0].screenY).to.equal(path[0].screenY);
         expect(inputWithHistory.path[0].clientX).to.equal(clientX);
         expect(inputWithHistory.path[0].clientY).to.equal(clientY);
+                
+        movingPointer.moveTo({x: 0.5, y: 0.5});
+        path.push(
+                {screenX: 0.5*window.screen.width, screenY: 0.5*window.screen.height}
+        );
+        tuioObjectUpdate({
+            tuioComponent: movingPointer.finished(),
+            inputObject: inputWithHistory,
+            calibration
+        });
+        
+        expect(inputWithHistory.path.length).to.equal(path.length);
         expect(inputWithHistory.path[1].screenX).to.equal(path[1].screenX);
         expect(inputWithHistory.path[1].screenY).to.equal(path[1].screenY);
         expect(inputWithHistory.path[1].clientX).to.equal(clientX);
@@ -183,15 +192,20 @@ describe('tuioInputObject', () => {
     it('should have the time information in the point path', () => {
         let startingTime = 300,
             timeAfterOneSecond = startingTime + 1000,
-            movingPointer = buildPointer({time: startingTime})
-                                .moveTo({time: timeAfterOneSecond})
-                                .finished(),
-            input = inputObjectFromTuio({
-                tuioComponent: movingPointer
+            movingPointer = buildPointer({time: startingTime}),
+            inputObject = inputObjectFromTuio({
+                tuioComponent: movingPointer.finished()
             }),
-            path = input.path;
+            path = inputObject.path;
         
         expect(path[0].tuioTime).to.equal(startingTime);
+        
+        movingPointer.moveTo({time: timeAfterOneSecond});
+        tuioObjectUpdate({
+            tuioComponent: movingPointer.finished(),
+            inputObject
+        })
+        
         expect(path[1].tuioTime).to.equal(timeAfterOneSecond);
     });
     
