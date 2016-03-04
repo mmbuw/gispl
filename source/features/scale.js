@@ -1,5 +1,7 @@
 import {vector} from '../vector';
 import {featureBase,
+            extractContraintsFrom,
+            calculateCentroidFrom,
             lowerUpperLimit} from '../feature';
 
 export default function scale(params) {
@@ -20,24 +22,6 @@ export default function scale(params) {
             directionVector = vector({x, y});
             
         return directionVector.length() / scale;
-    }
-    
-    function calculateCentroidFrom(inputObjects) {
-        let inputCount = inputObjects.length,
-            // check above scale comment
-            scale = 10000,
-            relativeScreenX = 0,
-            relativeScreenY = 0;
-        
-        inputObjects.forEach(inputObject => {
-            relativeScreenX += inputObject.path[0].relativeScreenX * scale;
-            relativeScreenY += inputObject.path[0].relativeScreenY * scale;
-        });
-        
-        relativeScreenX /= inputCount * scale;
-        relativeScreenY /= inputCount * scale;
-                                    
-        return {relativeScreenX, relativeScreenY};
     }
     
     function matchWithValue(scale) {
@@ -87,21 +71,4 @@ export default function scale(params) {
         
         setValueToObject: baseFeature.setValueToObject
     };
-}
-
-function extractContraintsFrom(params) {
-    let {constraints} = params,
-        defaultLowerLimit = 0,
-        defaultUpperLimit = Number.POSITIVE_INFINITY;
-        
-    if (!Array.isArray(constraints)) {
-        constraints = [defaultLowerLimit, defaultUpperLimit];
-    }
-    if (constraints.length === 0) {
-        constraints.push(defaultLowerLimit);
-    }
-    if (constraints.length === 1) {
-        constraints.push(defaultUpperLimit);
-    }
-    return constraints;
 }
