@@ -36,6 +36,45 @@ export default function rotation(params) {
                     angle <= limit.upper;
     }
     
+    function calculateAverageAngleFrom(inputObjects) {
+        let centroid = calculateCentroidFrom(inputObjects),
+            inputCount = 0,
+            averageAngle;
+        
+        let totalAngle = inputObjects.reduce((angleSum, inputObject) => {
+            let path = inputObject.path;
+            if (path.length > 1) {
+                let firstPoint = path[0],
+                    lastPoint = path[path.length-1];
+            
+                let centroidToFirst = directionVector(centroid, firstPoint),
+                    centroidToLast = directionVector(centroid, lastPoint);
+                    
+                let angle = directedAngleBetweenVectors(
+                                    centroidToFirst,
+                                    centroidToLast
+                            );
+                            
+                angleSum += angle;
+                inputCount += 1;
+            }
+            return angleSum;
+        }, 0);
+                
+        if (inputCount !== 0) {
+            averageAngle = totalAngle / inputCount;
+        }
+        
+        return averageAngle; 
+    }
+    
+    function initRotationValues() {
+        return {
+            touches: undefined,
+            objects: {}
+        };
+    }
+    
     return {
         type() {
             return 'Rotation';
@@ -51,47 +90,18 @@ export default function rotation(params) {
                     return typeof inputObject.angle !== 'undefined';
                 }),
                 match = false,
-                rotationValues = {
-                    touches: undefined,
-                    objects: {}
-                };
+                rotationValues = initRotationValues();
                 
             if (touchInput.length > 1) {
-                let centroid = calculateCentroidFrom(inputObjects),
-                    inputCount = 0;
-                
-                let totalAngle = touchInput.reduce((angleSum, inputObject) => {
-                    let path = inputObject.path;
-                    if (path.length > 1) {
-                        let firstPoint = path[0],
-                            lastPoint = path[path.length-1];
-                    
-                        let centroidToFirst = directionVector(centroid, firstPoint),
-                            centroidToLast = directionVector(centroid, lastPoint);
-                            
-                        let angle = directedAngleBetweenVectors(
-                                            centroidToFirst,
-                                            centroidToLast
-                                    );
-                                    
-                        angleSum += angle;
-                        inputCount += 1;
-                    }
-                    return angleSum;
-                }, 0);
-                
-                if (inputCount !== 0) {
-                    let averageAngle = totalAngle / inputCount;
-                        
-                    match = matchWithValue(averageAngle);
-                    if (match) {
-                        rotationValues.touches = averageAngle;
-                    }
+                let averageAngle = calculateAverageAngleFrom(touchInput);
+                                
+                match = matchWithValue(averageAngle);
+                if (match) {
+                    rotationValues.touches = averageAngle;
                 }
             }
             
             if (objectInput.length !== 0) {
-                
                 objectInput.forEach(inputObject => {
                     let path = inputObject.path,
                         firstAngle = path[0].angle,
@@ -99,9 +109,7 @@ export default function rotation(params) {
                     
                     let angle = lastAngle - firstAngle;
                     if (matchWithValue(angle)) {
-                        if (!match) {
-                            match = true;
-                        }
+                        match = true;
                         rotationValues.objects[inputObject.identifier] = angle;
                     }
                 });
