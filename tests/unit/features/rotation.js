@@ -1,5 +1,8 @@
 import {featureFactory} from '../../../source/feature';
 import {buildInputFromPointer} from '../../helpers/pointer';
+import {inputObjectFromTuio} from '../../../source/tuio/tuioInputObject';
+import TuioObject from 'tuio/src/TuioObject';
+import TuioToken from 'tuio/src/TuioToken';
 
 describe('feature', () => {
     describe('rotation', () => {
@@ -137,8 +140,8 @@ describe('feature', () => {
             let featureValues = {};
             filteredRotation.setValueToObject(featureValues);
             
-            expect(featureValues.rotation).to.be.above(expectedValue - 0.01);
-            expect(featureValues.rotation).to.be.below(expectedValue + 0.01);
+            expect(featureValues.rotation.touches).to.be.above(expectedValue - 0.01);
+            expect(featureValues.rotation.touches).to.be.below(expectedValue + 0.01);
         });
         
         it('should be able to set its last known value in the feature values object', () => {
@@ -166,8 +169,8 @@ describe('feature', () => {
             anyRotation.setValueToObject(featureValues);
             
             // pi/2 is 1.57
-            expect(featureValues.rotation).to.be.above(expectedValue - 0.01);
-            expect(featureValues.rotation).to.be.below(expectedValue + 0.01);
+            expect(featureValues.rotation.touches).to.be.above(expectedValue - 0.01);
+            expect(featureValues.rotation.touches).to.be.below(expectedValue + 0.01);
         });
         
         it('should calculate a directed angle of rotation', () => {
@@ -192,8 +195,8 @@ describe('feature', () => {
             let featureValues = {};
             anyRotation.setValueToObject(featureValues);
             
-            expect(featureValues.rotation).to.be.above(expectedValue - 0.01);
-            expect(featureValues.rotation).to.be.below(expectedValue + 0.01);
+            expect(featureValues.rotation.touches).to.be.above(expectedValue - 0.01);
+            expect(featureValues.rotation.touches).to.be.below(expectedValue + 0.01);
         });
         
         it(`should not recognize rotation if input is not above the lower limit`, () => {

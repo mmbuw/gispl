@@ -44,7 +44,11 @@ export default function rotation(params) {
             let inputObjects = baseFeature
                                 .inputObjectsFrom(inputState)
                                 .filter(baseFeature.checkAgainstDefinition),
-                match = false;
+                match = false,
+                rotationValues = {
+                    touches: undefined,
+                    objects: {}
+                };
             
             if (inputObjects.length > 1) {
                 let centroid = calculateCentroidFrom(inputObjects),
@@ -75,7 +79,8 @@ export default function rotation(params) {
                         
                     match = matchWithValue(averageAngle);
                     if (match) {
-                        baseFeature.setCalculatedValue(averageAngle);
+                        rotationValues.touches = averageAngle;
+                        baseFeature.setCalculatedValue(rotationValues);
                     }
                 }
             }
