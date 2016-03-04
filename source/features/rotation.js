@@ -44,17 +44,23 @@ export default function rotation(params) {
             let inputObjects = baseFeature
                                 .inputObjectsFrom(inputState)
                                 .filter(baseFeature.checkAgainstDefinition),
+                touchInput = inputObjects.filter(inputObject => {
+                    return typeof inputObject.angle === 'undefined';
+                }),
+                objectInput = inputObjects.filter(inputObject => {
+                    return typeof inputObject.angle !== 'undefined';
+                }),
                 match = false,
                 rotationValues = {
                     touches: undefined,
                     objects: {}
                 };
-            
-            if (inputObjects.length > 1) {
+                
+            if (touchInput.length > 1) {
                 let centroid = calculateCentroidFrom(inputObjects),
                     inputCount = 0;
                 
-                let totalAngle = inputObjects.reduce((angleSum, inputObject) => {
+                let totalAngle = touchInput.reduce((angleSum, inputObject) => {
                     let path = inputObject.path;
                     if (path.length > 1) {
                         let firstPoint = path[0],
@@ -80,9 +86,29 @@ export default function rotation(params) {
                     match = matchWithValue(averageAngle);
                     if (match) {
                         rotationValues.touches = averageAngle;
-                        baseFeature.setCalculatedValue(rotationValues);
                     }
                 }
+            }
+            
+            if (objectInput.length !== 0) {
+                
+                objectInput.forEach(inputObject => {
+                    let path = inputObject.path,
+                        firstAngle = path[0].angle,
+                        lastAngle = path[path.length-1].angle;
+                    
+                    let angle = lastAngle - firstAngle;
+                    if (matchWithValue(angle)) {
+                        if (!match) {
+                            match = true;
+                        }
+                        rotationValues.objects[inputObject.identifier] = angle;
+                    }
+                });
+            }
+            
+            if (match) {
+                baseFeature.setCalculatedValue(rotationValues);
             }
             
             return match;

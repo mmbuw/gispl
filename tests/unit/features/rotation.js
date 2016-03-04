@@ -1,6 +1,7 @@
 import {featureFactory} from '../../../source/feature';
 import {buildInputFromPointer} from '../../helpers/pointer';
-import {inputObjectFromTuio} from '../../../source/tuio/tuioInputObject';
+import {inputObjectFromTuio,
+            tuioObjectUpdate} from '../../../source/tuio/tuioInputObject';
 import TuioObject from 'tuio/src/TuioObject';
 import TuioToken from 'tuio/src/TuioToken';
 
@@ -277,6 +278,83 @@ describe('feature', () => {
                 secondPointer.finished()
             ];
             expect(rotateMax90degClockwise.load({inputObjects})).to.equal(true);
+        });
+        
+        it('should recognize rotation of objects(tokens)', () => {
+            let angle = Math.PI,
+                object = new TuioObject({a: angle}),
+                inputObject = inputObjectFromTuio({tuioComponent: object});
+            
+            object.update({a: angle+1});
+            tuioObjectUpdate({tuioComponent: object, inputObject});
+            
+            let inputObjects = [inputObject];
+            expect(anyRotation.load({inputObjects})).to.equal(true);
+        });
+        
+        it('should not recognize rotation of objects if they do not rotate', () => {
+            let angle = Math.PI,
+                object = new TuioObject({a: angle}),
+                inputObject = inputObjectFromTuio({tuioComponent: object}); 
+            let inputObjects = [inputObject];
+            expect(anyRotation.load({inputObjects})).to.equal(false);
+        });
+        
+        it(`should not recognize object rotation if input is not above the lower limit`, () => {
+            let angle = 0,
+                object = new TuioObject({a: angle}),
+                inputObject = inputObjectFromTuio({tuioComponent: object}),
+                rotateMin91degClockwise = featureFactory({
+                    type,
+                    constraints: [91/180 * Math.PI]
+                });
+            
+            //rotate +90 degrees (clockwise) 
+            object.update({a: angle + Math.PI / 2});
+            tuioObjectUpdate({tuioComponent: object, inputObject});
+            
+            let inputObjects = [inputObject];
+            expect(rotateMin91degClockwise.load({inputObjects})).to.equal(false);
+        });
+        
+        it(`should recognize object rotation if input is above/equal to lower limit`, () => {
+            let angle = 0,
+                object = new TuioObject({a: angle}),
+                inputObject = inputObjectFromTuio({tuioComponent: object}),
+                rotateMin90degClockwise = featureFactory({
+                    type,
+                    constraints: [90/180 * Math.PI]
+                });
+            
+            //rotate +90 degrees (clockwise) 
+            object.update({a: angle + Math.PI / 2});
+            tuioObjectUpdate({tuioComponent: object, inputObject});
+            
+            let inputObjects = [inputObject];
+            expect(rotateMin90degClockwise.load({inputObjects})).to.equal(true);
+        });
+        
+        it('should be able to set its last known value in the feature values object', () => {
+            let angle = 0,
+                angleIncrement = Math.PI / 2,
+                sessionId = 10,
+                object = new TuioObject({a: angle, si: sessionId}),
+                inputObject = inputObjectFromTuio({tuioComponent: object}),
+                rotateMin90degClockwise = featureFactory({
+                    type,
+                    constraints: [90/180 * Math.PI]
+                });
+            
+            //rotate +90 degrees (clockwise) 
+            object.update({a: angle + angleIncrement});
+            tuioObjectUpdate({tuioComponent: object, inputObject});
+            
+            let inputObjects = [inputObject];
+            rotateMin90degClockwise.load({inputObjects});
+            
+            let featureValues = {};
+            rotateMin90degClockwise.setValueToObject(featureValues);
+            expect(featureValues.rotation.objects[sessionId]).to.equal(angleIncrement);
         });
     });
 });
