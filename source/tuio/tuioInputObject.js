@@ -4,10 +4,10 @@ import TuioToken from 'tuio/src/TuioToken';
 import TuioObject from 'tuio/src/TuioObject';
 
 export function inputObjectFromTuio(params) {
-    let {tuioComponent, calibration} = params;
+    let {tuioComponent} = params;
 
     let identifier = tuioComponent.getSessionId(),
-        point = pointInformation(tuioComponent, calibration, new Date().getTime()),
+        point = pointInformation(params, new Date().getTime()),
         path = [point],
         componentType = componentTypeInformation(tuioComponent),
         type;
@@ -39,28 +39,26 @@ export function inputObjectFromPath(params = {}) {
 }
 
 export function tuioObjectUpdate(params) {
-    let {tuioComponent,
-            calibration,
-            inputObject} = params;
+    let {inputObject} = params;
     // update path
-    let lastPoint = pointInformation(tuioComponent, calibration, new Date().getTime());
+    let lastPoint = pointInformation(params, new Date().getTime());
     inputObject.path.push(lastPoint);
     // update point information (screenX, clientX...)
     // but keep the original starting time
-    Object.assign(inputObject, pointInformation(tuioComponent,
-                                                    calibration,
-                                                    inputObject.startingTime));
+    Object.assign(inputObject, pointInformation(params, inputObject.startingTime));
 }
 
-function pointInformation(point, calibration, startingTime) {
+function pointInformation(params, startingTime) {
+    let {tuioComponent,
+            calibration} = params;
 
-    let relativeScreenX = point.getX(),
-        relativeScreenY = point.getY(),
+    let relativeScreenX = tuioComponent.getX(),
+        relativeScreenY = tuioComponent.getY(),
         // this is time in milliseconds
-        tuioTime = (point.getTuioTime().seconds * 1e6 +
-                    point.getTuioTime().microSeconds) * 1e-3,
-        screenX = point.getScreenX(window.screen.width),
-        screenY = point.getScreenY(window.screen.height),
+        tuioTime = (tuioComponent.getTuioTime().seconds * 1e6 +
+                    tuioComponent.getTuioTime().microSeconds) * 1e-3,
+        screenX = tuioComponent.getScreenX(window.screen.width),
+        screenY = tuioComponent.getScreenY(window.screen.height),
         clientX, clientY,
         pageX, pageY,
         angle;
@@ -73,8 +71,8 @@ function pointInformation(point, calibration, startingTime) {
         pageY = clientY + window.pageYOffset;
     }
     
-    if (!isNaN(point.getAngle())) {
-        angle = point.getAngle();
+    if (!isNaN(tuioComponent.getAngle())) {
+        angle = tuioComponent.getAngle();
     }
 
     return {
