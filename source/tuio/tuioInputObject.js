@@ -7,22 +7,17 @@ export function inputObjectFromTuio(params) {
     let {tuioComponent, calibration} = params;
 
     let identifier = tuioComponent.getSessionId(),
-        point = pointInformation(tuioComponent, calibration),
+        point = pointInformation(tuioComponent, calibration, new Date().getTime(), tuioComponent.getAngle()),
         path = tuioObjectPath(params),
         componentType = componentTypeInformation(tuioComponent),
-        angle,
         type;
 
     if (typeof tuioComponent.getTypeId === 'function') {
         type = tuioComponent.getTypeId();
     }
-    
-    if (!isNaN(tuioComponent.getAngle())) {
-        angle = tuioComponent.getAngle();
-    }
 
     return {
-        identifier, type, angle,
+        identifier, type,
         path,
         componentType,
         ...point
@@ -54,7 +49,8 @@ export function tuioObjectUpdate(params) {
     // update point information (screenX, clientX...)
     Object.assign(inputObject, pointInformation(tuioComponent,
                                                     calibration,
-                                                    inputObject.startingTime));
+                                                    inputObject.startingTime,
+                                                    tuioComponent.getAngle()));
 }
 
 function tuioObjectPath({tuioComponent, calibration}, startFrom = 0) {
@@ -63,12 +59,11 @@ function tuioObjectPath({tuioComponent, calibration}, startFrom = 0) {
     // but pointers are in tests often times built as one input with
     // several points in the path and then converted to tuioInputObject
     return tuioComponent.path.slice(startFrom).map(point => {
-        return pointInformation(point, calibration);
+        return pointInformation(point, calibration, new Date().getTime(), tuioComponent.getAngle());
     });
 }
 
-function pointInformation(point, calibration,
-                                startingTime = new Date().getTime()) {
+function pointInformation(point, calibration, startingTime, currentAngle) {
 
     let relativeScreenX = point.getX(),
         relativeScreenY = point.getY(),
@@ -80,7 +75,8 @@ function pointInformation(point, calibration,
         screenX = point.getScreenX(window.screen.width),
         screenY = point.getScreenY(window.screen.height),
         clientX, clientY,
-        pageX, pageY;
+        pageX, pageY,
+        angle;
 
     if (typeof calibration !== 'undefined') {
         ({x:clientX,
@@ -89,6 +85,10 @@ function pointInformation(point, calibration,
         pageX = clientX + window.pageXOffset;
         pageY = clientY + window.pageYOffset;
     }
+    
+    if (!isNaN(currentAngle)) {
+        angle = currentAngle;
+    }
 
     return {
         relativeScreenX, relativeScreenY,
@@ -96,7 +96,8 @@ function pointInformation(point, calibration,
         clientX, clientY,
         pageX, pageY,
         startingTime,
-        tuioTime
+        tuioTime,
+        angle
     };
 }
 

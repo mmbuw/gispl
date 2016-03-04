@@ -296,4 +296,18 @@ describe('tuioInputObject', () => {
         let inputObjectFromPointer = inputObjectFromTuio({tuioComponent: cursor});
         expect(inputObjectFromPointer.angle).to.be.an('undefined');
     });
+    
+    it('should contain angle information in path', () => {
+        let angle = Math.PI, 
+            object = new TuioObject({a: angle});
+        
+        let inputObject = inputObjectFromTuio({tuioComponent: object});
+        
+        object.update({a: angle+1});
+        tuioObjectUpdate({tuioComponent: object, inputObject});
+        
+        expect(inputObject.path.length).to.equal(2);
+        expect(inputObject.path[0].angle).to.equal(angle);
+        expect(inputObject.path[1].angle).to.equal(angle + 1);
+    });
 }); 
