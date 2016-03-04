@@ -82,7 +82,7 @@ export function buildInputFromPointer(params) {
         },
         newSessionId: function() {
             pointerBuilder.newSessionId();
-            inputObject = tuioInputObject();
+            inputObject.identifier = pointerBuilder.finished().getSessionId();
             return this;
         },
         finished: function() {
