@@ -9,15 +9,21 @@ export function inputObjectFromTuio(params) {
     let identifier = tuioComponent.getSessionId(),
         point = pointInformation(tuioComponent, calibration),
         path = tuioObjectPath(params),
-        type,
-        componentType = componentTypeInformation(tuioComponent);
+        componentType = componentTypeInformation(tuioComponent),
+        angle,
+        type;
 
     if (typeof tuioComponent.getTypeId === 'function') {
         type = tuioComponent.getTypeId();
     }
+    
+    if (!isNaN(tuioComponent.getAngle())) {
+        angle = tuioComponent.getAngle();
+    }
 
     return {
-        identifier, type, path,
+        identifier, type, angle,
+        path,
         componentType,
         ...point
     };
