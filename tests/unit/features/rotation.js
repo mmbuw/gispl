@@ -334,11 +334,11 @@ describe('feature', () => {
             expect(rotateMin90degClockwise.load({inputObjects})).to.equal(true);
         });
         
-        it('should be able to set its last known value in the feature values object', () => {
+        it('should be able to set its last known object value in the feature values object', () => {
             let angle = 0,
                 angleIncrement = Math.PI / 2,
-                sessionId = 10,
-                object = new TuioObject({a: angle, si: sessionId}),
+                sym = 10,
+                object = new TuioObject({a: angle, sym}),
                 inputObject = inputObjectFromTuio({tuioComponent: object}),
                 rotateMin90degClockwise = featureFactory({
                     type,
@@ -354,7 +354,7 @@ describe('feature', () => {
             
             let featureValues = {};
             rotateMin90degClockwise.setValueToObject(featureValues);
-            expect(featureValues.rotation.objects[sessionId]).to.equal(angleIncrement);
+            expect(featureValues.rotation.objects[sym]).to.equal(angleIncrement);
         });
     });
 });

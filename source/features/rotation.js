@@ -110,7 +110,7 @@ export default function rotation(params) {
                     let angle = lastAngle - firstAngle;
                     if (matchWithValue(angle)) {
                         match = true;
-                        rotationValues.objects[inputObject.identifier] = angle;
+                        rotationValues.objects[inputObject.componentId] = angle;
                     }
                 });
             }
