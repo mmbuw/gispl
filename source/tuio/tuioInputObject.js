@@ -10,6 +10,7 @@ export function inputObjectFromTuio(params) {
         point = pointInformation(params, new Date().getTime()),
         path = [point],
         componentType = componentTypeInformation(tuioComponent),
+        componentId = componentIdInformation(tuioComponent),
         type;
 
     if (typeof tuioComponent.getTypeId === 'function') {
@@ -20,6 +21,7 @@ export function inputObjectFromTuio(params) {
         identifier, type,
         path,
         componentType,
+        componentId,
         ...point
     };
 }
@@ -102,4 +104,9 @@ function componentTypeInformation(tuioComponent) {
         return inputType.OBJECT;
     if (tuioComponent instanceof TuioToken)
         return inputType.TOKEN;
+}
+
+function componentIdInformation(tuioComponent) {
+    if (tuioComponent instanceof TuioObject)
+        return tuioComponent.getSymbolId();
 }

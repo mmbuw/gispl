@@ -324,4 +324,13 @@ describe('tuioInputObject', () => {
         expect(inputObject.path[0].angle).to.equal(angle);
         expect(inputObject.path[1].angle).to.equal(angle + 1);
     });
+    
+    it('should contain component (symbol) information for objects', () => {
+        let sym = 99,
+            object = new TuioObject({sym});
+        
+        let inputObject = inputObjectFromTuio({tuioComponent: object});
+        
+        expect(inputObject.componentId).to.equal(sym);
+    });
 }); 
