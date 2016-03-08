@@ -62,21 +62,6 @@ describe('feature', () => {
             ];
             expect(anyRotation.load({inputObjects})).to.equal(true);
         });
-        
-        it('should recognize the rotation of points even if one is static', () => {
-            // centroid is 0.5
-            let staticPointer = buildInputFromPointer({x: 0.4, y: 0.4}),
-                movingPointer = buildInputFromPointer({x: 0.6, y: 0.6});
-            
-            //rotate +90 degrees (clockwise) 
-            movingPointer.moveTo({x: 0.4, y: 0.6});
-            
-            let inputObjects = [
-                staticPointer.finished(),
-                movingPointer.finished()
-            ];
-            expect(anyRotation.load({inputObjects})).to.equal(true);
-        });
 
         it(`should not recognize the feature if the input does not match
                 the defined filter`, () => {
@@ -163,6 +148,46 @@ describe('feature', () => {
                 secondPointer.finished(),
                 firstStaticPointer.finished(),
                 secondStaticPointer.finished()
+            ];
+            anyRotation.load({inputObjects});
+            
+            let featureValues = {};
+            anyRotation.setValueToObject(featureValues);
+            
+            // pi/2 is 1.57
+            expect(featureValues.rotation.touches).to.be.above(expectedValue - 0.01);
+            expect(featureValues.rotation.touches).to.be.below(expectedValue + 0.01);
+        });
+        
+        it('should recognize the rotation of points even if one is static', () => {
+            // centroid is 0.5
+            let staticPointer = buildInputFromPointer({x: 0.4, y: 0.4}),
+                movingPointer = buildInputFromPointer({x: 0.6, y: 0.6});
+            
+            //rotate +90 degrees (clockwise) 
+            movingPointer.moveTo({x: 0.4, y: 0.6});
+            
+            let inputObjects = [
+                staticPointer.finished(),
+                movingPointer.finished()
+            ];
+            expect(anyRotation.load({inputObjects})).to.equal(true);
+        });
+        
+        it('should ignore the static input for the angle calculation', () => {
+            // centroid is 0.5
+            let staticPointer = buildInputFromPointer({x: 0.4, y: 0.4}),
+                movingPointer = buildInputFromPointer({x: 0.6, y: 0.6});
+            
+            //rotate +90 degrees (clockwise)
+            movingPointer.moveTo({x: 0.4, y: 0.6});
+            staticPointer.moveTo({x: 0.4, y: 0.4}); // same point
+            
+            let expectedValue = Math.PI / 2;
+            
+            let inputObjects = [
+                staticPointer.finished(),
+                movingPointer.finished()
             ];
             anyRotation.load({inputObjects});
             

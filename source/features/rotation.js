@@ -54,15 +54,22 @@ export default function rotation(params) {
                                     centroidToFirst,
                                     centroidToLast
                             );
-                            
-                angleSum += angle;
-                inputCount += 1;
+                console.log(angle);
+                if (angle !== 0) {
+                    angleSum += angle;
+                    inputCount += 1;   
+                }
             }
             return angleSum;
         }, 0);
                 
         if (inputCount !== 0) {
             averageAngle = totalAngle / inputCount;
+            // tuio uses values 3.14 - 6.28 for objects/tokens
+            // stick to that instead of negative numbers for counter clockwise
+            if (averageAngle < 0) {
+                averageAngle += Math.PI * 2;
+            }
         }
         
         return averageAngle; 
