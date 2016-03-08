@@ -17,7 +17,7 @@ System.config({
     "babel-runtime": "npm:babel-runtime@5.8.35",
     "core-js": "npm:core-js@1.2.6",
     "jquery": "github:components/jquery@2.2.1",
-    "osc": "npm:osc@2.0.2",
+    "osc": "npm:osc@2.0.3",
     "tuio": "npm:tuio-extended@0.1.4",
     "webmocket": "github:nomve/WebMocket@1.0.1",
     "github:jspm/nodelibs-assert@0.1.0": {
