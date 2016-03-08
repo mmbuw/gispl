@@ -22,7 +22,7 @@ export default function rotation(params) {
         // first minus second gives positive values moving clockwise
         let angle = Math.atan2(first.y, first.x) -
                     Math.atan2(second.y, second.x);
-        // tuio uses values 3.14 - 6.28 for objects/tokens
+        // tuio uses values PI -> 2PI for rotation
         // stick to that instead of negative numbers for counter clockwise
         if (angle < 0) {
             angle += Math.PI * 2;
@@ -36,42 +36,50 @@ export default function rotation(params) {
                     angle <= limit.upper;
     }
     
+    function angleFromMovingAndFixedPoint(moving, fixed) {
+        let path = moving.path,
+            firstPoint = path[0],
+            lastPoint = path[path.length-1];
+    
+        let fixedToFirstPoint = directionVector(fixed, firstPoint),
+            fixedToLastPoint = directionVector(fixed, lastPoint);
+            
+        return directedAngleBetweenVectors(
+                    fixedToFirstPoint,
+                    fixedToLastPoint
+        );
+    }
+    
+    function isClockwise(angle) {
+        return angle < Math.PI;
+    }
+    
+    function allValuesIdentical(array) {
+        let first = array[0];
+        return array.every(current => current === first);
+    }
+    
     function calculateAverageAngleFrom(inputObjects) {
         let centroid = calculateCentroidFrom(inputObjects),
             inputCount = 0,
+            rotationDirections = [],
             averageAngle;
         
         let totalAngle = inputObjects.reduce((angleSum, inputObject) => {
-            let path = inputObject.path;
-            if (path.length > 1) {
-                let firstPoint = path[0],
-                    lastPoint = path[path.length-1];
+            let currentAngle = angleFromMovingAndFixedPoint(inputObject, centroid);
             
-                let centroidToFirst = directionVector(centroid, firstPoint),
-                    centroidToLast = directionVector(centroid, lastPoint);
-                    
-                let angle = directedAngleBetweenVectors(
-                                    centroidToFirst,
-                                    centroidToLast
-                            );
-                console.log(angle);
-                if (angle !== 0) {
-                    angleSum += angle;
-                    inputCount += 1;   
-                }
+            if (currentAngle !== 0) {
+                angleSum += currentAngle;
+                inputCount += 1;
+                rotationDirections.push(isClockwise(currentAngle));
             }
             return angleSum;
         }, 0);
                 
-        if (inputCount !== 0) {
+        if (inputCount !== 0 &&
+                allValuesIdentical(rotationDirections)) {
             averageAngle = totalAngle / inputCount;
-            // tuio uses values 3.14 - 6.28 for objects/tokens
-            // stick to that instead of negative numbers for counter clockwise
-            if (averageAngle < 0) {
-                averageAngle += Math.PI * 2;
-            }
         }
-        
         return averageAngle; 
     }
     

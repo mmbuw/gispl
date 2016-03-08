@@ -381,5 +381,22 @@ describe('feature', () => {
             rotateMin90degClockwise.setValueToObject(featureValues);
             expect(featureValues.rotation.objects[sym]).to.equal(angleIncrement);
         });
+        
+        it('should not recognize rotation of pointers moving in opposite directions', () => {
+            // centroid is 0.5
+            let firstPointer = buildInputFromPointer({x: 0.4, y: 0.4}),
+                secondPointer = buildInputFromPointer({x: 0.6, y: 0.6});
+            
+            // rotate +45 degrees (clockwise) 
+            firstPointer.moveTo({x: 0.5, y: 0.4});
+            // rotate -45 degrees (270)
+            secondPointer.moveTo({x: 0.6, y: 0.5});
+            
+            let inputObjects = [
+                firstPointer.finished(),
+                secondPointer.finished()
+            ];
+            expect(anyRotation.load({inputObjects})).to.equal(false);
+        });
     });
 });
