@@ -88,12 +88,12 @@ function pointInformation(params, startingTime) {
     };
 }
 
-export const inputType = {
+export const inputType = Object.freeze({
     POINTER: 'pointer',
     CURSOR: 'cursor',
     OBJECT: 'object',
     TOKEN: 'token'
-};
+});
 
 function componentTypeInformation(tuioComponent) {
     if (tuioComponent instanceof TuioPointer)

@@ -81,11 +81,11 @@ function dollarPointsFrom(constraints) {
     });
 }
 
-export let pathFeatureException = {
+export const pathFeatureException = Object.freeze({
     NO_CONSTRAINTS: `Attempting to add a path feature with no constraints;
                         i.e. number of path points`,
     INVALID_CONSTRAINTS: `Attempting to add a path feature with invalid constraints;
                             number of points less than two`,
     INVALID_CONSTRAINTS_POINT: `Attempting to add a path point, but it does not contain
                                     two coordinates x, y`
-};
+});

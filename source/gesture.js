@@ -3,15 +3,17 @@ import {inputObjectFromPath} from './tuio/tuioInputObject';
 
 export let userDefinedGestures = new Map();
 
-let gestureFlags = {
+const gestureFlags = Object.freeze({
     ONESHOT: 'oneshot',
     STICKY: 'sticky',
     BUBBLE: 'bubble'
-};
-
-let gestureFlagNames = Object.keys(gestureFlags).map(key => {
-    return gestureFlags[key];
 });
+
+const gestureFlagNames = Object.freeze(
+    Object.keys(gestureFlags).map(key => {
+        return gestureFlags[key];
+    })
+);
 
 export function createGesture(gestureDefinition) {
     let matchedInputIds = [],
@@ -161,7 +163,7 @@ export function createGesture(gestureDefinition) {
     };
 }
 
-export let gestureException = {
+export const gestureException = Object.freeze({
     EMPTY: `Attempting to define a gesture without
                         passing a gesture`,
     NO_NAME: 'Attempting to define a gesture without name',
@@ -169,7 +171,7 @@ export let gestureException = {
     DUPLICATE: 'Attempting to define a gesture that already exists',
     INVALID_FLAGS: 'Attempting to define a gesture with an invalid flag',
     INVALID_DURATION: 'Attempting to define a gesture with invalid duration'
-};
+});
 
 function isValidGesture(definition) {
     if (typeof definition === 'undefined' ||

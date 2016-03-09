@@ -80,9 +80,9 @@ function gettableEnumerableProperty(get) {
     );
 }
 
-export let vectorException = {
+export const vectorException = Object.freeze({
     ILLEGAL_COORDINATES: 'Initializing a vector with incorrect coordinates',
     ILLEGAL_ADD: 'Adding to a vector with a non-vector value',
     ILLEGAL_SCALAR: 'Multiplying a vector with a non-scalar value',
     INVALID_VECTOR: 'Invalid vector'
-};
+});

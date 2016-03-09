@@ -145,6 +145,6 @@ export function clearUserDefinedPaths() {
     singleRecognizerInstance.DeleteUserGestures();
 }
 
-export let featureException = {
+export const featureException = Object.freeze({
     NONEXISTING: 'Attempting to add a gesture with a non-existing feature:'
-};
+});

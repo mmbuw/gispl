@@ -42,7 +42,7 @@ function isValidCountFeature(countFeature) {
     }
 }
 
-export let countFeatureException = {
+export const countFeatureException = Object.freeze({
     NO_CONSTRAINTS: `Attempting to add a count feature with no constraints;
                         i.e. number of contact points`
-};
+});

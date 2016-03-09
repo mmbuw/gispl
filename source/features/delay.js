@@ -41,12 +41,12 @@ export default function delay(params) {
     };
 }
 
-export const delayException = {
+export const delayException = Object.freeze({
     NO_CONSTRAINTS: `Attempting to add a delay feature with no constraints;
                         i.e. lower and upper limit`,
     INVALID_CONSTRAINTS: `Attempting to add a delay feature with invalid constraints;
                             expecting array of lower, upper`
-};
+});
 
 function isValidDelayFeature(params) {
     let {constraints} = params;
