@@ -20,6 +20,7 @@ function eventFeatures() {
         motion: undefined,
         path: undefined,
         count: undefined,
-        rotation: undefined
+        rotation: undefined,
+        delay: undefined
     };
 }

@@ -20,16 +20,24 @@ export default function delay(params) {
             let match = false;
             
             if (inputObjects.length > 0) {
+                let totalTimeDiff = 0;
                 match = inputObjects.every(inputObject => {
                     let currentTime = Date.now(),
                         timeDiff = currentTime - inputObject.startingTime;
                     
+                    totalTimeDiff += timeDiff;
+                    
                     return timeDiff >= limit.lower &&
                             timeDiff <= limit.upper;
-                });   
+                });
+                if (match) {
+                    let averageTimeDiff = totalTimeDiff / inputObjects.length;
+                    baseFeature.setCalculatedValue(averageTimeDiff);
+                }
             }
             return match;
-        }
+        },
+        setValueToObject: baseFeature.setValueToObject
     };
 }
 

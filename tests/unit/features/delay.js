@@ -144,5 +144,28 @@ describe('feature', () => {
 
             expect(filteredDelay.load({inputObjects})).to.equal(true);
         });
+        
+        it('should be able to set its last known value in the feature values object', () => {
+            let timeIncrementInMs = 1500,
+                minOneSecond = 1,
+                delayOfMinOneSecond = featureFactory({
+                   type, constraints: [minOneSecond]
+                });
+            
+            let inputObject = buildInputFromPointer();
+            
+            clock.tick(timeIncrementInMs);
+            
+            let inputObjects = [inputObject.finished()];
+            delayOfMinOneSecond.load({inputObjects});
+            
+            let featureValues = {},
+                expectedDelayValue = timeIncrementInMs;
+            
+            delayOfMinOneSecond.load({inputObjects}); // valid feature
+            delayOfMinOneSecond.setValueToObject(featureValues);
+            
+            expect(featureValues.delay).to.equal(expectedDelayValue);
+        });
     });
 });
