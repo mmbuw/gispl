@@ -83,7 +83,7 @@ export function featureBase(params) {
     };
 }
 
-export function extractContraintsFrom(params) {
+export function extractConstraintsFrom(params) {
     let {constraints} = params,
         defaultLowerLimit = 0,
         defaultUpperLimit = Number.POSITIVE_INFINITY;

@@ -1,12 +1,12 @@
 import {vector} from '../vector';
 import {featureBase,
-            extractContraintsFrom,
+            extractConstraintsFrom,
             calculateCentroidFrom,
             lowerUpperLimit} from '../feature';
 
 export default function scale(params) {
     
-    let constraints = extractContraintsFrom(params),
+    let constraints = extractConstraintsFrom(params),
         baseFeature = featureBase(params),
         limit = lowerUpperLimit(constraints);
     

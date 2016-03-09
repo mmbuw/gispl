@@ -1,8 +1,12 @@
+import {lowerUpperLimit,
+            extractConstraintsFrom} from '../feature';
+
 export default function delay(params) {
     
     isValidDelayFeature(params);
     
-    let {constraints} = params;
+    let constraints = extractDelayConstraintsFrom(params),
+        limit = lowerUpperLimit(constraints);
     
     return {
         type() {
@@ -12,17 +16,11 @@ export default function delay(params) {
             let {inputObjects} = inputState;
             
             return inputObjects.every(inputObject => {
-                let currentTime = Date.now();
+                let currentTime = Date.now(),
+                    timeDiff = currentTime - inputObject.startingTime;
                 
-                let match = (currentTime - inputObject.startingTime) >=
-                            (constraints[0] * 1000);
-                            
-                if (typeof constraints[1] !== 'undefined') {
-                    match = match && ((currentTime - inputObject.startingTime) <=
-                            (constraints[1] * 1000));
-                }
-                
-                return match;
+                return timeDiff >= limit.lower &&
+                        timeDiff <= limit.upper;
             });
         }
     };
@@ -57,4 +55,9 @@ function isValidDelayFeature(params) {
                 received: ${typeof constraints[0]}, ${typeof constraints[1]}`);
         } 
     });
+}
+
+function extractDelayConstraintsFrom(params) {
+    let constraints = extractConstraintsFrom(params);
+    return constraints.map(value => value * 1000);
 }

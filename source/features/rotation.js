@@ -2,11 +2,11 @@ import {vector} from '../vector';
 import {featureBase,
             lowerUpperLimit,
             calculateCentroidFrom,
-            extractContraintsFrom} from '../feature';
+            extractConstraintsFrom} from '../feature';
 
 export default function rotation(params) {
     
-    let constraints = extractContraintsFrom(params),
+    let constraints = extractConstraintsFrom(params),
         baseFeature = featureBase(params),
         limit = lowerUpperLimit(constraints);
     
