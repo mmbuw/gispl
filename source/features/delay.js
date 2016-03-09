@@ -1,4 +1,5 @@
-import {lowerUpperLimit,
+import {featureBase,
+            lowerUpperLimit,
             extractConstraintsFrom} from '../feature';
 
 export default function delay(params) {
@@ -6,6 +7,7 @@ export default function delay(params) {
     isValidDelayFeature(params);
     
     let constraints = extractDelayConstraintsFrom(params),
+        baseFeature = featureBase(params),
         limit = lowerUpperLimit(constraints);
     
     return {
@@ -13,15 +15,20 @@ export default function delay(params) {
             return 'Delay';
         },
         load(inputState) {
-            let {inputObjects} = inputState;
+            let inputObjects = baseFeature.inputObjectsFrom(inputState)
+                                            .filter(baseFeature.checkAgainstDefinition);
+            let match = false;
             
-            return inputObjects.every(inputObject => {
-                let currentTime = Date.now(),
-                    timeDiff = currentTime - inputObject.startingTime;
-                
-                return timeDiff >= limit.lower &&
-                        timeDiff <= limit.upper;
-            });
+            if (inputObjects.length > 0) {
+                match = inputObjects.every(inputObject => {
+                    let currentTime = Date.now(),
+                        timeDiff = currentTime - inputObject.startingTime;
+                    
+                    return timeDiff >= limit.lower &&
+                            timeDiff <= limit.upper;
+                });   
+            }
+            return match;
         }
     };
 }
@@ -50,7 +57,7 @@ function isValidDelayFeature(params) {
                             received more than 2 constraints.`);
     }
     constraints.forEach(value => {
-        if (!Number.isFinite(value)) {
+        if (typeof value !== 'number') {
             throw new Error(`${delayException.INVALID_CONSTRAINTS};
                 received: ${typeof constraints[0]}, ${typeof constraints[1]}`);
         } 

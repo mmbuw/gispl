@@ -109,5 +109,40 @@ describe('feature', () => {
                 featureFactory({type, constraints});
             }).to.throw(Error, new RegExp(delayException.INVALID_CONSTRAINTS));
         });
+
+        it(`should not recognize the feature if the input does not match
+                the defined filter`, () => {
+            let tuioRightThumbFinger = 0b10000,
+                tuioRightIndexFinger = 1,
+                filteredDelay = featureFactory({
+                    type,
+                    constraints: [0, +Infinity],
+                    filters: tuioRightThumbFinger
+                });
+                
+            let inputObject = buildInputFromPointer({
+                    typeId: tuioRightIndexFinger
+                }).finished(),
+                inputObjects = [inputObject];
+
+            expect(filteredDelay.load({inputObjects})).to.equal(false);
+        });
+
+        it('should allow multiple filters to be set as bitmask', () => {
+            let tuioRightIndexFinger = 1,
+                filters = 0b10000 | 0b1,
+                filteredDelay = featureFactory({
+                    type,
+                    constraints: [0, +Infinity],
+                    filters
+                });
+                
+            let inputObject = buildInputFromPointer({
+                    typeId: tuioRightIndexFinger
+                }).finished(),
+                inputObjects = [inputObject];
+
+            expect(filteredDelay.load({inputObjects})).to.equal(true);
+        });
     });
 });
