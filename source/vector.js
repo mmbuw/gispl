@@ -1,62 +1,56 @@
 export function vector(params = {}) {
-    let _vector = {},
-        {x:_x = 0,
+    let {x:_x = 0,
             y:_y = 0} = params;
 
     if (!validVector(_x, _y)) {
         throw new Error(`${vectorException.ILLEGAL_COORDINATES}. Instead using ${params}`);
     }
+    
+    let vectorApi = {
+        add(vectorToAdd = {}) {
+            let {x, y} = vectorToAdd;
 
-    Object.defineProperties(_vector, {
+            if (!validVector(x, y)) {
+                throw new Error(`${vectorException.ILLEGAL_ADD}. Instead using: ${vectorToAdd}`);
+            }
+            _x += x;
+            _y += y;
+        },
+        scaleWith(value) {
+            this.scaleX(value);
+            this.scaleY(value);
+        },
+        scaleX(value) {
+            validScalar(value);
+            _x *= value;
+        },
+        scaleY(value) {
+            validScalar(value);
+            _y *= value;
+        },
+        length() {
+            return Math.sqrt(
+                Math.pow(_x, 2) + Math.pow(_y, 2)
+            );
+        },
+        dot(withVector = {}) {
+            let {x, y} = withVector;
+            if (!validVector(x, y)) {
+                throw new Error(`${vectorException.INVALID_VECTOR}.
+                            Expecting {x: Number, y: Number}. Received ${withVector}`);
+            }
+            return _x * x + _y * y;
+        }
+    };
+    
+    return Object.defineProperties(vectorApi, {
         x: gettableEnumerableProperty(function getX() {
             return _x;
         }),
         y: gettableEnumerableProperty(function getY() {
             return _y;
         })
-    });
-
-    _vector.add = function vectorAdd(vector = {}) {
-        let {x, y} = vector;
-
-        if (!validVector(x, y)) {
-            throw new Error(`${vectorException.ILLEGAL_ADD}. Instead using: ${vector}`);
-        }
-
-        _x += x;
-        _y += y;
-    };
-
-    _vector.scaleWith = function vectorWithScalar(value) {
-        _vector.scaleX(value);
-        _vector.scaleY(value);
-    };
-    
-    _vector.scaleX = function vectorScaleX(value) {
-        validScalar(value);
-        _x *= value;
-    };
-    
-    _vector.scaleY = function vectorScaleY(value) {
-        validScalar(value);
-        _y *= value;
-    };
-
-    _vector.length = function vectorLength() {
-        return Math.sqrt(
-            Math.pow(_x, 2) + Math.pow(_y, 2)
-        );
-    };
-    
-    _vector.dot = function vectorDot(vector = {}) {
-        if (!validVector(vector.x, vector.y)) {
-            throw new Error(`${vectorException.INVALID_VECTOR}.
-                        Expecting {x: Number, y: Number}. Received ${vector}`);
-        }
-        return _x * vector.x + _y * vector.y;
-    };
-
-    return _vector;
+    }); 
 }
 
 function validVector(x, y) {
