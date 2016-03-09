@@ -1,12 +1,14 @@
 import {featureBase,
-        lowerUpperLimit} from '../feature';
+        lowerUpperLimit,
+        extractConstraintsFrom} from '../feature';
 
 export default function count(params) {
 
     isValidCountFeature(params);
 
     let baseFeature = featureBase(params),
-        limit = lowerUpperLimit(params.constraints);
+        constraints = extractConstraintsFrom(params),
+        limit = lowerUpperLimit(constraints);
 
     return {
         type() {
@@ -14,19 +16,13 @@ export default function count(params) {
         },
 
         load(inputState) {
-            let count = 0,
-                inputObjects = baseFeature.inputObjectsFrom(inputState);
-                
-            inputObjects.forEach(inputObject => {
-                if (baseFeature.checkAgainstDefinition(inputObject)) {
-                    count += 1;
-                }
-            });
+            let inputObjects = baseFeature.inputObjectsFrom(inputState)
+                                            .filter(baseFeature.checkAgainstDefinition);
+                                            
+            let count = inputObjects.length;
             
-            let match = count >= limit.lower;
-            if (typeof limit.upper !== 'undefined') {
-                match = match && (count <= limit.upper);
-            }
+            let match = count >= limit.lower &&
+                            count <= limit.upper;
             
             if (match) {
                 baseFeature.setCalculatedValue(count);

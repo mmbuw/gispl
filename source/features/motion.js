@@ -31,15 +31,15 @@ export default function motion(params) {
         },
 
         load(inputState) {
-            let inputObjects = baseFeature.inputObjectsFrom(inputState),
+            let inputObjects = baseFeature.inputObjectsFrom(inputState)
+                                            .filter(baseFeature.checkAgainstDefinition),
                 directionVectorAllInputs = vector(),
                 inputCount = 0,
                 match = false;
 
             inputObjects.forEach(inputObject => {
                 let path = inputObject.path;
-                if (path.length > 1 &&
-                        baseFeature.checkAgainstDefinition(inputObject)) {
+                if (path.length > 1) {
                     let lastPoint = path[path.length-1],
                         beforeLastPoint = path[path.length-2];
 
