@@ -4,6 +4,7 @@ import count from './features/count';
 import path from './features/path';
 import scale from './features/scale';
 import rotation from './features/rotation';
+import delay from './features/delay';
 import {extractDurationFrom,
         validInputFromDuration} from './gesture';
 import {DollarRecognizer} from './libs/dollar';
@@ -26,6 +27,8 @@ export function featureFactory(params = {}) {
         return scale(params);
     case 'rotation':
         return rotation(params);
+    case 'delay':
+        return delay(params);
     default:
         throw new Error(`${featureException.NONEXISTING} ${type}`);
     }
