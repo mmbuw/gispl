@@ -1,5 +1,6 @@
 import {featureFactory} from '../../../source/feature';
 import {buildInputFromPointer} from '../../helpers/pointer';
+import {delayException} from '../../../source/features/delay';
 
 describe('feature', () => {
     
@@ -14,13 +15,6 @@ describe('feature', () => {
         
         afterEach(() => {
             clock.restore();
-        });
-        
-        it('should construct', () => {
-            let delayFeature = featureFactory({type});
-            
-            expect(delayFeature).to.be.an('object');
-            expect(delayFeature.type()).to.equal('Delay');
         });
         
         it(`should recognize a feature if the lower limit constraint matches`, () => {
@@ -83,6 +77,37 @@ describe('feature', () => {
             
             let inputObjects = [inputObject.finished()];
             expect(delayOfMaxOneSecond.load({inputObjects})).to.equal(false);
+        });
+        
+        it('should throw when defining delay without valid constraints', () => {
+            expect(() => {
+                featureFactory({type});
+            }).to.throw(Error, new RegExp(delayException.NO_CONSTRAINTS));
+            
+            expect(() => {
+                let constraints = {};
+                featureFactory({type, constraints});
+            }).to.throw(Error, new RegExp(delayException.INVALID_CONSTRAINTS));
+            
+            expect(() => {
+                let constraints = [];
+                featureFactory({type, constraints});
+            }).to.throw(Error, new RegExp(delayException.NO_CONSTRAINTS));
+            
+            expect(() => {
+                let constraints = ['0'];
+                featureFactory({type, constraints});
+            }).to.throw(Error, new RegExp(delayException.INVALID_CONSTRAINTS));
+            
+            expect(() => {
+                let constraints = [0, '1'];
+                featureFactory({type, constraints});
+            }).to.throw(Error, new RegExp(delayException.INVALID_CONSTRAINTS));
+            
+            expect(() => {
+                let constraints = [0, 1, 2];
+                featureFactory({type, constraints});
+            }).to.throw(Error, new RegExp(delayException.INVALID_CONSTRAINTS));
         });
     });
 });
