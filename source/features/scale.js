@@ -1,7 +1,7 @@
-import {vector} from '../vector';
 import {featureBase,
             extractConstraintsFrom,
             calculateCentroidFrom,
+            pointToPointDistance,
             lowerUpperLimit} from '../feature';
 
 export function scale(params) {
@@ -9,20 +9,6 @@ export function scale(params) {
     let constraints = extractConstraintsFrom(params),
         baseFeature = featureBase(params),
         limit = lowerUpperLimit(constraints);
-    
-    function pointToPointDistance(first, second) {
-        // scale helps with floating point inprecision 
-        // without it some edge case in tests will fail
-        // because instead of 2, the scale factor will be 2.00...004
-        // using screenX which is an integer does not always help
-        // also don't change to (first - second) * scale
-        let scale = 10000,
-            x = (first.relativeScreenX * scale - second.relativeScreenX * scale),
-            y = (first.relativeScreenY * scale - second.relativeScreenY * scale),
-            directionVector = vector({x, y});
-            
-        return directionVector.length() / scale;
-    }
     
     function matchWithValue(scale) {
         return scale !== 1 &&

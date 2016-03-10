@@ -88,6 +88,20 @@ export function extractConstraintsFrom(params) {
     }
     return constraints;
 }
+    
+export function pointToPointDistance(first, second) {
+    // scale helps with floating point inprecision 
+    // without it some edge case in tests will fail
+    // because instead of 2, the scale factor will be 2.00...004
+    // using screenX which is an integer does not always help
+    // also don't change to (first - second) * scale
+    let scale = 10000,
+        x = (first.relativeScreenX * scale - second.relativeScreenX * scale),
+        y = (first.relativeScreenY * scale - second.relativeScreenY * scale),
+        directionVector = vector({x, y});
+        
+    return directionVector.length() / scale;
+}
 
 export function calculateCentroidFrom(inputObjects) {
     let inputCount = inputObjects.length,
@@ -103,8 +117,12 @@ export function calculateCentroidFrom(inputObjects) {
     
     relativeScreenX /= inputCount * scale;
     relativeScreenY /= inputCount * scale;
+    
+    let screenX = relativeScreenX * window.screen.width,
+        screenY = relativeScreenY * window.screen.height; 
                                 
-    return {relativeScreenX, relativeScreenY};
+    return {relativeScreenX, relativeScreenY,
+                screenX, screenY};
 }
 
 export function lowerUpperLimit(constraints = []) {
