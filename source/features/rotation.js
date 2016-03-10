@@ -4,7 +4,7 @@ import {featureBase,
             calculateCentroidFrom,
             extractConstraintsFrom} from '../feature';
 
-export default function rotation(params) {
+export function rotation(params) {
     
     let constraints = extractConstraintsFrom(params),
         baseFeature = featureBase(params),

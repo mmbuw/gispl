@@ -2,7 +2,7 @@ import {featureBase,
         lowerUpperVectorLimit} from '../feature';
 import {vector} from '../vector';
 
-export default function motion(params) {
+export function motion(params) {
     let baseFeature = featureBase(params),
         {constraints} = params,
         limit;

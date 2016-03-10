@@ -2,7 +2,7 @@ import {featureBase,
         lowerUpperLimit,
         extractConstraintsFrom} from '../feature';
 
-export default function count(params) {
+export function count(params) {
 
     isValidCountFeature(params);
 

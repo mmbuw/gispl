@@ -1,7 +1,7 @@
 import {featureBase} from '../feature';
 import {Point} from '../libs/dollar';
 
-export default function path(params) {
+export function path(params) {
 
     isValidPathFeature(params);
 

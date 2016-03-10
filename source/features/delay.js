@@ -2,7 +2,7 @@ import {featureBase,
             lowerUpperLimit,
             extractConstraintsFrom} from '../feature';
 
-export default function delay(params) {
+export function delay(params) {
     
     isValidDelayFeature(params);
     

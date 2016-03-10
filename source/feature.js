@@ -1,10 +1,5 @@
 import {vector} from './vector';
-import motion from './features/motion';
-import count from './features/count';
-import path from './features/path';
-import scale from './features/scale';
-import rotation from './features/rotation';
-import delay from './features/delay';
+import * as features from './features';
 import {extractDurationFrom,
         validInputFromDuration} from './gesture';
 import {DollarRecognizer} from './libs/dollar';
@@ -14,24 +9,18 @@ let singleRecognizerInstance = new DollarRecognizer();
 export function featureFactory(params = {}) {
 
     let {type = ''} = params;
-
-    switch (type.toLowerCase()) {
-    case 'motion':
-        return motion(params);
-    case 'count':
-        return count(params);
-    case 'path':
-        params.recognizer = singleRecognizerInstance;
-        return path(params);
-    case 'scale':
-        return scale(params);
-    case 'rotation':
-        return rotation(params);
-    case 'delay':
-        return delay(params);
-    default:
+    
+    type = type.toLowerCase();
+    let constructor = features[type];
+    
+    if (typeof constructor === 'undefined') {
         throw new Error(`${featureException.NONEXISTING} ${type}`);
     }
+    if (type === 'path') {
+        params.recognizer = singleRecognizerInstance;   
+    }
+    
+    return constructor(params);
 }
 
 export function featureBase(params) {

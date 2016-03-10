@@ -4,7 +4,7 @@ import {featureBase,
             calculateCentroidFrom,
             lowerUpperLimit} from '../feature';
 
-export default function scale(params) {
+export function scale(params) {
     
     let constraints = extractConstraintsFrom(params),
         baseFeature = featureBase(params),
