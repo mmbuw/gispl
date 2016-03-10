@@ -5,3 +5,4 @@ export {scale} from './features/scale';
 export {rotation} from './features/rotation';
 export {delay} from './features/delay';
 export {objectId as objectid} from './features/objectId';
+export {objectparent} from './features/objectParent';

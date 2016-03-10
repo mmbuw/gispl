@@ -22,6 +22,7 @@ function eventFeatures() {
         count: undefined,
         rotation: undefined,
         delay: undefined,
-        objectId: undefined
+        objectid: undefined,
+        objectparent: undefined
     };
 }
