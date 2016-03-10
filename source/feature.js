@@ -27,7 +27,7 @@ export function featureBase(params) {
     let {filters,
             type} = params,
         duration = extractDurationFrom(params),
-        calculatedValue;
+        matchedValue;
     
     
     function matchFiltersWith(inputObject) {
@@ -61,12 +61,12 @@ export function featureBase(params) {
         checkAgainstDefinition(inputObject) {
             return matchFiltersWith(inputObject);
         },
-        setCalculatedValue(value) {
-            calculatedValue = value;
+        setMatchedValue(value) {
+            matchedValue = value;
         },
         setValueToObject(featureValues) {
             if (typeof featureValues === 'object') {
-                featureValues[type.toLowerCase()] = calculatedValue;
+                featureValues[type.toLowerCase()] = matchedValue;
             }
         }
     };

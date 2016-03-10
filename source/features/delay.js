@@ -32,7 +32,7 @@ export function delay(params) {
                 });
                 if (match) {
                     let averageTimeDiff = totalTimeDiff / inputObjects.length;
-                    baseFeature.setCalculatedValue(averageTimeDiff);
+                    baseFeature.setMatchedValue(averageTimeDiff);
                 }
             }
             return match;

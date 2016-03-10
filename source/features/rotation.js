@@ -131,7 +131,7 @@ export function rotation(params) {
             }
             
             if (match) {
-                baseFeature.setCalculatedValue(rotationValues);
+                baseFeature.setMatchedValue(rotationValues);
             }
             
             return match;

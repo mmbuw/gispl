@@ -25,7 +25,7 @@ export function count(params) {
                             count <= limit.upper;
             
             if (match) {
-                baseFeature.setCalculatedValue(count);
+                baseFeature.setMatchedValue(count);
             }
 
             return match;

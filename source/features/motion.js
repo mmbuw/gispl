@@ -62,7 +62,7 @@ export function motion(params) {
                 match = matchWithValue(directionVectorAllInputs);
                 if (match) {
                     let {x, y} = directionVectorAllInputs;
-                    baseFeature.setCalculatedValue({x, y});
+                    baseFeature.setMatchedValue({x, y});
                 }
             }
 

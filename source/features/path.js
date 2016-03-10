@@ -44,7 +44,7 @@ export function path(params) {
             });
             
             if (match) {
-                baseFeature.setCalculatedValue(totalScore / inputObjects.length);
+                baseFeature.setMatchedValue(totalScore / inputObjects.length);
             }
             
             return match;

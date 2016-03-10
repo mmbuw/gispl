@@ -62,7 +62,7 @@ export function scale(params) {
                 match = matchWithValue(averageScaleFactor);
                             
                 if (match) {
-                    baseFeature.setCalculatedValue(averageScaleFactor);
+                    baseFeature.setMatchedValue(averageScaleFactor);
                 }
             }
             

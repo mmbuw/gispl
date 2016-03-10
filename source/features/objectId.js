@@ -16,7 +16,7 @@ export function objectId(params) {
         load(inputState) {
             let inputObjects = baseFeature.inputObjectsFrom(inputState)
                                             .filter(baseFeature.checkAgainstDefinition),
-                matchingValues = [];
+                idValues = [];
             
             let match = inputObjects.length !== 0 &&
                         inputObjects.every(inputObject => {
@@ -24,12 +24,12 @@ export function objectId(params) {
                                 match = componentId >= limit.lower &&
                                         componentId <= limit.upper;
                             if (match) {
-                                matchingValues.push(componentId);
+                                idValues.push(componentId);
                             }
                             return match;
                         });
             if (match) {
-                baseFeature.setCalculatedValue(matchingValues);
+                baseFeature.setMatchedValue(idValues);
             } 
             return match;
         },
