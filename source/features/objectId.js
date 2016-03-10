@@ -1,10 +1,12 @@
-import {lowerUpperLimit} from '../feature';
+import {featureBase,
+        lowerUpperLimit} from '../feature';
 
 export function objectId(params) {
     
     isValidObjectIdFeature(params);
     
     let {constraints} = params,
+        baseFeature = featureBase(params),
         limit = lowerUpperLimit(constraints);
     
     return {
@@ -12,15 +14,26 @@ export function objectId(params) {
             return 'ObjectID';
         },
         load(inputState) {
-            let {inputObjects} = inputState;
+            let inputObjects = baseFeature.inputObjectsFrom(inputState)
+                                            .filter(baseFeature.checkAgainstDefinition),
+                matchingValues = [];
             
-            return inputObjects.every(inputObject => {
-                let {componentId} = inputObject;
-                
-                return componentId >= limit.lower &&
-                            componentId <= limit.upper;
-            });
-        }
+            let match = inputObjects.length !== 0 &&
+                        inputObjects.every(inputObject => {
+                            let {componentId} = inputObject,
+                                match = componentId >= limit.lower &&
+                                        componentId <= limit.upper;
+                            if (match) {
+                                matchingValues.push(componentId);
+                            }
+                            return match;
+                        });
+            if (match) {
+                baseFeature.setCalculatedValue(matchingValues);
+            } 
+            return match;
+        },
+        setValueToObject: baseFeature.setValueToObject
     };
 }
 

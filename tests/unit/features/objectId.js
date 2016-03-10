@@ -98,5 +98,26 @@ describe('feature', () => {
                 featureFactory({type, constraints});
             }).to.throw(Error, new RegExp(objectIdException.INVALID_CONSTRAINTS));
         });
+        
+        it('should be able to set its last known value in the feature values object', () => {
+            let id = 8,
+                constraints = [id, id],
+                objectIdFeature = featureFactory({type, constraints});
+            
+            let object = new TuioObject({sym: id}),
+                inputObject = inputObjectFromTuio({
+                    tuioComponent: object
+                });
+            
+            let inputObjects = [inputObject];
+            objectIdFeature.load({inputObjects})
+            
+            let featureValues = {},
+                expectedObjectIdValue = [id];
+            
+            objectIdFeature.setValueToObject(featureValues);
+            
+            expect(featureValues.objectid).to.deep.equal(expectedObjectIdValue);
+        });
     });
 });
