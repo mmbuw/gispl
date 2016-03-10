@@ -1,7 +1,7 @@
 import {featureBase,
         lowerUpperLimit} from '../feature';
 
-export function objectId(params) {
+export function objectid(params) {
     
     isValidObjectIdFeature(params);
     
