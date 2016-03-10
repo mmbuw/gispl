@@ -333,4 +333,13 @@ describe('tuioInputObject', () => {
         
         expect(inputObject.componentId).to.equal(sym);
     });
+    
+    it('should contain user id information for objects', () => {
+        let userId = 10,
+            object = new TuioPointer({ui: userId});
+        
+        let inputObject = inputObjectFromTuio({tuioComponent: object});
+        
+        expect(inputObject.user).to.equal(userId);
+    });
 }); 

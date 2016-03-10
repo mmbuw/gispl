@@ -11,14 +11,19 @@ export function inputObjectFromTuio(params) {
         path = [point],
         componentType = componentTypeInformation(tuioComponent),
         componentId = componentIdInformation(tuioComponent),
-        type;
+        type,
+        user;
 
     if (typeof tuioComponent.getTypeId === 'function') {
         type = tuioComponent.getTypeId();
     }
+    
+    if (typeof tuioComponent.getUserId === 'function') {
+        user = tuioComponent.getUserId();
+    }
 
     return {
-        identifier, type,
+        identifier, type, user,
         path,
         componentType,
         componentId,
