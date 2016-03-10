@@ -6,20 +6,16 @@ import {inputObjectFromTuio,
 export function buildPointer(params = {}) {
     let {x:xp, y:yp, sessionId:si,
             time,
-            typeId} = params,
+            typeId:ti,
+            userId:ui} = params,
             ttime;
             
     if (typeof time !== 'undefined') {
         ttime = TuioTime.fromMilliseconds(time);   
     }
-    let pointer = new TuioPointer({xp, yp, si, ttime});
+    let pointer = new TuioPointer({xp, yp, si, ti, ui, ttime});
 
     //not very clean
-    if (typeof typeId !== 'undefined') {
-        pointer.typeId = typeId;
-    }
-
-    //even worse
     if (typeof si !== 'undefined') {
         pointer.getSessionId = function() {
             return si;
