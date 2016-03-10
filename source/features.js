@@ -6,3 +6,4 @@ export {rotation} from './features/rotation';
 export {delay} from './features/delay';
 export {objectid} from './features/objectId';
 export {objectparent} from './features/objectParent';
+export {objectgroup} from './features/objectGroup';
