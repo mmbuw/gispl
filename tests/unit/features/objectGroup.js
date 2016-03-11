@@ -136,11 +136,23 @@ describe('feature', () => {
             objectGroupFeature.load({inputObjects});
             
             let featureValues = {},
-                expectedValue = radius;
+                expectedRadius = radius,
+                expectedMidpoint = {
+                    screenX: 0.5 * window.screen.width,
+                    screenY: 0.5 * window.screen.height
+                };
+                
             objectGroupFeature.setValueToObject(featureValues);
             
-            expect(featureValues.objectgroup).to.be.above(expectedValue - 0.01);
-            expect(featureValues.objectgroup).to.be.below(expectedValue + 0.01);
+            let {objectgroup} = featureValues;
+            
+            expect(objectgroup.radius).to.be.above(expectedRadius - 0.01);
+            expect(objectgroup.radius).to.be.below(expectedRadius + 0.01);
+            
+            let {midpoint} = objectgroup;
+            
+            expect(midpoint.screenX).to.be.above(expectedMidpoint.screenX - 0.01);
+            expect(midpoint.screenX).to.be.below(expectedMidpoint.screenX + 0.01);
         });
         
         it('should throw when defining the feature without valid constraints', () => {

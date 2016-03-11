@@ -18,6 +18,27 @@ export function objectgroup(params) {
             
         return directionVector.length();
     }
+    
+    function browserPosition(point) {
+        return {
+            browserX: point.screenX - point.clientX,
+            browserY: point.screenY - point.clientY
+        };
+    }
+    
+    function additionalPointInfo(screenX, screenY, point) {
+        let {browserX, browserY} = browserPosition(point);
+        
+        let clientX = screenX - browserX,
+            clientY = screenY - browserY,
+            pageX = clientX + window.pageXOffset,
+            pageY = clientX + window.pageYOffset;
+        
+        return {
+            clientX, clientY,
+            pageX, pageY
+        };
+    }
 
     function calculateCentroidFrom(inputObjects) {
         let inputCount = inputObjects.length,
@@ -31,8 +52,19 @@ export function objectgroup(params) {
         
         screenX /= inputCount;
         screenY /= inputCount;
+        
+        // TODO
+        // already doing similar things
+        // in calibration and tuioInputObject creation
+        // refactor this functionality to the calibration object
+        let {clientX, clientY,
+                pageX, pageY} = additionalPointInfo(screenX,
+                                                    screenY,
+                                                    inputObjects[0]);
                                     
-        return {screenX, screenY};
+        return {screenX, screenY,
+                    pageX, pageY,
+                    clientX, clientY};
     }
     
     return {
@@ -54,7 +86,10 @@ export function objectgroup(params) {
                         count <= limit.upper;
             
                 if (match) {
-                    baseFeature.setMatchedValue(distance);
+                    baseFeature.setMatchedValue({
+                        radius: distance,
+                        midpoint: centroid
+                    });
                 }   
             }
             
