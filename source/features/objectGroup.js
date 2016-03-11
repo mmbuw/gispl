@@ -19,8 +19,7 @@ export function objectgroup(params) {
             
             let inputObjectsWithinRadius = inputObjects.filter(inputObject => {
                 let distance = pointToPointDistance(inputObject, centroid, true);
-                console.log(distance);
-                return distance <= radius;
+                return Math.floor(distance) <= radius;
             });
             
             let count = inputObjectsWithinRadius.length;

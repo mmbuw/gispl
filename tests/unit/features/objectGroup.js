@@ -13,7 +13,6 @@ describe('feature', () => {
                 inputObjects = [firstInput, secondInput],
                 // both points will be in
                 radius = Math.abs((firstInput.screenX - secondInput.screenX) / 2);
-                console.log(radius);
                 
             let type = 'objectGroup',
                 count = inputObjects.length,
@@ -23,7 +22,7 @@ describe('feature', () => {
             expect(objectGroupFeature.load({inputObjects})).to.equal(true);
         });
         
-        it.only(`should not recognize the feature if input objects not within
+        it(`should not recognize the feature if input objects not within
                 the defined radius`, () => {
             // centroid is 0.5, 0.5
             let firstInput = buildInputFromPointer({x: 0.4, y: 0.4})
