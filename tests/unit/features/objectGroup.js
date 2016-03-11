@@ -173,5 +173,28 @@ describe('feature', () => {
                 featureFactory({type, constraints});
             }).to.throw(Error, new RegExp(objectGroupException.INVALID_CONSTRAINTS));
         });
+        
+        it('should recognize the feature even if input moving', () => {
+            // centroid is 0.5, 0.5
+            // then 0.8 0.5, radius remains valid
+            let firstInput = buildInputFromPointer({x: 0.4, y: 0.4})
+                                .moveTo({x: 0.7, y: 0.4})
+                                .finished(),
+                secondInput = buildInputFromPointer({x: 0.6, y: 0.4})
+                                .moveTo({x: 0.4, y: 0.4})
+                                .finished(),
+                inputObjects = [
+                    firstInput,
+                    secondInput
+                ],
+                // both points will be in
+                radius = Math.abs((firstInput.screenX - secondInput.screenX) / 2);
+                
+            let count = inputObjects.length,
+                constraints = [count, count, radius],
+                objectGroupFeature = featureFactory({type, constraints});
+            
+            expect(objectGroupFeature.load({inputObjects})).to.equal(true);
+        });
     });
 });

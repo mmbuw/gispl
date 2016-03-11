@@ -1,6 +1,5 @@
+import {vector} from '../vector';
 import {featureBase,
-        calculateCentroidFrom,
-        pointToPointDistance,
         lowerUpperLimit} from '../feature';
 
 export function objectgroup(params) {
@@ -11,6 +10,30 @@ export function objectgroup(params) {
         baseFeature = featureBase(params),
         limit = lowerUpperLimit(constraints),
         radius = constraints[2];
+    
+    function pointToPointDistance(first, second) {
+        let x = (first.screenX - second.screenX),
+            y = (first.screenY - second.screenY),
+            directionVector = vector({x, y});
+            
+        return directionVector.length();
+    }
+
+    function calculateCentroidFrom(inputObjects) {
+        let inputCount = inputObjects.length,
+            screenX = 0,
+            screenY = 0;
+        
+        inputObjects.forEach(inputObject => {
+            screenX += inputObject.screenX;
+            screenY += inputObject.screenY;
+        });
+        
+        screenX /= inputCount;
+        screenY /= inputCount;
+                                    
+        return {screenX, screenY};
+    }
     
     return {
         type() {
