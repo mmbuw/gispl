@@ -13,18 +13,15 @@ export function objectgroup(params) {
             return 'ObjectGroup';
         },
         load(inputState) {
-            let {inputObjects} = inputState;
+            let {inputObjects} = inputState,
+                count = inputObjects.length;
             
-            let centroid = calculateCentroidFrom(inputObjects);
+            let centroid = calculateCentroidFrom(inputObjects),
+                distance = pointToPointDistance(centroid, inputObjects[0], true);
+                
+            let match = Math.floor(distance) <= radius;
             
-            let inputObjectsWithinRadius = inputObjects.filter(inputObject => {
-                let distance = pointToPointDistance(inputObject, centroid, true);
-                return Math.floor(distance) <= radius;
-            });
-            
-            let count = inputObjectsWithinRadius.length;
-            
-            return count >= limit.lower &&
+            return match && count >= limit.lower &&
                         count <= limit.upper;
         }
     };
