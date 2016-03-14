@@ -32,7 +32,7 @@ export function objectgroup(params) {
         let clientX = screenX - browserX,
             clientY = screenY - browserY,
             pageX = clientX + window.pageXOffset,
-            pageY = clientX + window.pageYOffset;
+            pageY = clientY + window.pageYOffset;
         
         return {
             clientX, clientY,
