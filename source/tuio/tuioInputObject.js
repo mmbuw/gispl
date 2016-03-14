@@ -70,7 +70,8 @@ function pointInformation(params, startingTime) {
         pageX, pageY,
         angle;
 
-    if (typeof calibration !== 'undefined') {
+    if (typeof calibration !== 'undefined' &&
+            calibration.isScreenUsable()) {
         ({x:clientX,
          y:clientY} = calibration.screenToViewportCoordinates({screenX,
                                                              screenY}));

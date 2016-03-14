@@ -8,6 +8,25 @@ import TuioToken from 'tuio/src/TuioToken';
 import TuioObject from 'tuio/src/TuioObject';
 
 describe('tuioInputObject', () => {
+    
+    function getCalibrationMock(params = {}) {
+        let {isUsable = true,
+                clientX, clientY} = params;
+                
+        return {
+            screenToViewportCoordinates: function() {
+                return {
+                    x: clientX,
+                    y: clientY
+                };
+            },
+            isScreenUsable: function() {return isUsable;}
+        }
+    }
+    
+    let calibration = {
+        isScreenUsable: function() {return true}
+    };
 
     it('should have a session identifier', () => {
         let sessionId = 10,
@@ -59,12 +78,7 @@ describe('tuioInputObject', () => {
             clientX = 100,
             clientY = 100,
             pointer = buildPointer({x, y}).finished(),
-            calibration = {
-                screenToViewportCoordinates: () => ({
-                    x: clientX,
-                    y: clientY
-                })
-            },
+            calibration = getCalibrationMock({clientX, clientY}),
             input = inputObjectFromTuio({
                 tuioComponent: pointer,
                 calibration
@@ -80,12 +94,7 @@ describe('tuioInputObject', () => {
             clientX = 100,
             clientY = 100,
             pointer = buildPointer({x, y}).finished(),
-            calibration = {
-                screenToViewportCoordinates: () => ({
-                    x: clientX,
-                    y: clientY
-                })
-            },
+            calibration = getCalibrationMock({clientX, clientY}),
             input = inputObjectFromTuio({
                 tuioComponent: pointer,
                 calibration
@@ -120,15 +129,11 @@ describe('tuioInputObject', () => {
             ],
             clientX = 100,
             clientY = 100,
-            calibration = {
-                screenToViewportCoordinates: () => ({
-                    x: clientX,
-                    y: clientY
-                })
-            },
+            calibration = getCalibrationMock({clientX, clientY}),
             inputWithHistory = inputObjectFromTuio({
                 tuioComponent: movingPointer.finished(),
-                calibration});
+                calibration
+            });
 
         expect(inputWithHistory.path.length).to.deep.equal(path.length);
         expect(inputWithHistory.path[0].screenX).to.equal(path[0].screenX);
