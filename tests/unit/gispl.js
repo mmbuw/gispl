@@ -311,4 +311,15 @@ describe('gispl', () => {
         expect(gispl.filterBitmask([4])).to.equal(0b1000);
         expect(gispl.filterBitmask([5,13,11])).to.equal(0b1010000010000);
     });
+    
+    it('should support event method chaining', () => {
+        let spy = sinon.spy(),
+            event = 'event';
+        
+        gispl(document).on(event, spy).off(event, spy);
+        
+        gispl(document).trigger(event);
+        
+        expect(spy.callCount).to.equal(0);
+    });
 });

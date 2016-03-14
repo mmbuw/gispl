@@ -83,19 +83,21 @@ export function domCollectionEvents(object = {}) {
         this.forEach(element => events.on(element,
                                             event,
                                             listener));
+        return this;
     };
 
     object.off = function collectionEventOff(event, listener) {
         this.forEach(element => events.off(element,
                                             event,
                                             listener));
+        return this;
     };
 
     object.emit = function collectionEventEmit(event, ...args) {
         this.forEach(element => events.emit(element,
                                                 event,
-                                                ...args)
-        );
+                                                ...args));
+        return this;
     };
 
     return object;
