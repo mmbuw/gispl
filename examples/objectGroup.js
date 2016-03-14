@@ -1,23 +1,6 @@
 import gispl from '../source/gispl';
 import $ from 'jquery';
 
-function centerPoint(inputObjects) {
-    let inputCount = inputObjects.length,
-        pageX = 0, pageY = 0;
-    
-    inputObjects.forEach(inputObject => {
-        pageX += inputObject.pageX;
-        pageY += inputObject.pageY;
-    });
-    
-    pageX /= inputCount;
-    pageY /= inputCount;
-    
-    return {
-        pageX, pageY
-    }
-}
-
 $(document).ready(() => {
     let radius150 = 'r-150';
     
@@ -35,8 +18,8 @@ $(document).ready(() => {
     canvas.height = document.body.clientHeight;
     
     gispl(canvas).on(radius150, function(event) {
-        let radius = event.featureValues.objectgroup,
-            center = centerPoint(event.input);
+        let radius = event.featureValues.objectgroup.radius,
+            center = event.featureValues.objectgroup.midpoint;
         
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
