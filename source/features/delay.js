@@ -6,7 +6,7 @@ export function delay(params) {
     
     isValidDelayFeature(params);
     
-    let constraints = extractDelayConstraintsFrom(params),
+    let constraints = extractConstraintsFrom(params),
         baseFeature = featureBase(params),
         limit = lowerUpperLimit(constraints);
     
@@ -70,9 +70,4 @@ function isValidDelayFeature(params) {
                 received: ${typeof constraints[0]}, ${typeof constraints[1]}`);
         } 
     });
-}
-
-function extractDelayConstraintsFrom(params) {
-    let constraints = extractConstraintsFrom(params);
-    return constraints.map(value => value * 1000);
 }

@@ -49,7 +49,7 @@ describe('gesture with duration', () => {
     
     it(`should not recognize motion gesture if partial path within the timeframe 
             specified by the starting-from point invalid`, () => {
-        let checkLastSecondOnly = [1],
+        let checkLastSecondOnly = [1000],
             elapsedTotal500ms = 500,
             elapsedTota1001ms = 501,
             oneSecondDurationMotionDefinition = addDurationToGesture(checkLastSecondOnly),
@@ -73,7 +73,7 @@ describe('gesture with duration', () => {
     
     it(`should recognize motion gesture if partial path within the timeframe
         specified by the starting-from point valid`, () => {
-        let checkLastSecondOnly = [1],
+        let checkLastSecondOnly = [1000],
             elapsedTotal500ms = 500,
             elapsedTotal1000ms = 500,
             oneSecondDurationMotionDefinition = addDurationToGesture(checkLastSecondOnly),
@@ -94,7 +94,7 @@ describe('gesture with duration', () => {
     
     it(`should not recognize motion gesture if partial path within the timeframe 
             specified by the start and end points is invalid`, () => {
-        let checkBetween2and1SecondsAgo = [2,1],
+        let checkBetween2and1SecondsAgo = [2000, 1000],
             elaspedTotal500ms = 500,
             elapsedTotal1499ms = 999,
             oneSecondDurationMotionDefinition = addDurationToGesture(checkBetween2and1SecondsAgo),
@@ -119,7 +119,7 @@ describe('gesture with duration', () => {
     
     it(`should recognize motion gesture if partial path within the timeframe 
             specified by the start and end points is valid`, () => {
-        let checkBetween2and1SecondsAgo = [2,1],
+        let checkBetween2and1SecondsAgo = [2000, 1000],
             elapsedTotal500ms = 500,
             elapsedTotal1500ms = 1000,
             oneSecondDurationMotionDefinition = addDurationToGesture(checkBetween2and1SecondsAgo),
@@ -154,7 +154,7 @@ describe('gesture with duration', () => {
     
     it(`should not recognize motion gesture if partial path within the
             feature timeframe specified by the start point `, () => {
-        let checkLastSecondOnly = [1],
+        let checkLastSecondOnly = [1000],
             elapsedTotal500ms = 500,
             elapsedTotal1001ms = 501,
             oneSecondDurationMotionDefinition = addDurationToFeature(checkLastSecondOnly),
@@ -175,7 +175,7 @@ describe('gesture with duration', () => {
     
     it(`should recognize gesture if path time more than or equal to lower duration bound
             of feature and other parameters valid`, () => {
-        let checkLastSecondOnly = [1],
+        let checkLastSecondOnly = [1000],
             elapsedTotal500ms = 500,
             elapsedTotal1000ms = 500,
             oneSecondDurationMotionDefinition = addDurationToFeature(checkLastSecondOnly),
@@ -199,9 +199,9 @@ describe('gesture with duration', () => {
         let doubleTapDefinition = {
             name: 'doubletap',
             features:[
-                {type: 'Count', constraints:[1,1], duration: [0.2, 0.1]},
-                {type: 'Count', constraints:[0,0], duration: [0.1, 0.01]},
-                {type: 'Count', constraints:[1,1], duration: [0.01]}
+                {type: 'Count', constraints:[1,1], duration: [200, 100]},
+                {type: 'Count', constraints:[0,0], duration: [100, 10]},
+                {type: 'Count', constraints:[1,1], duration: [10]}
             ]
         },
         doubleTapGesture = createGesture(doubleTapDefinition);
@@ -227,7 +227,7 @@ describe('gesture with duration', () => {
         let scaleInTheLastSecondOnly = {
             name: 'any-scale',
             features: [
-                {type: 'Scale', duration: [1]}
+                {type: 'Scale', duration: [1000]}
             ] 
         },
         oneSecondScaleGesture = createGesture(scaleInTheLastSecondOnly);
@@ -260,7 +260,7 @@ describe('gesture with duration', () => {
         let scaleInTheLastSecondOnly = {
             name: 'any-scale',
             features: [
-                {type: 'Scale', duration: [1]}
+                {type: 'Scale', duration: [1000]}
             ] 
         },
         oneSecondScaleGesture = createGesture(scaleInTheLastSecondOnly);

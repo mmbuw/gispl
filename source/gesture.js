@@ -259,12 +259,11 @@ export function extractDurationFrom(definitionObject) {
     };
     if (typeof definitionObject.duration !== 'undefined') {
         let definition = duration.definition = definitionObject.duration;
-        // transfrom from seconds to milliseconds
         if (typeof definition[0] !== 'undefined') {
-            duration.start = definition[0] * 1000;   
+            duration.start = definition[0];   
         }
         if (typeof definition[1] !== 'undefined') {
-            duration.end = definition[1] * 1000;   
+            duration.end = definition[1];   
         }
     }
     return duration;

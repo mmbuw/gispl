@@ -10,12 +10,12 @@ $(document).ready(() => {
         name: tripleTap,
         flags: 'oneshot',
         features: [
-            {type: 'Count', constraints:[1,1], duration: [1/60]},
-            {type: 'Count', constraints:[0,0], duration: [0.2, 1/30]},
-            {type: 'Count', constraints:[1,1], duration: [0.4, 0.2]},
-            {type: 'Count', constraints:[0,0], duration: [0.6, 0.4]},
-            {type: 'Count', constraints:[1,1], duration: [0.8, 0.6]},
-            {type: 'Count', constraints:[0,0], duration: [1.2, 0.8]}
+            {type: 'Count', constraints:[1,1], duration: [1/30]},
+            {type: 'Count', constraints:[0,0], duration: [200, 1/30]},
+            {type: 'Count', constraints:[1,1], duration: [400, 200]},
+            {type: 'Count', constraints:[0,0], duration: [600, 400]},
+            {type: 'Count', constraints:[1,1], duration: [800, 600]},
+            {type: 'Count', constraints:[0,0], duration: [1200, 800]}
         ]
     });
     
@@ -23,10 +23,10 @@ $(document).ready(() => {
         name: doubleTap,
         flags: 'oneshot',
         features: [
-            {type: 'Count', constraints:[1,1], duration: [1/60]},
-            {type: 'Count', constraints:[0,0], duration: [0.2, 1/30]},
-            {type: 'Count', constraints:[1,1], duration: [0.4, 0.2]},
-            {type: 'Count', constraints:[0,0], duration: [0.8, 0.4]},
+            {type: 'Count', constraints:[1,1], duration: [1/30]},
+            {type: 'Count', constraints:[0,0], duration: [200, 1/30]},
+            {type: 'Count', constraints:[1,1], duration: [400, 200]},
+            {type: 'Count', constraints:[0,0], duration: [800, 400]},
         ]
     });
     
