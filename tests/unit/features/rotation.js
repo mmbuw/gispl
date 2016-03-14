@@ -382,6 +382,18 @@ describe('feature', () => {
             expect(featureValues.rotation.objects[sym]).to.equal(angleIncrement);
         });
         
+        it('should recognize counter-clockwise rotation of objects(tokens)', () => {
+            let angle = Math.PI,
+                object = new TuioObject({a: angle}),
+                inputObject = inputObjectFromTuio({tuioComponent: object});
+            
+            object.update({a: angle-1});
+            tuioObjectUpdate({tuioComponent: object, inputObject});
+            
+            let inputObjects = [inputObject];
+            expect(anyRotation.load({inputObjects})).to.equal(true);
+        });
+        
         it('should not recognize rotation of pointers moving in opposite directions', () => {
             // centroid is 0.5
             let firstPointer = buildInputFromPointer({x: 0.4, y: 0.4}),

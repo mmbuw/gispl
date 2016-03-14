@@ -18,16 +18,21 @@ export function rotation(params) {
         });
     }
     
+    function normalizeAngle(value) {
+        // tuio uses values PI -> 2PI for rotation
+        // stick to that instead of negative numbers for counter clockwise
+        if (value < 0) {
+            value += Math.PI * 2;
+        }
+        return value;
+    }
+    
     function directedAngleBetweenVectors(first, second) {
         // first minus second gives positive values moving clockwise
         let angle = Math.atan2(first.y, first.x) -
                     Math.atan2(second.y, second.x);
-        // tuio uses values PI -> 2PI for rotation
-        // stick to that instead of negative numbers for counter clockwise
-        if (angle < 0) {
-            angle += Math.PI * 2;
-        }
-        return angle;
+                    
+        return normalizeAngle(angle);
     }
     
     function matchWithValue(angle) {
@@ -122,7 +127,7 @@ export function rotation(params) {
                         firstAngle = path[0].angle,
                         lastAngle = path[path.length-1].angle;
                     
-                    let angle = lastAngle - firstAngle;
+                    let angle = normalizeAngle(lastAngle - firstAngle);
                     if (matchWithValue(angle)) {
                         match = true;
                         rotationValues.objects[inputObject.componentId] = angle;
