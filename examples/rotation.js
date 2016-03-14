@@ -8,7 +8,7 @@ $(document).ready(() => {
     gispl.addGesture({
         name: fingerRotation,
         features: [
-            {type: 'Count', constraints: [2,2]},
+            {type: 'Count', constraints: [2,4]},
             {type: 'Rotation'},
         ]
     });
