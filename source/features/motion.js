@@ -14,10 +14,10 @@ export function motion(params) {
     function matchWithValue(motionVector) {
         let match;
         if (typeof limit !== 'undefined') {
-            match = motionVector.x > limit.lower.x &&
-                    motionVector.y > limit.lower.y &&
-                    motionVector.x < limit.upper.x &&
-                    motionVector.y < limit.upper.y;
+            match = motionVector.x >= limit.lower.x &&
+                    motionVector.y >= limit.lower.y &&
+                    motionVector.x <= limit.upper.x &&
+                    motionVector.y <= limit.upper.y;
         }
         else {
             match = motionVector.length() !== 0;
