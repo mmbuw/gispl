@@ -21,12 +21,8 @@ describe('tuioInputObject', () => {
                 };
             },
             isScreenUsable: function() {return isUsable;}
-        }
+        };
     }
-    
-    let calibration = {
-        isScreenUsable: function() {return true}
-    };
 
     it('should have a session identifier', () => {
         let sessionId = 10,
