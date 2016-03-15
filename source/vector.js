@@ -1,17 +1,43 @@
+let vectorPool = [],
+    usedVectors = 0;
+const vectorPoolSize = 10;
+        
+for (let i = 0; i < vectorPoolSize; i += 1) {
+    vectorPool.push(vectorConstructor());
+}
+
 export function vector(params = {}) {
+    
+    let {x = 0, y = 0} = params;
+
+    if (!validVector(x, y)) {
+        throw new Error(`${vectorException.ILLEGAL_COORDINATES}.
+                            Instead using ${params}`);
+    }
+    
+    if (usedVectors === vectorPoolSize) {
+        usedVectors = 0;
+    }
+    
+    let vectorObject = vectorPool[usedVectors];
+    
+    vectorObject.setCoordinates(params);
+    usedVectors += 1;
+    
+    return vectorObject;
+}
+
+function vectorConstructor(params = {}) {
     let {x:_x = 0,
             y:_y = 0} = params;
-
-    if (!validVector(_x, _y)) {
-        throw new Error(`${vectorException.ILLEGAL_COORDINATES}. Instead using ${params}`);
-    }
     
     let vectorApi = {
         add(vectorToAdd = {}) {
             let {x, y} = vectorToAdd;
 
             if (!validVector(x, y)) {
-                throw new Error(`${vectorException.ILLEGAL_ADD}. Instead using: ${vectorToAdd}`);
+                throw new Error(`${vectorException.ILLEGAL_ADD}.
+                                    Instead using: ${vectorToAdd}`);
             }
             _x += x;
             _y += y;
@@ -37,9 +63,15 @@ export function vector(params = {}) {
             let {x, y} = withVector;
             if (!validVector(x, y)) {
                 throw new Error(`${vectorException.INVALID_VECTOR}.
-                            Expecting {x: Number, y: Number}. Received ${withVector}`);
+                                    Expecting {x: Number, y: Number}.
+                                    Received ${typeof x} ${typeof y}`);
             }
             return _x * x + _y * y;
+        },
+        setCoordinates(toValues = {}) {
+            let {x = 0, y = 0} = toValues;
+            _x = x;
+            _y = y;
         }
     };
     
@@ -50,7 +82,7 @@ export function vector(params = {}) {
         y: gettableEnumerableProperty(function getY() {
             return _y;
         })
-    }); 
+    });
 }
 
 function validVector(x, y) {

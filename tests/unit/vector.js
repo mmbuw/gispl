@@ -42,13 +42,13 @@ describe('vector', () => {
     it('should throw when constructing from incorrect coordinates', () => {
 
         expect(function() {
-            vector({x: '1'})
+            vector({x: '1'});
         }).to.throw(Error, new RegExp(vectorException.ILLEGAL_COORDINATES));
 
         expect(function() {
-            vector({y: '1'})
+            vector({y: '1'});
         }).to.throw(Error, new RegExp(vectorException.ILLEGAL_COORDINATES));
-    })
+    });
 
     it('should support vector addition', () => {
         let x = 10,
@@ -95,7 +95,7 @@ describe('vector', () => {
             y = 5,
             someVector = vector({x, y});
 
-        someVector.scaleWith(multiplyTwo)
+        someVector.scaleWith(multiplyTwo);
         expect(someVector.x).to.equal(x*multiplyTwo);
         expect(someVector.y).to.equal(y*multiplyTwo);
 
@@ -110,10 +110,10 @@ describe('vector', () => {
             y = 5,
             someVector = vector({x, y});
 
-        someVector.scaleX(multiplyThree)
+        someVector.scaleX(multiplyThree);
         expect(someVector.x).to.equal(x*multiplyThree);
 
-        someVector.scaleY(multiplyThree)
+        someVector.scaleY(multiplyThree);
         expect(someVector.y).to.equal(y*multiplyThree);
     });
 
@@ -152,5 +152,36 @@ describe('vector', () => {
             let invalidVector = {};
             first.dot(invalidVector);
         }).to.throw(Error, new RegExp(vectorException.INVALID_VECTOR));
+    });
+    
+    it('should be able to reset coordinates to 0, 0', () => {
+        let someVector = vector({x: 1, y: 1});
+        someVector.setCoordinates();
+        expect(someVector.x).to.equal(0);
+        expect(someVector.y).to.equal(0);
+    });
+    
+    it('should be able to set coordinates to any value', () => {
+        let someVector = vector({x: 2, y: 2});
+        someVector.setCoordinates({x: 1, y: 1});
+        expect(someVector.x).to.equal(1);
+        expect(someVector.y).to.equal(1);
+    });
+    
+    it('should have a pool of 10 reusable vector objects', () => {
+        let vectorCount = 11,
+            vectors = [],
+            x = 1, y = 1;
+        
+        for (let i = 0; i < vectorCount; i += 1) {
+            if (i+1 === vectorCount) {
+                x = 10, y = 10;
+            }
+            vectors.push(vector({x, y}));
+        }
+        
+        expect(vectors[0]).to.equal(vectors[10]);
+        expect(vectors[10].x).to.equal(10);
+        expect(vectors[10].y).to.equal(10);
     });
 });

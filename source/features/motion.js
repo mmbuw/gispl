@@ -52,7 +52,7 @@ export function motion(params) {
                         // if we want a vector with bottom left origin
                         // which equals beforeLast - last
                         y = beforeLastPoint.screenY - lastPoint.screenY;
-                    directionVectorAllInputs.add(vector({x, y}));
+                    directionVectorAllInputs.add({x, y});
 
                     inputCount += 1;
                 }
