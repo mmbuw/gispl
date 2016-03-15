@@ -168,8 +168,8 @@ describe('vector', () => {
         expect(someVector.y).to.equal(1);
     });
     
-    it('should have a pool of 10 reusable vector objects', () => {
-        let vectorCount = 11,
+    it('should have a pool of 100 reusable vector objects', () => {
+        let vectorCount = 101,
             vectors = [],
             x = 1, y = 1;
         
@@ -180,8 +180,8 @@ describe('vector', () => {
             vectors.push(vector({x, y}));
         }
         
-        expect(vectors[0]).to.equal(vectors[10]);
-        expect(vectors[10].x).to.equal(10);
-        expect(vectors[10].y).to.equal(10);
+        expect(vectors[0]).to.equal(vectors[100]);
+        expect(vectors[100].x).to.equal(10);
+        expect(vectors[100].y).to.equal(10);
     });
 });
