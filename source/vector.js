@@ -1,6 +1,6 @@
 let vectorPool = [],
     usedVectors = 0;
-const vectorPoolSize = 10;
+const vectorPoolSize = 100;
         
 for (let i = 0; i < vectorPoolSize; i += 1) {
     vectorPool.push(vectorConstructor());
