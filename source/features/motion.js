@@ -59,6 +59,7 @@ export function motion(params) {
             });
 
             if (inputCount !== 0) {
+                directionVectorAllInputs.scaleWith(1/inputCount);
                 match = matchWithValue(directionVectorAllInputs);
                 if (match) {
                     let {x, y} = directionVectorAllInputs;

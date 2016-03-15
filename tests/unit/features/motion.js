@@ -69,8 +69,7 @@ describe('feature', () => {
 
         it(`should not recognize the feature if the input does not match
                 the defined filter`, () => {
-            let tuioRightThumbFinger = 5,
-                tuioRightIndexFinger = 1,
+            let tuioRightIndexFinger = 1,
                 filters = 0b10000, //5th bit
                 filteredMotion = featureFactory({type, filters});
 
@@ -170,6 +169,34 @@ describe('feature', () => {
             movingPointer.moveTo({x: 1, y: 0});
             inputObjects = [
                 movingPointer.finished()
+            ];
+            expect(constrainedMotion.load({inputObjects})).to.equal(true);
+        });
+
+        it(`should match if constraints defined and multiple
+                input objects used`, () => {
+            // constraints vectors -> origin is bottom left
+            let tuioPixel = {
+                    width: 1 / window.screen.width,
+                    height: 1 / window.screen.height
+                },
+                matchIfToRight = [[0, 0], [1, 0]],
+                constrainedMotion = featureFactory({
+                    type, constraints: matchIfToRight
+                }),
+                // tuio origin is top left
+                x = 0.5, y = 0.5,
+                firstPointer = buildInputFromPointer({x, y}),
+                secondPointer = buildInputFromPointer({x, y});
+            
+            // move horizontally right
+            x += tuioPixel.width;
+            firstPointer.moveTo({x, y});
+            secondPointer.moveTo({x, y});
+
+            let inputObjects = [
+                firstPointer.finished(),
+                secondPointer.finished()
             ];
             expect(constrainedMotion.load({inputObjects})).to.equal(true);
         });
