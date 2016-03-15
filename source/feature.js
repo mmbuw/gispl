@@ -133,14 +133,14 @@ export function lowerUpperVectorLimit(constraints = []) {
     // object.lower.x, object.lower.y
     // object.upper.x, object.upper.y
     return lowerUpperLimit([
-        vector({
+        {
             x: constraints[0][0],
             y: constraints[0][1]
-        }),
-        vector({
+        },
+        {
             x: constraints[1][0],
             y: constraints[1][1]
-        })
+        }
     ]);
 }
 
