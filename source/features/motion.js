@@ -24,6 +24,23 @@ export function motion(params) {
         }
         return match;
     }
+    
+    function totalInputObjectsMotion(vectorSum, inputObject) {
+        let path = inputObject.path;
+        let lastPoint = path[path.length-1],
+            beforeLastPoint = path[path.length-2];
+
+        // use relative position because for very small movements
+        // different relative position will translate to the same screen pixel
+        let x = lastPoint.screenX - beforeLastPoint.screenX,
+            // not a bug
+            // tuio coordinates are with top left origin
+            // so last - beforeLast, is actually (1-last) - (1-beforeLast)
+            // if we want a vector with bottom left origin
+            // which equals beforeLast - last
+            y = beforeLastPoint.screenY - lastPoint.screenY;
+        return vectorSum.add({x, y});
+    }
 
     return {
         type() {
@@ -32,37 +49,18 @@ export function motion(params) {
 
         load(inputState) {
             let inputObjects = baseFeature.inputObjectsFrom(inputState)
-                                            .filter(baseFeature.checkAgainstDefinition),
-                directionVectorAllInputs = vector(),
-                inputCount = 0,
+                                            .filter(baseFeature.checkAgainstDefinition)
+                                            .filter(inputObject => inputObject.path.length > 1),
                 match = false;
 
-            inputObjects.forEach(inputObject => {
-                let path = inputObject.path;
-                if (path.length > 1) {
-                    let lastPoint = path[path.length-1],
-                        beforeLastPoint = path[path.length-2];
-
-                    // use relative position because for very small movements
-                    // different relative position will translate to the same screen pixel
-                    let x = lastPoint.screenX - beforeLastPoint.screenX,
-                        // not a bug
-                        // tuio coordinates are with top left origin
-                        // so last - beforeLast, is actually (1-last) - (1-beforeLast)
-                        // if we want a vector with bottom left origin
-                        // which equals beforeLast - last
-                        y = beforeLastPoint.screenY - lastPoint.screenY;
-                    directionVectorAllInputs.add({x, y});
-
-                    inputCount += 1;
-                }
-            });
-
-            if (inputCount !== 0) {
-                directionVectorAllInputs.scaleWith(1/inputCount);
-                match = matchWithValue(directionVectorAllInputs);
+            if (inputObjects.length !== 0) {
+                let motionVector = inputObjects.reduce(totalInputObjectsMotion, vector());
+                // average based on input count
+                motionVector.scaleWith(1/inputObjects.length);
+                match = matchWithValue(motionVector);
+                
                 if (match) {
-                    let {x, y} = directionVectorAllInputs;
+                    let {x, y} = motionVector;
                     baseFeature.setMatchedValue({x, y});
                 }
             }
