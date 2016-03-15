@@ -41,18 +41,21 @@ function vectorConstructor(params = {}) {
             }
             _x += x;
             _y += y;
+            return this;
         },
         scaleWith(value) {
-            this.scaleX(value);
-            this.scaleY(value);
+            return this.scaleX(value)
+                        .scaleY(value);
         },
         scaleX(value) {
             validScalar(value);
             _x *= value;
+            return this;
         },
         scaleY(value) {
             validScalar(value);
             _y *= value;
+            return this;
         },
         length() {
             return Math.sqrt(
@@ -72,6 +75,7 @@ function vectorConstructor(params = {}) {
             let {x = 0, y = 0} = toValues;
             _x = x;
             _y = y;
+            return this;
         }
     };
     
