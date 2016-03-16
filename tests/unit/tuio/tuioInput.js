@@ -27,7 +27,7 @@ describe('tuioInput', () => {
         tuioClient = new TuioClient({host});
 
         calibration = screenCalibration();
-        coordinatesStub = sinon.stub(calibration, 'screenToViewportCoordinates')
+        coordinatesStub = sinon.stub(calibration, 'screenToBrowserCoordinates')
                             .returns({clientX: 0, clientY: 0});
         screenUsableStub = sinon.stub(calibration, 'isScreenUsable')
                             .returns(true);
@@ -163,7 +163,7 @@ describe('tuioInput', () => {
             spy = sinon.spy();
 
         coordinatesStub.restore();
-        coordinatesStub = sinon.stub(calibration, 'screenToViewportCoordinates');
+        coordinatesStub = sinon.stub(calibration, 'screenToBrowserCoordinates');
 
         let element1 = $(`<div style="
                             position: absolute; top: 0; left: 0;
@@ -399,7 +399,7 @@ describe('tuioInput', () => {
         input.listen(spy);
 
         coordinatesStub.restore();
-        coordinatesStub = sinon.stub(calibration, 'screenToViewportCoordinates');
+        coordinatesStub = sinon.stub(calibration, 'screenToBrowserCoordinates');
 
         let element = $(`<div style="
                             position: absolute; top: 0; left: 0;

@@ -98,7 +98,7 @@ describe('screenCalibration', () => {
             clientY = screenY - (event.screenY - event.clientY);
 
         calibration.mouseEvent(event);
-        expect(calibration.screenToViewportCoordinates({screenX, screenY})).
+        expect(calibration.screenToBrowserCoordinates({screenX, screenY})).
                 to.deep.equal({clientX, clientY});
     });
 
@@ -189,4 +189,8 @@ describe('screenCalibration', () => {
         });
         expect(calibration.isScreenUsable()).to.equal(true);
     });
+    
+    // it('should ', () => {
+        
+    // });
 });

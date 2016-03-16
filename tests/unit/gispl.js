@@ -162,7 +162,7 @@ describe('gispl', () => {
         window.WebSocket = WebMocket;
 
         let calibration = {
-            screenToViewportCoordinates: function() {
+            screenToBrowserCoordinates: function() {
                 return {
                     clientX: 0,
                     clientY: 0
@@ -211,7 +211,7 @@ describe('gispl', () => {
         window.WebSocket = WebMocket;
 
         let calibration = {
-            screenToViewportCoordinates: function() {
+            screenToBrowserCoordinates: function() {
                 return {
                     clientX: 0,
                     clientY: 0
@@ -266,7 +266,7 @@ describe('gispl', () => {
         window.WebSocket = WebMocket;
 
         let calibration = {
-            screenToViewportCoordinates: function() {
+            screenToBrowserCoordinates: function() {
                 return {
                     clientX: 0,
                     clientY: 0

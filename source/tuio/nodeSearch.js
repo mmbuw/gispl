@@ -10,7 +10,7 @@ export default function nodeSearch(params = {}) {
         if (typeof screenX !== 'undefined' &&
                 typeof screenY !== 'undefined' &&
                 calibration.isScreenUsable()) {
-            let adjustedPoints = calibration.screenToViewportCoordinates(params);
+            let adjustedPoints = calibration.screenToBrowserCoordinates(params);
             ({clientX, clientY} = adjustedPoints);
         }
 
