@@ -85,21 +85,21 @@ describe('screenCalibration', () => {
     it('should adapt passed screen point to a point in viewport coordinates', () => {
 
         let event = {
-            screenX: 50,
-            screenY: 50,
-            clientX: 0,
-            clientY: 0
-        },
+                screenX: 50,
+                screenY: 50,
+                clientX: 0,
+                clientY: 0
+            },
             screenX = 300,
             screenY = 400,
             // this is also exactly like it is implemented
             // possibly useless test
-            x = screenX - (event.screenX - event.clientX),
-            y = screenY - (event.screenY - event.clientY);
+            clientX = screenX - (event.screenX - event.clientX),
+            clientY = screenY - (event.screenY - event.clientY);
 
         calibration.mouseEvent(event);
         expect(calibration.screenToViewportCoordinates({screenX, screenY})).
-                to.deep.equal({x, y});
+                to.deep.equal({clientX, clientY});
     });
 
     it('should attach a mouseover event listener for document on creation to capture a mouse event', () => {

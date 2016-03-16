@@ -15,10 +15,7 @@ describe('tuioInputObject', () => {
                 
         return {
             screenToViewportCoordinates: function() {
-                return {
-                    x: clientX,
-                    y: clientY
-                };
+                return {clientX, clientY};
             },
             isScreenUsable: function() {return isUsable;}
         };

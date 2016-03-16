@@ -164,8 +164,8 @@ describe('gispl', () => {
         let calibration = {
             screenToViewportCoordinates: function() {
                 return {
-                    x: 0,
-                    y: 0
+                    clientX: 0,
+                    clientY: 0
                 };
             },
             isScreenUsable: function() {
@@ -213,8 +213,8 @@ describe('gispl', () => {
         let calibration = {
             screenToViewportCoordinates: function() {
                 return {
-                    x: 0,
-                    y: 0
+                    clientX: 0,
+                    clientY: 0
                 };
             },
             isScreenUsable: function() {
@@ -268,8 +268,8 @@ describe('gispl', () => {
         let calibration = {
             screenToViewportCoordinates: function() {
                 return {
-                    x: 0,
-                    y: 0
+                    clientX: 0,
+                    clientY: 0
                 };
             },
             isScreenUsable: function() {

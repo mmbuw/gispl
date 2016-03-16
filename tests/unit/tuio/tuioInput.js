@@ -1,5 +1,4 @@
 import tuioInput from '../../../source/tuio/tuioInput';
-import gispl from '../../../source/gispl';
 import screenCalibration from '../../../source/tuio/screenCalibration';
 import nodeSearch from '../../../source/tuio/nodeSearch';
 import {WebMocket, MocketServer} from 'webmocket';
@@ -12,7 +11,6 @@ describe('tuioInput', () => {
 
     let server,
         tuioClient,
-        tuioSpy,
         connectionUrl = 'test-url',
         calibration,
         coordinatesStub,
@@ -30,7 +28,7 @@ describe('tuioInput', () => {
 
         calibration = screenCalibration();
         coordinatesStub = sinon.stub(calibration, 'screenToViewportCoordinates')
-                            .returns({x: 0, y: 0});
+                            .returns({clientX: 0, clientY: 0});
         screenUsableStub = sinon.stub(calibration, 'isScreenUsable')
                             .returns(true);
         findNode = nodeSearch({calibration});
@@ -172,14 +170,14 @@ describe('tuioInput', () => {
                             width: 10px;
                             height: 10px;"></div>`).appendTo('body');
         //ensure first search finds element1
-        coordinatesStub.onCall(0).returns({x:0, y:0});
+        coordinatesStub.onCall(0).returns({clientX:0, clientY:0});
 
         let element2 = $(`<div style="
                             width: 10px;
                             height: 10px;
                             margin-left: 95px;"></div>`).appendTo('body');
         //ensure second search finds element2
-        coordinatesStub.onCall(1).returns({x:100, y:0});
+        coordinatesStub.onCall(1).returns({clientX:100, clientY:0});
 
         let input = tuioInput({tuioClient, findNode});
         input.listen(spy);
@@ -391,8 +389,8 @@ describe('tuioInput', () => {
             lastSessionId = 12,
             args = [firstSessionId, secondSessionId,
                         3, 4, 5, 6, 7, 8, 9, 10].map(sessionId => {
-                return {sessionId};
-            }),
+                            return {sessionId};
+                        }),
             spy = sinon.spy();
 
         let input = tuioInput({tuioClient, findNode});
@@ -408,10 +406,10 @@ describe('tuioInput', () => {
                             width: 10px;
                             height: 10px;"></div>`).appendTo('body')[0];
         //ensure first and last search find element
-        coordinatesStub.onCall(0).returns({x:0, y:0});
-        coordinatesStub.onCall(11).returns({x:0, y:0});
+        coordinatesStub.onCall(0).returns({clientX:0, clientY:0});
+        coordinatesStub.onCall(11).returns({clientX:0, clientY:0});
         // all others return html root
-        coordinatesStub.returns({x: 11, y: 11});
+        coordinatesStub.returns({clientX: 11, clientY: 11});
 
         setTimeout(() => {
             sendPointerBundle.apply(undefined, args);

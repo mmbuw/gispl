@@ -55,10 +55,10 @@ export default function screenCalibration(params = {}) {
 
         screenToViewportCoordinates(coords = {}) {
             let {screenX, screenY} = coords,
-                x = screenX - viewportPositionLeft(),
-                y = screenY - viewportPositionTop();
+                clientX = screenX - viewportPositionLeft(),
+                clientY = screenY - viewportPositionTop();
 
-            return {x, y};
+            return {clientX, clientY};
         },
 
         isScreenUsable() {

@@ -66,8 +66,8 @@ describe('nodeSearch', () => {
             marginLeft: 10,
             marginTop: 10
         });
-        let x = 0, y = 0;
-        let foundNode = findNode.fromPoint({x, y});
+        let clientX = 0, clientY = 0;
+        let foundNode = findNode.fromPoint({clientX, clientY});
 
         expect(helper.tagName(foundNode)).to.equal('html');
     });
@@ -78,33 +78,19 @@ describe('nodeSearch', () => {
             marginLeft: 10,
             marginTop: 10
         });
-        let x = 15, y = 15;
-        let foundNode = findNode.fromPoint({x, y});
+        let clientX = 15, clientY = 15;
+        let foundNode = findNode.fromPoint({clientX, clientY});
         expect(helper.tagName(foundNode)).to.equal('div');
     });
 
-    // it('should return all elements that contain the point, and can usually attach listeners to',
-    //    () => {
-
-    //     helper.appendElement({
-    //         marginLeft: 10,
-    //         marginTop: 10
-    //     });
-    //     let x = 10, y = 10;
-    //     let foundNode = findNode.fromPoint({x, y});
-    //     let expectedNodes = ['div', 'body', 'html', '#document'];
-
-    //     helper.assertNodesExpectation(foundNode, expectedNodes);
-    // });
-
     it('should treat right and bottom dom element boundary as point non inclusive', () => {
 
-        let x = 20, y = 15;
+        let clientX = 20, clientY = 15;
         let element = helper.appendElement({
-            width: x,
-            height: y
+            width: clientX,
+            height: clientY
         });
-        let foundNode = findNode.fromPoint({x, y});
+        let foundNode = findNode.fromPoint({clientX, clientY});
 
         expect(foundNode).to.not.equal(element);
     });
@@ -118,8 +104,8 @@ describe('nodeSearch', () => {
             left: 10,
             top: 10
         });
-        let x = 15, y = 15;
-        let foundNode = findNode.fromPoint({x, y});
+        let clientX = 15, clientY = 15;
+        let foundNode = findNode.fromPoint({clientX, clientY});
         expect(foundNode).to.equal(element2);
     });
 
@@ -131,9 +117,9 @@ describe('nodeSearch', () => {
 
     it('should return nothing when the screen is not calibrated', () => {
         let findNode = nodeSearch({
-           calibration: {
-               isScreenUsable: () => false
-           }
+            calibration: {
+                isScreenUsable: () => false
+            }
         });
         let foundNode = findNode.fromPoint({screenX: 10, screenY: 10});
         expect(foundNode).to.equal(null);
