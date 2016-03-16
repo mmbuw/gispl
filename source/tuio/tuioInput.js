@@ -7,27 +7,27 @@ export default function tuioInput(params = {}) {
             calibration} = params,
         listeners = [],
         tuioInputHistory = nodeInputHistory(),
-        enabled = false;
+        enabled = false,
+        nodesWithInput = new Map();
+        
+    function findNodesFromInputObject(inputObject) {
+        let node = findNode.fromPoint(inputObject);
+        if (node) {
+            if (!nodesWithInput.has(node)) {
+                nodesWithInput.set(node, []);
+            }
+            nodesWithInput.get(node).push(inputObject);
+            tuioInputHistory.add(node, inputObject);   
+        }
+    }
 
     function onTuioRefresh() {
-        let tuioComponents = fetchTuioData(),
-            nodesWithInput = new Map();
+        nodesWithInput.clear();
+        let tuioComponents = fetchTuioData();
         
         tuioInputHistory
-            .store({tuioComponents, calibration})
-            .forEach(inputObject => {
-                let screenX = inputObject.screenX,
-                    screenY = inputObject.screenY;
-            
-                let node = findNode.fromPoint({screenX, screenY});
-                if (node) {
-                    if (!nodesWithInput.has(node)) {
-                        nodesWithInput.set(node, []);
-                    }
-                    nodesWithInput.get(node).push(inputObject);
-                    tuioInputHistory.add({node, inputObject});   
-                }
-            });
+            .store(tuioComponents, calibration)
+            .forEach(findNodesFromInputObject);
 
         notify(nodesWithInput, tuioInputHistory.historyData());
     }
@@ -128,7 +128,7 @@ function nodeInputHistory(params = {}) {
         historyData() {
             return nodeHistory;
         },
-        add({node, inputObject}) {
+        add(node, inputObject) {
             if (!nodeHistory.has(node)) {
                 nodeHistory.set(node, []);
             }
@@ -140,7 +140,7 @@ function nodeInputHistory(params = {}) {
             }
             return this;
         },
-        store({tuioComponents, calibration}) {
+        store(tuioComponents, calibration) {
             return tuioComponents.map(tuioComponent => {
                 let indexOfComponent = findIndexOf(tuioComponent),
                     newComponent = indexOfComponent === -1,
