@@ -72,10 +72,9 @@ function pointInformation(params, startingTime) {
 
     if (typeof calibration !== 'undefined' &&
             calibration.isScreenUsable()) {
-        ({clientX, clientY} = calibration.screenToBrowserCoordinates({screenX,
+        ({clientX, clientY,
+            pageX, pageY} = calibration.screenToBrowserCoordinates({screenX,
                                                              screenY}));
-        pageX = clientX + window.pageXOffset;
-        pageY = clientY + window.pageYOffset;
     }
     
     if (!isNaN(tuioComponent.getAngle())) {
