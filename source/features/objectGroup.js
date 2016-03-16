@@ -1,6 +1,7 @@
 import {vector} from '../vector';
 import {featureBase,
         lowerUpperLimit} from '../feature';
+import screenCalibration from '../tuio/screenCalibration';
 
 export function objectgroup(params) {
     
@@ -9,6 +10,9 @@ export function objectgroup(params) {
     let {constraints} = params,
         baseFeature = featureBase(params),
         limit = lowerUpperLimit(constraints),
+        // TODO
+        // maybe pass in an instance somehow
+        calibration = screenCalibration.lastInstance(),
         radius = constraints[2];
     
     function pointToPointDistance(first, second) {
@@ -17,27 +21,6 @@ export function objectgroup(params) {
             directionVector = vector({x, y});
             
         return directionVector.length();
-    }
-    
-    function browserPosition(point) {
-        return {
-            browserX: point.screenX - point.clientX,
-            browserY: point.screenY - point.clientY
-        };
-    }
-    
-    function additionalPointInfo(screenX, screenY, point) {
-        let {browserX, browserY} = browserPosition(point);
-        
-        let clientX = screenX - browserX,
-            clientY = screenY - browserY,
-            pageX = clientX + window.pageXOffset,
-            pageY = clientY + window.pageYOffset;
-        
-        return {
-            clientX, clientY,
-            pageX, pageY
-        };
     }
 
     function calculateCentroidFrom(inputObjects) {
@@ -53,14 +36,8 @@ export function objectgroup(params) {
         screenX /= inputCount;
         screenY /= inputCount;
         
-        // TODO
-        // already doing similar things
-        // in calibration and tuioInputObject creation
-        // refactor this functionality to the calibration object
         let {clientX, clientY,
-                pageX, pageY} = additionalPointInfo(screenX,
-                                                    screenY,
-                                                    inputObjects[0]);
+                pageX, pageY} = calibration.screenToBrowserCoordinates({screenX, screenY});
                                     
         return {screenX, screenY,
                     pageX, pageY,

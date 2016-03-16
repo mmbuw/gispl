@@ -1,11 +1,20 @@
 import {featureFactory} from '../../../source/feature';
 import {buildInputFromPointer} from '../../helpers/pointer';
 import {objectGroupException} from '../../../source/features/objectGroup';
+import screenCalibration from '../../../source/tuio/screenCalibration';
 
 describe('feature', () => {
     describe('objectGroup', () => {
         
-        let type = 'objectGroup';
+        let type = 'objectGroup',
+            mouseEvent = {
+                clientX: 0, clientY: 0, screenX: 200, screenY: 200
+            };
+        
+        // instantiate one calibration
+        // objectGroup takes the last instance (sort of like a singleton)
+        // lastleton? :D
+        screenCalibration({mouseEvent});
         
         it('should recognize the feature if input within constraints', () => {
             // centroid is 0.5, 0.5
