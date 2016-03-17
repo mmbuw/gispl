@@ -35,24 +35,12 @@ export default function gispl(selection) {
     return gisplApi;
 }
 
-let allPreviousInput = [];
-function handleInput(nodesInput, nodesInputHistory, allCurrentInput) {
-    
-    let removedInput = allPreviousInput.filter(previousInput => {
-        return allCurrentInput.every(currentInput => {
-            return currentInput.identifier !== previousInput.identifier;
-        });
-    });
-    
-    removedInput.forEach(() => {
-        let eventName = 'touchend';
-        events.emit(document, eventName);
-    });
+function handleInput(nodesInput, nodesInputHistory) {
 
     nodesInput.forEach((inputObjects, node) => {
         userDefinedGestures.forEach(gesture => {
             let inputHistory = nodesInputHistory.get(node),
-                inputState = {inputObjects, inputHistory, node, allCurrentInput},
+                inputState = {inputObjects, inputHistory, node},
                 nodesToEmitOn = gesture.load(inputState);
             
             if (nodesToEmitOn.length !== 0) {
@@ -67,8 +55,6 @@ function handleInput(nodesInput, nodesInputHistory, allCurrentInput) {
             }
         });
     });
-    
-    allPreviousInput = allCurrentInput;
 }
 
 gispl.addGesture = function gisplAddGesture(gestureDefinition) {
