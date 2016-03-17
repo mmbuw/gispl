@@ -6,9 +6,9 @@ export default function tuioInput(params = {}) {
             findNode,
             calibration} = params,
         listeners = [],
-        tuioInputHistory = nodeInputHistory(),
         enabled = false,
-        nodesWithInput = new Map();
+        nodesWithInput = new Map(),
+        tuioInputHistory = nodeInputHistory();
         
     function findNodesFromInputObject(inputObject) {
         let foundNode = findNode.fromPoint(inputObject);
@@ -25,11 +25,10 @@ export default function tuioInput(params = {}) {
         nodesWithInput.clear();
         let tuioComponents = fetchTuioData();
         
-        tuioInputHistory
-            .store(tuioComponents, calibration)
-            .forEach(findNodesFromInputObject);
+        let allCurrentInput = tuioInputHistory.store(tuioComponents, calibration)
+        allCurrentInput.forEach(findNodesFromInputObject);
 
-        notify(nodesWithInput, tuioInputHistory.historyData());
+        notify(nodesWithInput, tuioInputHistory.historyData(), allCurrentInput);
     }
     
     function fetchTuioData() {

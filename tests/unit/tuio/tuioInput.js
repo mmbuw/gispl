@@ -441,8 +441,9 @@ describe('tuioInput', () => {
         let findNodeStub = sinon.stub(findNode, 'fromPoint').returns(null),
             pointer = buildPointer().finished(),
             tuioClientStub = sinon.stub(tuioClient, 'getTuioPointers')
-                                    .returns([pointer]),
-            input = tuioInput({tuioClient, findNode});
+                                    .returns([pointer]);
+        
+        tuioInput({tuioClient, findNode});
 
         setTimeout(() => {
             expect(function() {
@@ -453,5 +454,27 @@ describe('tuioInput', () => {
             asyncDone();
         });
     });
+    
+    it('should notify the listeners of all current input touches', (asyncDone) => {
+        let spy = sinon.spy(),
+            sessionId = 11,
+            examplePointer = {sessionId};
 
+        let input = tuioInput({tuioClient, findNode});
+
+        input.listen(spy);
+        input.disable();
+        input.enable();
+
+        setTimeout(() => {
+            sendPointerBundle(server, examplePointer);
+            let args = spy.firstCall.args;
+            expect(args.length).to.equal(3);
+            let currentInput = args[2];
+            expect(currentInput).to.be.an('array');
+            expect(currentInput.length).to.equal(1);
+            expect(currentInput[0].identifier).to.equal(sessionId);
+            asyncDone();
+        });
+    });
 });
