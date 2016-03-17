@@ -91,7 +91,8 @@ function nodesInputHistory(params = {}) {
     let storedObjects = [],
         // a map of node => [inputObjects]
         // all inputObjects that were in contact with the node at one point
-        nodesHistory = new WeakMap(),
+        nodesWithInputHistory = new WeakMap(),
+        // similar map, but only with nodes that have active input
         nodesWithInput = new Map(),
         // limit for all stored objects
         {limit = 10,
@@ -149,34 +150,43 @@ function nodesInputHistory(params = {}) {
         return inputObject;
     }
     //
-    function add(node, inputObject) {
-        if (!nodesHistory.has(node)) {
-            nodesHistory.set(node, []);
+    function toNodeInputCurrent(node, inputObject) {
+        if (!nodesWithInput.has(node)) {
+            nodesWithInput.set(node, []);
         }
-        let historyForNode = nodesHistory.get(node),
+        nodesWithInput.get(node).push(inputObject);
+    }
+    //
+    function toNodeInputHistory(node, inputObject) {
+        if (!nodesWithInputHistory.has(node)) {
+            nodesWithInputHistory.set(node, []);
+        }
+        let historyForNode = nodesWithInputHistory.get(node),
             inputObjectNotInHistory = historyForNode.indexOf(inputObject) === -1;
         if (inputObjectNotInHistory) {
             removeDroppedInputObjectsFrom(historyForNode);
             historyForNode.push(inputObject);
         }
-        return this;
     }
     //
-    function findNodesFromInputObject(inputObject) {
-        let foundNode = findNode.fromPoint(inputObject);
+    function storeNode(foundNode, inputObject) {
         if (foundNode) {
-            if (!nodesWithInput.has(foundNode)) {
-                nodesWithInput.set(foundNode, []);
-            }
-            nodesWithInput.get(foundNode).push(inputObject);
-            add(foundNode, inputObject);   
+            toNodeInputCurrent(foundNode, inputObject);
+            toNodeInputHistory(foundNode, inputObject);
         }
+    }
+    // filters out input objects on the screen
+    // that are not in the browser window
+    function inputInBrowserOnly(inputObject) {
+        let foundNode = findNode.fromPoint(inputObject);
+        // ideally should not be here
+        storeNode(foundNode, inputObject);
         return !!foundNode;
     }
         
     return {
         historyData() {
-            return nodesHistory;
+            return nodesWithInputHistory;
         },
         nodeInputData() {
             return nodesWithInput;
@@ -186,7 +196,7 @@ function nodesInputHistory(params = {}) {
             nodesWithInput.clear();
             return tuioComponents
                     .map(convertToInputObject)
-                    .filter(findNodesFromInputObject);
+                    .filter(inputInBrowserOnly);
         }
     };
 }
