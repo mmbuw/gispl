@@ -78,12 +78,10 @@ describe('screenCalibration', () => {
     });
 
     it('should throw an error if trying to access viewport position without passing a mouse event', () => {
-
         expect(calibration.viewportPosition).to.throw();
     });
 
     it('should adapt passed screen point to a point in viewport coordinates', () => {
-
         let event = {
                 screenX: 50,
                 screenY: 50,
@@ -98,8 +96,29 @@ describe('screenCalibration', () => {
             clientY = screenY - (event.screenY - event.clientY);
 
         calibration.mouseEvent(event);
-        expect(calibration.screenToBrowserCoordinates({screenX, screenY})).
-                to.deep.equal({clientX, clientY});
+        let browserCoords = calibration.screenToBrowserCoordinates({screenX, screenY});
+        expect(browserCoords.clientX).to.equal(clientX);
+        expect(browserCoords.clientY).to.equal(clientY);
+    });
+
+    it('should adapt passed screen point to a point in viewport coordinates', () => {
+        let event = {
+                screenX: 50,
+                screenY: 50,
+                clientX: 0,
+                clientY: 0
+            },
+            screenX = 300,
+            screenY = 400,
+            // this is also exactly like it is implemented
+            // possibly useless test
+            pageX = screenX - (event.screenX - event.clientX) + window.pageXOffset,
+            pageY = screenY - (event.screenY - event.clientY) + window.pageYOffset;
+
+        calibration.mouseEvent(event);
+        let browserCoords = calibration.screenToBrowserCoordinates({screenX, screenY});
+        expect(browserCoords.pageX).to.equal(pageX);
+        expect(browserCoords.pageY).to.equal(pageY);
     });
 
     it('should attach a mouseover event listener for document on creation to capture a mouse event', () => {
@@ -189,8 +208,4 @@ describe('screenCalibration', () => {
         });
         expect(calibration.isScreenUsable()).to.equal(true);
     });
-    
-    // it('should ', () => {
-        
-    // });
 });

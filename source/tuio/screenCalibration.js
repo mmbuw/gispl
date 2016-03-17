@@ -58,9 +58,11 @@ export default function screenCalibration(params = {}) {
         screenToBrowserCoordinates(coords = {}) {
             let {screenX, screenY} = coords,
                 clientX = screenX - viewportPositionLeft(),
-                clientY = screenY - viewportPositionTop();
+                clientY = screenY - viewportPositionTop(),
+                pageX = clientX + window.pageXOffset,
+                pageY = clientY + window.pageYOffset;
 
-            return {clientX, clientY};
+            return {clientX, clientY, pageX, pageY};
         },
 
         isScreenUsable() {
