@@ -25,7 +25,7 @@ export default function tuioInput(params = {}) {
         nodesWithInput.clear();
         let tuioComponents = fetchTuioData();
         
-        let allCurrentInput = tuioInputHistory.store(tuioComponents, calibration)
+        let allCurrentInput = tuioInputHistory.store(tuioComponents, calibration);
         allCurrentInput.forEach(findNodesFromInputObject);
 
         notify(nodesWithInput, tuioInputHistory.historyData(), allCurrentInput);

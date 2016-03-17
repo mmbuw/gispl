@@ -1,7 +1,8 @@
 export function createEventObject(params = {}) {
     let {inputState = {},
             gesture} = params,
-        {inputObjects} = inputState,
+        {inputObjects,
+            allCurrentInput} = inputState,
         featureValues = eventFeatures();
     
     if (typeof gesture !== 'undefined') {
@@ -10,6 +11,7 @@ export function createEventObject(params = {}) {
     
     return {
         input: inputObjects,
+        touches: allCurrentInput,
         featureValues
     };
 }

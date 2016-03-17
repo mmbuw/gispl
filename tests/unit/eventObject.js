@@ -57,12 +57,19 @@ describe('event object', () => {
     
     it('should call the gesture object in order to set the feature values', () => {
         let featureValuesToObject = sinon.spy(),
-            gesture = {featureValuesToObject},
-            eventObject = createEventObject({gesture});
+            gesture = {featureValuesToObject};
+        
+        createEventObject({gesture});
         
         expect(featureValuesToObject.callCount).to.equal(1);
         let args = featureValuesToObject.firstCall.args;
         expect(args.length).to.equal(1);
         expect(args[0].hasOwnProperty('scale')).to.equal(true);
+    });
+    
+    it('should contain information about all current input touches', () => {
+        expect(
+            defaultEvent.hasOwnProperty('touches')
+        ).to.equal(true);
     });
 });
