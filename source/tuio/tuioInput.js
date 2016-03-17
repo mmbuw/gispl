@@ -19,6 +19,7 @@ export default function tuioInput(params = {}) {
             nodesWithInput.get(foundNode).push(inputObject);
             tuioInputHistory.add(foundNode, inputObject);   
         }
+        return !!foundNode;
     }
 
     function onTuioRefresh() {
@@ -26,9 +27,9 @@ export default function tuioInput(params = {}) {
         let tuioComponents = fetchTuioData();
         
         let allCurrentInput = tuioInputHistory.store(tuioComponents, calibration);
-        allCurrentInput.forEach(findNodesFromInputObject);
+        let allCurrentInputInBrowser = allCurrentInput.filter(findNodesFromInputObject);
 
-        notify(nodesWithInput, tuioInputHistory.historyData(), allCurrentInput);
+        notify(nodesWithInput, tuioInputHistory.historyData(), allCurrentInputInBrowser);
     }
     
     function fetchTuioData() {

@@ -461,19 +461,44 @@ describe('tuioInput', () => {
             examplePointer = {sessionId};
 
         let input = tuioInput({tuioClient, findNode});
-
         input.listen(spy);
-        input.disable();
-        input.enable();
 
         setTimeout(() => {
             sendPointerBundle(server, examplePointer);
+            expect(spy.callCount).to.equal(1);
+            
             let args = spy.firstCall.args;
             expect(args.length).to.equal(3);
-            let currentInput = args[2];
-            expect(currentInput).to.be.an('array');
-            expect(currentInput.length).to.equal(1);
-            expect(currentInput[0].identifier).to.equal(sessionId);
+            
+            let allCurrentInput = args[2];
+            expect(allCurrentInput).to.be.an('array');
+            expect(allCurrentInput.length).to.equal(1);
+            expect(allCurrentInput[0].identifier).to.equal(sessionId);
+            
+            asyncDone();
+        });
+    });
+    
+    it('should not count touches outside of browser in all current input touches', (asyncDone) => {
+        let spy = sinon.spy(),
+            sessionId = 11,
+            examplePointer = {sessionId};
+
+        // touch outside of browser
+        let findNodeStub = sinon.stub(findNode, 'fromPoint')
+                                .returns(null);
+                                
+        let input = tuioInput({tuioClient, findNode});
+        input.listen(spy);
+
+        setTimeout(() => {
+            sendPointerBundle(server, examplePointer);
+            
+            let args = spy.firstCall.args;
+            let allCurrentInput = args[2];
+            expect(allCurrentInput.length).to.equal(0);
+            
+            findNodeStub.restore();
             asyncDone();
         });
     });
