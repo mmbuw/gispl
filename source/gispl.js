@@ -38,23 +38,23 @@ export default function gispl(selection) {
 let allPreviousInput = [];
 function handleInput(nodesInput, nodesInputHistory, allCurrentInput) {
     
-    let sameInput = allCurrentInput.length === allPreviousInput.length &&
+    let currentLength = allCurrentInput.length,
+        previousLength = allPreviousInput.length,
+        sameInput = currentLength === previousLength &&
                         allCurrentInput.every((currentInput, index) => {
                             return currentInput === allPreviousInput[index];
                         });
     
-    if (!sameInput) {
-        events.emit(document, 'inputchange');
-    }
-    
-    if (allCurrentInput.length !== 0 &&
-        allPreviousInput.length === 0) {
+    if (currentLength !== 0 &&
+        previousLength === 0) {
         events.emit(document, 'inputstart');
     }
-    
-    if (allCurrentInput.length === 0 &&
-        allPreviousInput.length !== 0) {
+    else if (currentLength === 0 &&
+        previousLength !== 0) {
         events.emit(document, 'inputend');
+    }
+    else if (!sameInput) {
+        events.emit(document, 'inputchange');
     }
     
     nodesInput.forEach((inputObjects, node) => {
