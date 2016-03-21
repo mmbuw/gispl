@@ -27,13 +27,15 @@ export function sendPointerBundle(server, ...pointers) {
             ySpeed: ySpeed,
             pressureSpeed: pressureSpeed,
             motionAccel: motionAccel,
-            pressureAccel: pressureAccel,
+            pressureAccel: pressureAccel
         }));
 
         alive.push(sessionId);
     });
-
-    server.send(getAliveBuffer(alive));
+    
+    if (alive.length !== 0) {
+        server.send(getAliveBuffer(alive));        
+    }
 }
 
 function getFrameBuffer(params) {
@@ -102,12 +104,11 @@ function getPointerBuffer(params) {
 }
 
 function getAliveBuffer(sessionIds) {
-    sessionIds = sessionIds || [1];
     var oscArgs = sessionIds.map(function(id) {
         return {
             type: "i",
             value: id
-        }
+        };
     });
 
     return writeOscMessage("/tuio2/alv", oscArgs);
