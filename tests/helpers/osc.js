@@ -38,11 +38,14 @@ export function sendPointerBundle(server, ...pointers) {
     }
 }
 
+let lastFrameId = 1;
 function getFrameBuffer(params) {
     params = params || {};
     var time = params.time || new Date().getTime(),
-        frameId = typeof params.frameId === "undefined" ? 1 : params.frameId,
+        frameId = typeof params.frameId === "undefined" ? lastFrameId : params.frameId,
         source = params.source || "name:1@address";
+        
+    lastFrameId = frameId + 1;
 
     return writeOscMessage("/tuio2/frm", [
         // frame id
