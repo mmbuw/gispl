@@ -33,9 +33,7 @@ export function sendPointerBundle(server, ...pointers) {
         alive.push(sessionId);
     });
     
-    if (alive.length !== 0) {
-        server.send(getAliveBuffer(alive));        
-    }
+    server.send(getAliveBuffer(alive));
 }
 
 let lastFrameId = 1;
@@ -141,15 +139,14 @@ function writeOscMessage(address, args) {
     // write address
     writeString(address);
 
+    var typeTags = args.map(function(arg){
+        return arg.type;
+    });
+    typeTags.unshift(",");
+    writeString(typeTags.join(""));
+
     if (args.length !== 0) {
-
-        var typeTags = args.map(function(arg){
-            return arg.type;
-        });
-        typeTags.unshift(",");
-        writeString(typeTags.join(""));
-
-        for( var i = 0; i < args.length; i += 1) {
+        for (var i = 0; i < args.length; i += 1) {
             var type = args[i].type,
                 value = args[i].value,
                 time;
