@@ -11,8 +11,8 @@ export default function tuioInput(params = {}) {
         let tuioComponents = fetchTuioData();        
         let allCurrentInput = tuioInputHistory.store(tuioComponents);
 
-        notify(tuioInputHistory.nodeInputData(),
-                tuioInputHistory.historyData(),
+        notify(tuioInputHistory.nodeCurrentInput(),
+                tuioInputHistory.nodeHistoryInput(),
                 allCurrentInput);
     }
     
@@ -185,10 +185,10 @@ function nodesInputHistory(params = {}) {
     }
         
     return {
-        historyData() {
+        nodeHistoryInput() {
             return nodesWithInputHistory;
         },
-        nodeInputData() {
+        nodeCurrentInput() {
             return nodesWithInput;
         },
         // returns an array of in browser inputObjects that correspond to tuioComponents
