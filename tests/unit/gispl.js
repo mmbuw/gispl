@@ -367,4 +367,30 @@ describe('gispl', () => {
             asyncDone();
         }, 0);
     });
+    
+    it(`should trigger inputend on the node where
+            the last inputobject was placecd`, (asyncDone) => {
+        let spy = sinon.spy(),
+            sessionId = 10,
+            host = 'test-socket-url';
+        
+        // for now just test that it's working on other than document
+        gispl(document.documentElement).on('inputend', spy);
+        gispl(document).on('inputend', spy);
+        
+        window.WebSocket = WebMocket;
+        gispl.initTuio({host, calibration});
+        let server = new MocketServer(host);
+
+        setTimeout(() => {
+            
+            sendPointerBundle(server, {sessionId});            
+            sendPointerBundle(server);
+            
+            expect(spy.callCount).to.equal(2);
+            
+            server.close();
+            asyncDone();
+        }, 0);
+    });
 });

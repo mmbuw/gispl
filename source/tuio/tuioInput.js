@@ -9,11 +9,11 @@ export default function tuioInput(params = {}) {
 
     function onTuioRefresh() {
         let tuioComponents = fetchTuioData();        
-        let allCurrentInput = tuioInputHistory.store(tuioComponents);
+        let allCurrentInputs = tuioInputHistory.store(tuioComponents);
 
         notify(tuioInputHistory.nodeCurrentInput(),
                 tuioInputHistory.nodeHistoryInput(),
-                allCurrentInput);
+                allCurrentInputs);
     }
     
     function fetchTuioData() {
@@ -94,6 +94,7 @@ function nodesInputHistory(params = {}) {
         nodesWithInputHistory = new WeakMap(),
         // similar map, but only with nodes that have active input
         nodesWithInput = new Map(),
+        allCurrentInputs = [],
         // limit for all stored objects
         {limit = 10,
             findNode,
@@ -194,9 +195,17 @@ function nodesInputHistory(params = {}) {
         // returns an array of in browser inputObjects that correspond to tuioComponents
         store(tuioComponents) {
             nodesWithInput.clear();
-            return tuioComponents
-                    .map(convertToInputObject)
-                    .filter(inputInBrowserOnly);
+            
+            let currentInput = tuioComponents
+                                .map(convertToInputObject)
+                                .filter(inputInBrowserOnly);
+                                
+            if (allCurrentInputs.length == 2) {
+                allCurrentInputs.pop();
+            }
+            allCurrentInputs.unshift(currentInput);
+            
+            return allCurrentInputs;
         }
     };
 }

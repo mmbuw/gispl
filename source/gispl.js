@@ -36,9 +36,20 @@ export default function gispl(selection) {
 }
 
 let allPreviousInput = [];
-function handleInput(nodesInput, nodesInputHistory, allCurrentInput) {
+function parentNodesFrom(node) {
+    let existingNode = node,
+        result = [];
+        
+    while (existingNode) {
+        result.push(existingNode);
+        existingNode = existingNode.parentNode;
+    }
     
-    let currentLength = allCurrentInput.length,
+    return result;
+}
+function builtInEvents(allCurrentInputs) {
+    let allCurrentInput = allCurrentInputs[0],
+        currentLength = allCurrentInput.length,
         previousLength = allPreviousInput.length,
         sameInput = currentLength === previousLength &&
                         allCurrentInput.every((currentInput, index) => {
@@ -51,11 +62,26 @@ function handleInput(nodesInput, nodesInputHistory, allCurrentInput) {
     }
     else if (currentLength === 0 &&
         previousLength !== 0) {
-        events.emit(document, 'inputend');
+        let lastKnownInput = allCurrentInputs[1],
+            lastKnownInputObject = lastKnownInput[0];
+        
+        let findNode = nodeSearch.lastInstance(),
+            foundNode = findNode.fromPoint(lastKnownInputObject);
+        
+        parentNodesFrom(foundNode).forEach(node => {
+            events.emit(node, 'inputend');
+        });
     }
     else if (!sameInput) {
         events.emit(document, 'inputchange');
     }
+    
+    allPreviousInput = allCurrentInput;
+}
+
+function handleInput(nodesInput, nodesInputHistory, allCurrentInput) {
+    
+    builtInEvents(allCurrentInput);
     
     nodesInput.forEach((inputObjects, node) => {
         userDefinedGestures.forEach(gesture => {
@@ -75,8 +101,6 @@ function handleInput(nodesInput, nodesInputHistory, allCurrentInput) {
             }
         });
     });
-    
-    allPreviousInput = allCurrentInput;
 }
 
 gispl.addGesture = function gisplAddGesture(gestureDefinition) {

@@ -468,9 +468,9 @@ describe('tuioInput', () => {
             expect(spy.callCount).to.equal(1);
             
             let args = spy.firstCall.args;
-            expect(args.length).to.equal(3);
             
-            let allCurrentInput = args[2];
+            let allCurrentInputs = args[2],
+                allCurrentInput = allCurrentInputs[0];
             expect(allCurrentInput).to.be.an('array');
             expect(allCurrentInput.length).to.equal(1);
             expect(allCurrentInput[0].identifier).to.equal(sessionId);
@@ -495,7 +495,8 @@ describe('tuioInput', () => {
             sendPointerBundle(server, examplePointer);
             
             let args = spy.firstCall.args;
-            let allCurrentInput = args[2];
+            let allCurrentInputs = args[2],
+                allCurrentInput = allCurrentInputs[0];
             expect(allCurrentInput.length).to.equal(0);
             
             findNodeStub.restore();
