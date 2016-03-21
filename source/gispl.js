@@ -35,8 +35,28 @@ export default function gispl(selection) {
     return gisplApi;
 }
 
-function handleInput(nodesInput, nodesInputHistory) {
-
+let allPreviousInput = [];
+function handleInput(nodesInput, nodesInputHistory, allCurrentInput) {
+    
+    let sameInput = allCurrentInput.length === allPreviousInput.length &&
+                        allCurrentInput.every((currentInput, index) => {
+                            return currentInput === allPreviousInput[index];
+                        });
+    
+    if (!sameInput) {
+        events.emit(document, 'inputchange');
+    }
+    
+    if (allCurrentInput.length !== 0 &&
+        allPreviousInput.length === 0) {
+        events.emit(document, 'inputstart');
+    }
+    
+    if (allCurrentInput.length === 0 &&
+        allPreviousInput.length !== 0) {
+        events.emit(document, 'inputend');
+    }
+    
     nodesInput.forEach((inputObjects, node) => {
         userDefinedGestures.forEach(gesture => {
             let inputHistory = nodesInputHistory.get(node),
@@ -55,6 +75,8 @@ function handleInput(nodesInput, nodesInputHistory) {
             }
         });
     });
+    
+    allPreviousInput = allCurrentInput;
 }
 
 gispl.addGesture = function gisplAddGesture(gestureDefinition) {

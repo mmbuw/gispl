@@ -1,7 +1,6 @@
 import gispl from '../../source/gispl';
 import $ from 'jquery';
 import {gestureException} from '../../source/gesture';
-import tuioInput from '../../source/tuio/tuioInput';
 import screenCalibration from '../../source/tuio/screenCalibration';
 import nodeSearch from '../../source/tuio/nodeSearch';
 import {WebMocket, MocketServer} from 'webmocket';
@@ -323,35 +322,115 @@ describe('gispl', () => {
         expect(spy.callCount).to.equal(0);
     });
     
-    // it(`should contain a built in touchend event when
-    //     input is removed from the screen`, (asyncDone) => {
-    //     let spy = sinon.spy(),
-    //         sessionId = 10,
-    //         examplePointer = {sessionId},
-    //         host = 'test-socket-url';
+    it(`should contain a built in inputchange event when
+            input changes`, (asyncDone) => {
+        let spy = sinon.spy(),
+            sessionId = 10,
+            host = 'test-socket-url';
             
-    //     gispl(document).on('touchend', spy);
-    //     window.WebSocket = WebMocket;
+        gispl(document).on('inputchange', spy);
+        window.WebSocket = WebMocket;
 
-    //     let calibration = {
-    //         screenToBrowserCoordinates: function() {
-    //             return {
-    //                 clientX: 0,
-    //                 clientY: 0
-    //             };
-    //         },
-    //         isScreenUsable: function() {
-    //             return true;
-    //         }
-    //     };
-    //     gispl.initTuio({host, calibration});
-    //     let server = new MocketServer(host);
+        let calibration = {
+            screenToBrowserCoordinates: function() {
+                return {
+                    clientX: 0,
+                    clientY: 0
+                };
+            },
+            isScreenUsable: function() {
+                return true;
+            }
+        };
+        gispl.initTuio({host, calibration});
+        let server = new MocketServer(host);
 
-    //     setTimeout(() => {
-    //         sendPointerBundle(server, examplePointer);
-    //         expect(spy.callCount).to.equal(1);
-    //         server.close();
-    //         asyncDone();
-    //     }, 0);
-    // });
+        setTimeout(() => {
+            sendPointerBundle(server, {sessionId});
+            expect(spy.callCount).to.equal(1); // new input
+            sendPointerBundle(server, {sessionId});
+            expect(spy.callCount).to.equal(1); // stays the same
+            
+            sessionId += 1;
+            sendPointerBundle(server, {sessionId});
+            expect(spy.callCount).to.equal(2); // new input
+            
+            server.close();
+            asyncDone();
+        }, 0);
+    });
+    
+    it(`should contain a built in inputend event when
+                all input ends`, (asyncDone) => {
+        let spy = sinon.spy(),
+            sessionId = 10,
+            host = 'test-socket-url';
+            
+        gispl(document).on('inputend', spy);
+        window.WebSocket = WebMocket;
+
+        let calibration = {
+            screenToBrowserCoordinates: function() {
+                return {
+                    clientX: 0,
+                    clientY: 0
+                };
+            },
+            isScreenUsable: function() {
+                return true;
+            }
+        };
+        gispl.initTuio({host, calibration});
+        let server = new MocketServer(host);
+
+        setTimeout(() => {
+            sendPointerBundle(server, {sessionId});
+            expect(spy.callCount).to.equal(0);
+            
+            sendPointerBundle(server);
+            expect(spy.callCount).to.equal(1);
+            
+            server.close();
+            asyncDone();
+        }, 0);
+    });
+    
+    it(`should contain a built in inputstart event when
+                input initially starts after no input`, (asyncDone) => {
+        let spy = sinon.spy(),
+            sessionId = 10,
+            host = 'test-socket-url';
+            
+        gispl(document).on('inputstart', spy);
+        window.WebSocket = WebMocket;
+
+        let calibration = {
+            screenToBrowserCoordinates: function() {
+                return {
+                    clientX: 0,
+                    clientY: 0
+                };
+            },
+            isScreenUsable: function() {
+                return true;
+            }
+        };
+        gispl.initTuio({host, calibration});
+        let server = new MocketServer(host);
+
+        setTimeout(() => {
+            sendPointerBundle(server);
+            expect(spy.callCount).to.equal(0); // no input
+            
+            sendPointerBundle(server, {sessionId});
+            expect(spy.callCount).to.equal(1);
+            
+            sessionId += 1;
+            sendPointerBundle(server, {sessionId});
+            expect(spy.callCount).to.equal(1); // different input does not count
+            
+            server.close();
+            asyncDone();
+        }, 0);
+    });
 });
