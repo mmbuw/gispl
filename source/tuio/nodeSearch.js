@@ -1,5 +1,7 @@
 import screenCalibration from './screenCalibration';
 
+let lastInstance;
+
 export default function nodeSearch(params = {}) {
 
     let {calibration = screenCalibration()} = params;
@@ -17,7 +19,7 @@ export default function nodeSearch(params = {}) {
         return {clientX, clientY};
     }
 
-    return {
+    lastInstance = {
         fromPoint(params = {}) {
             // elementFromPoint returns null when nothing found
             // e.g. looking outside of the viewport
@@ -32,4 +34,13 @@ export default function nodeSearch(params = {}) {
             return foundElement;
         }
     };
+    
+    return lastInstance;
 }
+
+nodeSearch.lastInstance = function lastNodeSearchInstance() {
+    if (typeof lastInstance === 'undefined') {
+        lastInstance = nodeSearch();
+    }
+    return lastInstance;
+};
