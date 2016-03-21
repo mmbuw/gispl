@@ -1,14 +1,14 @@
 import gispl from '../../source/gispl';
 import $ from 'jquery';
 import {gestureException} from '../../source/gesture';
-import screenCalibration from '../../source/tuio/screenCalibration';
-import nodeSearch from '../../source/tuio/nodeSearch';
 import {WebMocket, MocketServer} from 'webmocket';
 import {sendPointerBundle} from '../helpers/osc';
+import {getCalibrationMock} from '../helpers/calibration';
 
 describe('gispl', () => {
 
-    let testGispl;
+    let testGispl,
+        calibration = getCalibrationMock();
 
     beforeEach(() => {
         testGispl = gispl(document);
@@ -41,8 +41,8 @@ describe('gispl', () => {
     it('should trigger events on selected dom elements', () => {
         let selectedElement = document,
             spy = sinon.spy();
-        gispl(document).on('custom-event', spy);
-        gispl(document).emit('custom-event');
+        gispl(selectedElement).on('custom-event', spy);
+        gispl(selectedElement).emit('custom-event');
         expect(spy.callCount).to.equal(1);
     });
 
@@ -159,18 +159,6 @@ describe('gispl', () => {
         });
         gispl(document).on(motionName, spy);
         window.WebSocket = WebMocket;
-
-        let calibration = {
-            screenToBrowserCoordinates: function() {
-                return {
-                    clientX: 0,
-                    clientY: 0
-                };
-            },
-            isScreenUsable: function() {
-                return true;
-            }
-        };
         gispl.initTuio({host, calibration});
 
         let server = new MocketServer(host);
@@ -208,18 +196,6 @@ describe('gispl', () => {
         });
         gispl(document).on(motionName, spy);
         window.WebSocket = WebMocket;
-
-        let calibration = {
-            screenToBrowserCoordinates: function() {
-                return {
-                    clientX: 0,
-                    clientY: 0
-                };
-            },
-            isScreenUsable: function() {
-                return true;
-            }
-        };
         gispl.initTuio({host, calibration});
 
         let server = new MocketServer(host);
@@ -263,18 +239,6 @@ describe('gispl', () => {
         });
         gispl(document).on(motionName, spy);
         window.WebSocket = WebMocket;
-
-        let calibration = {
-            screenToBrowserCoordinates: function() {
-                return {
-                    clientX: 0,
-                    clientY: 0
-                };
-            },
-            isScreenUsable: function() {
-                return true;
-            }
-        };
         gispl.initTuio({host, calibration});
 
         let server = new MocketServer(host);
@@ -330,18 +294,6 @@ describe('gispl', () => {
             
         gispl(document).on('inputend', spy);
         window.WebSocket = WebMocket;
-
-        let calibration = {
-            screenToBrowserCoordinates: function() {
-                return {
-                    clientX: 0,
-                    clientY: 0
-                };
-            },
-            isScreenUsable: function() {
-                return true;
-            }
-        };
         gispl.initTuio({host, calibration});
         let server = new MocketServer(host);
 
@@ -365,18 +317,6 @@ describe('gispl', () => {
             
         gispl(document).on('inputstart', spy);
         window.WebSocket = WebMocket;
-
-        let calibration = {
-            screenToBrowserCoordinates: function() {
-                return {
-                    clientX: 0,
-                    clientY: 0
-                };
-            },
-            isScreenUsable: function() {
-                return true;
-            }
-        };
         gispl.initTuio({host, calibration});
         let server = new MocketServer(host);
 
@@ -406,18 +346,6 @@ describe('gispl', () => {
             
         gispl(document).on('inputchange', spy);
         window.WebSocket = WebMocket;
-
-        let calibration = {
-            screenToBrowserCoordinates: function() {
-                return {
-                    clientX: 0,
-                    clientY: 0
-                };
-            },
-            isScreenUsable: function() {
-                return true;
-            }
-        };
         gispl.initTuio({host, calibration});
         let server = new MocketServer(host);
 

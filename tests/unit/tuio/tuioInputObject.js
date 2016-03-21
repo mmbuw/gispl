@@ -6,25 +6,9 @@ import TuioPointer from 'tuio/src/TuioPointer';
 import TuioCursor from 'tuio/src/TuioCursor';
 import TuioToken from 'tuio/src/TuioToken';
 import TuioObject from 'tuio/src/TuioObject';
+import {getCalibrationMock} from '../../helpers/calibration';
 
 describe('tuioInputObject', () => {
-    
-    function getCalibrationMock(params = {}) {
-        let {isUsable = true,
-                clientX, clientY} = params;
-        
-        // implementation is the same
-        // poor test
-        let pageX = clientX + window.pageXOffset,
-            pageY = clientY + window.pageYOffset;
-                
-        return {
-            screenToBrowserCoordinates: function() {
-                return {clientX, clientY, pageX, pageY};
-            },
-            isScreenUsable: function() {return isUsable;}
-        };
-    }
 
     it('should have a session identifier', () => {
         let sessionId = 10,
