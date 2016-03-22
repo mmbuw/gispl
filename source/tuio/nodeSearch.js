@@ -28,6 +28,17 @@ export default function nodeSearch(params = {}) {
             }
 
             return foundElement;
+        },
+        withParentsOf(node) {
+            let existingNode = node,
+                result = [];
+                
+            while (existingNode) {
+                result.push(existingNode);
+                existingNode = existingNode.parentNode;
+            }
+            
+            return result;
         }
     };
 }

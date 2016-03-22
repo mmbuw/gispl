@@ -37,17 +37,6 @@ export default function gispl(selection) {
 
 let allPreviousInput = [];
 let findNode;
-function parentNodesFrom(node) {
-    let existingNode = node,
-        result = [];
-        
-    while (existingNode) {
-        result.push(existingNode);
-        existingNode = existingNode.parentNode;
-    }
-    
-    return result;
-}
 function builtInEvents(allCurrentInputs) {
     let allCurrentInput = allCurrentInputs[0],
         currentLength = allCurrentInput.length,
@@ -68,9 +57,9 @@ function builtInEvents(allCurrentInputs) {
             
         let foundNode = findNode.fromPoint(lastKnownInputObject);
         
-        parentNodesFrom(foundNode).forEach(node => {
-            events.emit(node, 'inputend');
-        });
+        findNode.withParentsOf(foundNode).forEach(
+            node => events.emit(node, 'inputend')
+        );
     }
     else if (!sameInput) {
         events.emit(document, 'inputchange');
