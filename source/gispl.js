@@ -36,7 +36,9 @@ export default function gispl(selection) {
 }
 
 let allPreviousInput = [];
-let findNode;
+let findNode,
+    defaultCalibration = screenCalibration();
+    
 function builtInEvents(allCurrentInputs) {
     let allCurrentInput = allCurrentInputs[0],
         currentLength = allCurrentInput.length,
@@ -97,7 +99,7 @@ gispl.addGesture = function gisplAddGesture(gestureDefinition) {
         gestureDefinition = JSON.parse(gestureDefinition);
     }
 
-    let gesture = createGesture(gestureDefinition),
+    let gesture = createGesture(gestureDefinition, findNode),
         {name} = gestureDefinition;
 
     userDefinedGestures.set(name, gesture);
@@ -116,7 +118,7 @@ gispl.gesture = function gisplGesture(gestureName) {
 gispl.initTuio = function gisplInitTuio(params) {
     let {host,
             propagation,
-            calibration = screenCalibration()} = params;
+            calibration = defaultCalibration} = params;
 
     let tuioClient = new TuioClient({host});
     findNode = nodeSearch({calibration, propagation});

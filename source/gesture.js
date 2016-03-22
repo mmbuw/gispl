@@ -1,5 +1,6 @@
 import {featureFactory} from './feature';
 import {inputObjectFromPath} from './tuio/tuioInputObject';
+import nodeSearch from './tuio/nodeSearch';
 
 export let userDefinedGestures = new Map();
 
@@ -15,7 +16,7 @@ const gestureFlagNames = Object.freeze(
     })
 );
 
-export function createGesture(gestureDefinition) {
+export function createGesture(gestureDefinition, findNode = nodeSearch()) {
     let matchedInputIds = [],
         previousInputIds = [],
         bubbleTopNodes = [],
@@ -56,7 +57,7 @@ export function createGesture(gestureDefinition) {
             // find all parent nodes from all valid nodes
             // and add them only once
             validTopNodesOnEmit.forEach(topNode => {
-                parentNodesFrom(topNode).forEach(node => {
+                findNode.withParentsOf(topNode).forEach(node => {
                     if (result.indexOf(node) === -1) {
                         result.push(node);
                     }
@@ -282,18 +283,6 @@ function compareInput(first, second) {
 // check if inputObjects are an array with at least one element
 function validInput(inputObjects = []) {
     return !!inputObjects.length;
-}
-
-function parentNodesFrom(topNode) {
-    let existingNode = topNode,
-        result = [];
-        
-    while (existingNode) {
-        result.push(existingNode);
-        existingNode = existingNode.parentNode;
-    }
-    
-    return result;
 }
 
 function initializeFlagsFrom(gestureDefinition) {
