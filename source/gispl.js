@@ -36,6 +36,7 @@ export default function gispl(selection) {
 }
 
 let allPreviousInput = [];
+let findNode;
 function parentNodesFrom(node) {
     let existingNode = node,
         result = [];
@@ -64,9 +65,8 @@ function builtInEvents(allCurrentInputs) {
         previousLength !== 0) {
         let lastKnownInput = allCurrentInputs[1],
             lastKnownInputObject = lastKnownInput[0];
-        
-        let findNode = nodeSearch.lastInstance(),
-            foundNode = findNode.fromPoint(lastKnownInputObject);
+            
+        let foundNode = findNode.fromPoint(lastKnownInputObject);
         
         parentNodesFrom(foundNode).forEach(node => {
             events.emit(node, 'inputend');
@@ -129,8 +129,8 @@ gispl.initTuio = function gisplInitTuio(params) {
             propagation,
             calibration = screenCalibration()} = params;
 
-    let tuioClient = new TuioClient({host}),
-        findNode = nodeSearch({calibration, propagation});
+    let tuioClient = new TuioClient({host});
+    findNode = nodeSearch({calibration, propagation});
 
     tuioInput({tuioClient,
                 findNode,

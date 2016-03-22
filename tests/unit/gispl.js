@@ -369,7 +369,7 @@ describe('gispl', () => {
     });
     
     it(`should trigger inputend on the node where
-            the last inputobject was placecd`, (asyncDone) => {
+            the last inputobject was placed`, (asyncDone) => {
         let spy = sinon.spy(),
             sessionId = 10,
             host = 'test-socket-url';

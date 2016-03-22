@@ -1,4 +1,4 @@
-let lastInstance;
+let instance;
 
 export default function screenCalibration(params = {}) {
 
@@ -45,7 +45,7 @@ export default function screenCalibration(params = {}) {
     }
     document.addEventListener('mouseover', captureEvent);
 
-    lastInstance = {
+    instance = {
         mouseEvent: calibrationMouseEvent,
 
         viewportPosition() {
@@ -70,12 +70,12 @@ export default function screenCalibration(params = {}) {
         }
     };
     
-    return lastInstance;
+    return instance;
 }
 
-screenCalibration.lastInstance = function lastCalibrationInstance() {
-    if (typeof lastInstance === 'undefined') {
-        lastInstance = screenCalibration();
+screenCalibration.instance = function calibrationInstance() {
+    if (typeof instance === 'undefined') {
+        instance = screenCalibration();
     }
-    return lastInstance;  
+    return instance;  
 };

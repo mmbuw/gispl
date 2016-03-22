@@ -12,7 +12,7 @@ export function objectgroup(params) {
         limit = lowerUpperLimit(constraints),
         // TODO
         // maybe pass in an instance somehow
-        calibration = screenCalibration.lastInstance(),
+        calibration = screenCalibration.instance(),
         radius = constraints[2];
     
     function pointToPointDistance(first, second) {
