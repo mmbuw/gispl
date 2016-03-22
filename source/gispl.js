@@ -113,11 +113,10 @@ gispl.gesture = function gisplGesture(gestureName) {
 
 gispl.initTuio = function gisplInitTuio(params) {
     let {host,
-            propagation,
             calibration = defaultCalibration} = params;
 
     let tuioClient = new TuioClient({host});
-    findNode = nodeSearch({calibration, propagation});
+    findNode = nodeSearch({calibration});
 
     tuioInput({tuioClient,
                 findNode,
