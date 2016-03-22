@@ -368,6 +368,30 @@ describe('gispl', () => {
         }, 0);
     });
     
+    it(`should trigger inputstart on the node where
+            the first inputobject was placed`, (asyncDone) => {
+        let spy = sinon.spy(),
+            sessionId = 10,
+            host = 'test-socket-url';
+        
+        // for now just test that it's working on other than document
+        gispl(document.documentElement).on('inputstart', spy);
+        gispl(document).on('inputstart', spy);
+        
+        window.WebSocket = WebMocket;
+        gispl.initTuio({host, calibration});
+        let server = new MocketServer(host);
+
+        setTimeout(() => {
+            
+            sendPointerBundle(server, {sessionId});
+            expect(spy.callCount).to.equal(2);
+            
+            server.close();
+            asyncDone();
+        }, 0);
+    });
+    
     it(`should trigger inputend on the node where
             the last inputobject was placed`, (asyncDone) => {
         let spy = sinon.spy(),

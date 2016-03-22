@@ -48,20 +48,24 @@ function builtInEvents(allCurrentInputs) {
                             return currentInput === allPreviousInput[index];
                         });
     
+    function triggerOnLastKnownNode(inputObjects, event) {
+        let lastKnownInputObject = inputObjects[0];
+            
+        let foundNode = findNode.fromPoint(lastKnownInputObject);
+        findNode.withParentsOf(foundNode).forEach(
+            node => events.emit(node, event)
+        );
+    }
+    
     if (currentLength !== 0 &&
         previousLength === 0) {
-        events.emit(document, 'inputstart');
+        let lastKnownInput = allCurrentInputs[0];
+        triggerOnLastKnownNode(lastKnownInput, 'inputstart');
     }
     else if (currentLength === 0 &&
         previousLength !== 0) {
-        let lastKnownInput = allCurrentInputs[1],
-            lastKnownInputObject = lastKnownInput[0];
-            
-        let foundNode = findNode.fromPoint(lastKnownInputObject);
-        
-        findNode.withParentsOf(foundNode).forEach(
-            node => events.emit(node, 'inputend')
-        );
+        let lastKnownInput = allCurrentInputs[1];
+        triggerOnLastKnownNode(lastKnownInput, 'inputend');
     }
     else if (!sameInput) {
         events.emit(document, 'inputchange');
