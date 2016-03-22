@@ -1,5 +1,6 @@
 import {featureFactory} from './feature';
 import {inputObjectFromPath} from './tuio/tuioInputObject';
+import {inputComparison} from './inputComparison';
 import nodeSearch from './tuio/nodeSearch';
 
 export let userDefinedGestures = new Map();
@@ -16,14 +17,13 @@ const gestureFlagNames = Object.freeze(
     })
 );
 
-export function createGesture(gestureDefinition, findNode = nodeSearch()) {
-    let matchedInputIds = [],
-        previousInputIds = [],
-        bubbleTopNodes = [],
-        stickyTopNode = null, 
+export function createGesture(gestureDefinition,
+                                findNode = nodeSearch()) {
+    let bubbleTopNodes = [],
+        stickyTopNode = null,
         validTopNodesOnEmit = [],
         features;
-        
+
     // don't store gesture if definition invalid 
     isValidGesture(gestureDefinition);
     // initialize and store features
@@ -32,25 +32,27 @@ export function createGesture(gestureDefinition, findNode = nodeSearch()) {
     // initialize flags
     let flags = initializeFlagsFrom(gestureDefinition),
         duration = extractDurationFrom(gestureDefinition),
-    // whether the gesture should be triggered on the found top nodes
-    // or on top nodes and all the parent nodes
-    // as with native event propagation
+        // whether the gesture should be triggered on the found top nodes
+        // or on top nodes and all the parent nodes
+        // as with native event propagation
         {propagation = true} = gestureDefinition;
-        
+    
+    let inputCheck = inputComparison();
+
     function validateEveryFeatureFor(inputState) {
         return features.every(feature => feature.load(inputState));
     }
-    
+
     function inputObjectsFrom(inputState) {
         let {inputObjects} = inputState;
-        
+
         if (duration.definition.length !== 0) {
             inputObjects = validInputFromDuration(inputObjects, duration);
         }
-        
+
         return inputObjects;
     }
-    
+
     function resultingNodes() {
         let result = [];
         if (propagation) {
@@ -69,7 +71,7 @@ export function createGesture(gestureDefinition, findNode = nodeSearch()) {
         }
         return result;
     }
-        
+
     return {
         definition() {
             return gestureDefinition;
@@ -82,11 +84,11 @@ export function createGesture(gestureDefinition, findNode = nodeSearch()) {
         features() {
             return features;
         },
-        
+
         flags() {
             return flags.all();
         },
-        
+
         duration() {
             return duration;
         },
@@ -94,37 +96,31 @@ export function createGesture(gestureDefinition, findNode = nodeSearch()) {
         // checks if the gesture is valid by validating every feature
         // and returns nodes to emit gestures on (based on which flags are set)
         load(inputState = {}) {
-            
+
             inputState.inputObjects = inputObjectsFrom(inputState);
-            
+
             let {node,
-                    inputObjects} = inputState;
+                inputObjects} = inputState;
 
             if (validInput(inputObjects)) {
+                inputCheck.use(inputObjects);
                 // boils down to
                 // gestures with oneshot flags should be triggered once
                 // until the identifiers change (e.g. tuio session ids)
-                let currentInputIds = extractIdentifiersFrom(inputObjects),
-                    inputPreviouslyMatched = compareInput(currentInputIds,
-                                                        matchedInputIds),
-                    isSameAsPreviousInput = compareInput(currentInputIds,
-                                                        previousInputIds),
-                    everyFeatureMatches = false,
-                    oneshotFlagFulfilled = flags.hasOneshot() && inputPreviouslyMatched;
-
-                // save for the next time the .load method is called
-                previousInputIds = currentInputIds;
+                let everyFeatureMatches = false,
+                    oneshotFlagFulfilled = flags.hasOneshot() &&
+                                                inputCheck.previouslyMatched();
                 // the gesture should not match if it is oneshot
                 // and already triggered
                 if (!oneshotFlagFulfilled) {
                     everyFeatureMatches = validateEveryFeatureFor(inputState);
                 }
                 if (flags.hasBubble()) {
-                    if (!isSameAsPreviousInput) {
+                    if (!inputCheck.previouslyUsed()) {
                         bubbleTopNodes = [];
                     }
                     if (bubbleTopNodes.indexOf(node) === -1) {
-                        bubbleTopNodes.push(node);   
+                        bubbleTopNodes.push(node);
                     }
                 }
                 if (everyFeatureMatches) {
@@ -133,7 +129,7 @@ export function createGesture(gestureDefinition, findNode = nodeSearch()) {
                     }
                     else if (flags.hasSticky()) {
                         // if input the same use the already known sticky node
-                        if (!inputPreviouslyMatched) {
+                        if (!inputCheck.previouslyMatched()) {
                             stickyTopNode = node;
                         }
                         validTopNodesOnEmit = [stickyTopNode];
@@ -146,7 +142,7 @@ export function createGesture(gestureDefinition, findNode = nodeSearch()) {
                         validTopNodesOnEmit = [node];
                     }
                     // save currentInputIds for future reference
-                    matchedInputIds = currentInputIds;
+                    inputCheck.matched();
                 }
                 else {
                     validTopNodesOnEmit = [];
@@ -176,7 +172,7 @@ export const gestureException = Object.freeze({
 
 function isValidGesture(definition) {
     if (typeof definition === 'undefined' ||
-            Object.keys(definition).length === 0) {
+        Object.keys(definition).length === 0) {
         throw new Error(gestureException.EMPTY);
     }
 
@@ -186,8 +182,8 @@ function isValidGesture(definition) {
         throw new Error(gestureException.NO_NAME);
     }
     if (typeof features === 'undefined' ||
-            typeof features.length === 'undefined' ||
-            features.length === 0) {
+        typeof features.length === 'undefined' ||
+        features.length === 0) {
         throw new Error(gestureException.NO_FEATURES);
     }
     if (userDefinedGestures.has(name)) {
@@ -206,7 +202,7 @@ function isValidGesture(definition) {
     }
     if (typeof duration !== 'undefined') {
         if (!Array.isArray(duration) ||
-                duration.length > 2) {
+            duration.length > 2) {
             throw new Error(`${gestureException.INVALID_DURATION}. Expecting
                                 [number], or [number, number]; received ${duration}`);
         }
@@ -234,20 +230,11 @@ function extractFlagsFrom(gestureDefinition) {
         flags = [];
     if (typeof definitionFlags !== 'undefined') {
         if (!Array.isArray(definitionFlags)) {
-            definitionFlags = [definitionFlags];   
+            definitionFlags = [definitionFlags];
         }
         flags = definitionFlags;
     }
     return flags;
-}
-
-// returns an array of identifiers [1,2,...]
-// from an array of inputObjects
-// [{identifier: 1,...}, {identifier: 2,...},...}
-function extractIdentifiersFrom(inputObjects = []) {
-    return inputObjects
-                .filter(inputObject => !!inputObject)
-                .map(inputObject => inputObject.identifier);
 }
 
 export function extractDurationFrom(definitionObject) {
@@ -261,24 +248,13 @@ export function extractDurationFrom(definitionObject) {
     if (typeof definitionObject.duration !== 'undefined') {
         let definition = duration.definition = definitionObject.duration;
         if (typeof definition[0] !== 'undefined') {
-            duration.start = definition[0];   
+            duration.start = definition[0];
         }
         if (typeof definition[1] !== 'undefined') {
-            duration.end = definition[1];   
+            duration.end = definition[1];
         }
     }
     return duration;
-}
-// compares if an array (of identifiers) is equal to another
-// [1,2,3] equals [1,2,3]
-// but also [3,2,1]
-function compareInput(first, second) {
-    let equalLength = first.length === second.length,
-        secondContainsAllOfFirst = first.every(item => {
-            return second.indexOf(item) !== -1;
-        });
-
-    return equalLength && secondContainsAllOfFirst;
 }
 // check if inputObjects are an array with at least one element
 function validInput(inputObjects = []) {
@@ -309,12 +285,12 @@ function initializeFlagsFrom(gestureDefinition) {
 export function validInputFromDuration(inputObjects = [], duration) {
     let validInputObjects = [],
         currentTime = new Date().getTime();
-        
+
     inputObjects.forEach(inputObject => {
         let validInputPath = inputObject.path.filter(point => {
             let timeDiff = currentTime - point.startingTime;
             return (timeDiff <= duration.start &&
-                        timeDiff >= duration.end);
+                timeDiff >= duration.end);
         });
         if (validInputPath.length !== 0) {
             let validInputObject = inputObjectFromPath({
@@ -324,6 +300,6 @@ export function validInputFromDuration(inputObjects = [], duration) {
             validInputObjects.push(validInputObject);
         }
     });
-    
+
     return validInputObjects;
 }

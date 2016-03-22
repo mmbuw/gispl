@@ -8,6 +8,7 @@ import nodeSearch from './tuio/nodeSearch';
 import tuioInput from './tuio/tuioInput';
 import screenCalibration from './tuio/screenCalibration';
 import {createEventObject} from './eventObject';
+import {compareInput} from './inputComparison';
 
 export default function gispl(selection) {
 
@@ -40,13 +41,7 @@ let findNode,
     defaultCalibration = screenCalibration();
     
 function builtInEvents(allCurrentInputs) {
-    let allCurrentInput = allCurrentInputs[0],
-        currentLength = allCurrentInput.length,
-        previousLength = allPreviousInput.length,
-        sameInput = currentLength === previousLength &&
-                        allCurrentInput.every((currentInput, index) => {
-                            return currentInput === allPreviousInput[index];
-                        });
+    let allCurrentInput = allCurrentInputs[0];
     
     function triggerOnLastKnownNode(inputObjects, event) {
         let lastKnownInputObject = inputObjects[0];
@@ -57,17 +52,18 @@ function builtInEvents(allCurrentInputs) {
         );
     }
     
-    if (currentLength !== 0 &&
-        previousLength === 0) {
+    if (allCurrentInput.length !== 0 &&
+        allPreviousInput.length === 0) {
         let lastKnownInput = allCurrentInputs[0];
         triggerOnLastKnownNode(lastKnownInput, 'inputstart');
     }
-    else if (currentLength === 0 &&
-        previousLength !== 0) {
+    else if (allCurrentInput.length === 0 &&
+        allPreviousInput.length !== 0) {
         let lastKnownInput = allCurrentInputs[1];
         triggerOnLastKnownNode(lastKnownInput, 'inputend');
     }
-    else if (!sameInput) {
+    else if (!compareInput(allCurrentInput,
+                                    allPreviousInput)) {
         events.emit(document, 'inputchange');
     }
     
