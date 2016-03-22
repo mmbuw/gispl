@@ -40,9 +40,7 @@ let allPreviousInput = [];
 let findNode,
     defaultCalibration = screenCalibration();
     
-function builtInEvents(allCurrentInputs) {
-    let allCurrentInput = allCurrentInputs[0];
-    
+function builtInEvents(allCurrentInput) {    
     function triggerOnLastKnownNode(inputObjects, event) {
         let lastKnownInputObject = inputObjects[0];
             
@@ -54,13 +52,11 @@ function builtInEvents(allCurrentInputs) {
     
     if (allCurrentInput.length !== 0 &&
         allPreviousInput.length === 0) {
-        let lastKnownInput = allCurrentInputs[0];
-        triggerOnLastKnownNode(lastKnownInput, 'inputstart');
+        triggerOnLastKnownNode(allCurrentInput, 'inputstart');
     }
     else if (allCurrentInput.length === 0 &&
         allPreviousInput.length !== 0) {
-        let lastKnownInput = allCurrentInputs[1];
-        triggerOnLastKnownNode(lastKnownInput, 'inputend');
+        triggerOnLastKnownNode(allPreviousInput, 'inputend');
     }
     else if (!compareInput(allCurrentInput,
                                     allPreviousInput)) {
