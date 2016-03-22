@@ -1,4 +1,4 @@
-import {createGesture, gestureException} from '../../source/gesture';
+import {createGesture} from '../../source/gesture';
 import {clearUserDefinedPaths} from '../../source/feature';
 import $ from 'jquery';
 import {buildInputFromPointer} from '../helpers/pointer';
@@ -775,7 +775,7 @@ describe('gesture with flags', () => {
                                        .moveTo({x: 0.5, y: 0.5});
         expect(
             bubbleStickyOneshotTriangleGesture.load({
-                inputObjects: [triangleMovingPointerInput.finished()],
+                inputObjects: [lineMovingPointerInput.finished()],
                 node: someNode
             })
         ).to.deep.equal([]);

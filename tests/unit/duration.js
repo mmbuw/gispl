@@ -1,7 +1,6 @@
 import {createGesture} from '../../source/gesture';
-import {tuioObjectUpdate} from '../../source/tuio/tuioInputObject';
-import {buildInputFromPointer,
-            buildPointer} from '../helpers/pointer';
+import {buildInputFromPointer} from '../helpers/pointer';
+import $ from 'jquery';
 
 describe('gesture with duration', () => {
 
@@ -39,7 +38,7 @@ describe('gesture with duration', () => {
                 {type: 'Motion'}
             ]
         };
-        startingTime = new Date().getTime()
+        startingTime = new Date().getTime();
         clock = sinon.useFakeTimers(startingTime);
     });
     
@@ -54,21 +53,21 @@ describe('gesture with duration', () => {
             elapsedTota1001ms = 501,
             oneSecondDurationMotionDefinition = addDurationToGesture(checkLastSecondOnly),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
-       
-       // the first point (0, 0) will be ignored
-       // it will fall outside of the time frame
-       // making the gesture invalid
-       let pointerMoving = buildInputFromPointer({x: 0, y: 0});
-       clock.tick(elapsedTotal500ms);
-       pointerMoving.moveTo({x: 0.1, y: 0.1});
-       clock.tick(elapsedTota1001ms);
-       
-       expect(
-           oneSecondDurationMotionGesture.load({
-               node,
-               inputObjects: [pointerMoving.finished()]
-           })
-       ).to.deep.equal([]);
+        
+        // the first point (0, 0) will be ignored
+        // it will fall outside of the time frame
+        // making the gesture invalid
+        let pointerMoving = buildInputFromPointer({x: 0, y: 0});
+        clock.tick(elapsedTotal500ms);
+        pointerMoving.moveTo({x: 0.1, y: 0.1});
+        clock.tick(elapsedTota1001ms);
+        
+        expect(
+            oneSecondDurationMotionGesture.load({
+                node,
+                inputObjects: [pointerMoving.finished()]
+            })
+        ).to.deep.equal([]);
     });
     
     it(`should recognize motion gesture if partial path within the timeframe
@@ -79,17 +78,17 @@ describe('gesture with duration', () => {
             oneSecondDurationMotionDefinition = addDurationToGesture(checkLastSecondOnly),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-       let pointerMoving = buildInputFromPointer({x: 0, y: 0});
-       clock.tick(elapsedTotal500ms);
-       pointerMoving.moveTo({x: 0.1, y: 0.1})                            
-       clock.tick(elapsedTotal1000ms);
-                 
-       expect(
-           oneSecondDurationMotionGesture.load({
-               node,
-               inputObjects: [pointerMoving.finished()]
-           })
-       ).to.deep.equal(nodesToEmitOn);
+        let pointerMoving = buildInputFromPointer({x: 0, y: 0});
+        clock.tick(elapsedTotal500ms);
+        pointerMoving.moveTo({x: 0.1, y: 0.1})                            
+        clock.tick(elapsedTotal1000ms);
+                    
+        expect(
+            oneSecondDurationMotionGesture.load({
+                node,
+                inputObjects: [pointerMoving.finished()]
+            })
+        ).to.deep.equal(nodesToEmitOn);
     });
     
     it(`should not recognize motion gesture if partial path within the timeframe 
@@ -100,21 +99,21 @@ describe('gesture with duration', () => {
             oneSecondDurationMotionDefinition = addDurationToGesture(checkBetween2and1SecondsAgo),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-       let pointerMoving = buildInputFromPointer({x: 0, y: 0});
-       clock.tick(elaspedTotal500ms);
-       // the second point is outside of the timeframe
-       // because
-       // firstpoint - 500ms pass - second point - 999ms pass
-       // the valid interval ends 1ms before the second point
-       pointerMoving.moveTo({x: 0.1, y: 0.1});                                 
-       clock.tick(elapsedTotal1499ms);
-            
-       expect(
-           oneSecondDurationMotionGesture.load({
-               node,
-               inputObjects: [pointerMoving.finished()]
-           })
-       ).to.deep.equal([]);
+        let pointerMoving = buildInputFromPointer({x: 0, y: 0});
+        clock.tick(elaspedTotal500ms);
+        // the second point is outside of the timeframe
+        // because
+        // firstpoint - 500ms pass - second point - 999ms pass
+        // the valid interval ends 1ms before the second point
+        pointerMoving.moveTo({x: 0.1, y: 0.1});                                 
+        clock.tick(elapsedTotal1499ms);
+                
+        expect(
+            oneSecondDurationMotionGesture.load({
+                node,
+                inputObjects: [pointerMoving.finished()]
+            })
+        ).to.deep.equal([]);
     });
     
     it(`should recognize motion gesture if partial path within the timeframe 
@@ -125,17 +124,17 @@ describe('gesture with duration', () => {
             oneSecondDurationMotionDefinition = addDurationToGesture(checkBetween2and1SecondsAgo),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-       let pointerMoving = buildInputFromPointer({x: 0, y: 0});
-       clock.tick(elapsedTotal500ms);
-       pointerMoving.moveTo({x: 0.1, y: 0.1});
-       clock.tick(elapsedTotal1500ms);
-       
-       expect(
-           oneSecondDurationMotionGesture.load({
-               node,
-               inputObjects: [pointerMoving.finished()]
-           })
-       ).to.deep.equal(nodesToEmitOn);
+        let pointerMoving = buildInputFromPointer({x: 0, y: 0});
+        clock.tick(elapsedTotal500ms);
+        pointerMoving.moveTo({x: 0.1, y: 0.1});
+        clock.tick(elapsedTotal1500ms);
+        
+        expect(
+            oneSecondDurationMotionGesture.load({
+                node,
+                inputObjects: [pointerMoving.finished()]
+            })
+        ).to.deep.equal(nodesToEmitOn);
     });
     
     it('should ignore an empty duration array', () => {
@@ -160,17 +159,17 @@ describe('gesture with duration', () => {
             oneSecondDurationMotionDefinition = addDurationToFeature(checkLastSecondOnly),
             oneSecondDurationMotionGesture = createGesture(oneSecondDurationMotionDefinition);
        
-       let pointerMoving = buildInputFromPointer({x: 0, y: 0});
-       clock.tick(elapsedTotal500ms);
-       pointerMoving.moveTo({x: 0.1, y: 0.1})
-       clock.tick(elapsedTotal1001ms);
-       
-       expect(
-           oneSecondDurationMotionGesture.load({
-               node,
-               inputObjects: [pointerMoving.finished()]
-           })
-       ).to.deep.equal([]);
+        let pointerMoving = buildInputFromPointer({x: 0, y: 0});
+        clock.tick(elapsedTotal500ms);
+        pointerMoving.moveTo({x: 0.1, y: 0.1})
+        clock.tick(elapsedTotal1001ms);
+        
+        expect(
+            oneSecondDurationMotionGesture.load({
+                node,
+                inputObjects: [pointerMoving.finished()]
+            })
+        ).to.deep.equal([]);
     });
     
     it(`should recognize gesture if path time more than or equal to lower duration bound
@@ -197,14 +196,14 @@ describe('gesture with duration', () => {
     it('should check input history when feature duration set', () => {
         
         let doubleTapDefinition = {
-            name: 'doubletap',
-            features:[
-                {type: 'Count', constraints:[1,1], duration: [200, 100]},
-                {type: 'Count', constraints:[0,0], duration: [100, 10]},
-                {type: 'Count', constraints:[1,1], duration: [10]}
-            ]
-        },
-        doubleTapGesture = createGesture(doubleTapDefinition);
+                name: 'doubletap',
+                features:[
+                    {type: 'Count', constraints:[1,1], duration: [200, 100]},
+                    {type: 'Count', constraints:[0,0], duration: [100, 10]},
+                    {type: 'Count', constraints:[1,1], duration: [10]}
+                ]
+            },
+            doubleTapGesture = createGesture(doubleTapDefinition);
         
         let firstTap = buildInputFromPointer({x: 0, y: 0}).finished();
         
@@ -225,13 +224,13 @@ describe('gesture with duration', () => {
     it(`should not recognize scale if it is not within the specified
             duration window`, () => {
         let scaleInTheLastSecondOnly = {
-            name: 'any-scale',
-            features: [
-                {type: 'Scale', duration: [1000]}
-            ] 
-        },
-        oneSecondScaleGesture = createGesture(scaleInTheLastSecondOnly);
-        
+                name: 'any-scale',
+                features: [
+                    {type: 'Scale', duration: [1000]}
+                ] 
+            },
+            oneSecondScaleGesture = createGesture(scaleInTheLastSecondOnly);
+            
         let firstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
             secondInput = buildInputFromPointer({x: 0.6, y: 0.6});
         
@@ -243,9 +242,9 @@ describe('gesture with duration', () => {
         clock.tick(501);
         
         let inputObjects = [
-            firstInput.finished(),
-            secondInput.finished()
-        ],
+                firstInput.finished(),
+                secondInput.finished()
+            ],
             inputHistory = inputObjects,
             node = 'current-node';
             
@@ -258,12 +257,12 @@ describe('gesture with duration', () => {
         
     it(`should recognize scale if it is within the specified duration window`, () => {
         let scaleInTheLastSecondOnly = {
-            name: 'any-scale',
-            features: [
-                {type: 'Scale', duration: [1000]}
-            ] 
-        },
-        oneSecondScaleGesture = createGesture(scaleInTheLastSecondOnly);
+                name: 'any-scale',
+                features: [
+                    {type: 'Scale', duration: [1000]}
+                ] 
+            },
+            oneSecondScaleGesture = createGesture(scaleInTheLastSecondOnly);
         
         let firstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
             secondInput = buildInputFromPointer({x: 0.6, y: 0.6});
@@ -276,9 +275,9 @@ describe('gesture with duration', () => {
         clock.tick(500);
         
         let inputObjects = [
-            firstInput.finished(),
-            secondInput.finished()
-        ],
+                firstInput.finished(),
+                secondInput.finished()
+            ],
             inputHistory = inputObjects,
             node = 'current-node';
             
