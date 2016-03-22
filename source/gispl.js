@@ -1,5 +1,4 @@
-import {domCollectionEvents,
-            events} from './events';
+import {domCollectionEvents} from './events';
 import elementInsertion from './elementInsertion';
 import {createGesture,
             userDefinedGestures} from './gesture';
@@ -7,8 +6,7 @@ import TuioClient from 'tuio/src/TuioClient';
 import nodeSearch from './tuio/nodeSearch';
 import tuioInput from './tuio/tuioInput';
 import screenCalibration from './tuio/screenCalibration';
-import {createEventObject} from './eventObject';
-import {compareInput} from './inputComparison';
+import {gestureEmition} from './gestureEmit';
 
 export default function gispl(selection) {
 
@@ -36,58 +34,17 @@ export default function gispl(selection) {
     return gisplApi;
 }
 
-let allPreviousInput = [];
+let emitGesture;
 let findNode,
     defaultCalibration = screenCalibration();
-    
-function builtInEvents(allCurrentInput) {    
-    function triggerOnLastKnownNode(inputObjects, event) {
-        let lastKnownInputObject = inputObjects[0];
-            
-        let foundNode = findNode.fromPoint(lastKnownInputObject);
-        findNode.withParentsOf(foundNode).forEach(
-            node => events.emit(node, event)
-        );
-    }
-    
-    if (allCurrentInput.length !== 0 &&
-        allPreviousInput.length === 0) {
-        triggerOnLastKnownNode(allCurrentInput, 'inputstart');
-    }
-    else if (allCurrentInput.length === 0 &&
-        allPreviousInput.length !== 0) {
-        triggerOnLastKnownNode(allPreviousInput, 'inputend');
-    }
-    else if (!compareInput(allCurrentInput,
-                                    allPreviousInput)) {
-        events.emit(document, 'inputchange');
-    }
-    
-    allPreviousInput = allCurrentInput;
-}
 
 function handleInput(nodesInput, nodesInputHistory, allCurrentInput) {
+    if (typeof emitGesture === 'undefined') {
+        emitGesture = gestureEmition({findNode});
+    }
     
-    builtInEvents(allCurrentInput);
-    
-    nodesInput.forEach((inputObjects, node) => {
-        userDefinedGestures.forEach(gesture => {
-            let inputHistory = nodesInputHistory.get(node),
-                inputState = {inputObjects, inputHistory, node},
-                nodesToEmitOn = gesture.load(inputState);
-            
-            if (nodesToEmitOn.length !== 0) {
-                let eventName = gesture.name(),
-                    eventObject = createEventObject({
-                        inputState, gesture
-                    });
-                                    
-                nodesToEmitOn.forEach(nodeToEmitOn => {
-                    events.emit(nodeToEmitOn, eventName, eventObject);
-                });   
-            }
-        });
-    });
+    emitGesture.builtIn(allCurrentInput);
+    emitGesture.userDefined(nodesInput, nodesInputHistory);
 }
 
 gispl.addGesture = function gisplAddGesture(gestureDefinition) {
