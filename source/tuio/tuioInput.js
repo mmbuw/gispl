@@ -23,14 +23,16 @@ export default function tuioInput(params = {}) {
             objects = tuioClient.getTuioObjects();
             
         let tuioComponents = pointers;
-        tuioComponents.push(...tokens);
+        for (let i = 0, length = tokens.length; i < length; i += 1) {
+            tuioComponents.push(tokens[i]);
+        }
         // tuio v1 types are stored in an {} object
-        Object.keys(cursors).forEach(key => {
-            tuioComponents.push(cursors[key]); 
-        });
-        Object.keys(objects).forEach(key => {
-            tuioComponents.push(objects[key]); 
-        });
+        for (let key in cursors) {
+            tuioComponents.push(cursors[key]);
+        }
+        for (let key in objects) {
+            tuioComponents.push(objects[key]);
+        }
         
         return tuioComponents;
     }

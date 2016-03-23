@@ -2,10 +2,14 @@ import tuioInput from '../../../source/tuio/tuioInput';
 import screenCalibration from '../../../source/tuio/screenCalibration';
 import nodeSearch from '../../../source/tuio/nodeSearch';
 import {WebMocket, MocketServer} from 'webmocket';
-import TuioClient from 'tuio/src/TuioClient';
 import {sendPointerBundle} from '../../helpers/osc';
 import $ from 'jquery';
-import {buildPointer} from '../../helpers/pointer'
+import {buildPointer} from '../../helpers/pointer';
+import TuioClient from 'tuio/src/TuioClient';
+import TuioPointer from 'tuio/src/TuioPointer';
+import TuioCursor from 'tuio/src/TuioCursor';
+import TuioObject from 'tuio/src/TuioObject';
+import TuioToken from 'tuio/src/TuioToken';
 
 describe('tuioInput', () => {
 
@@ -498,6 +502,60 @@ describe('tuioInput', () => {
             let allCurrentInput = args[2];
             
             expect(allCurrentInput.length).to.equal(0);
+            
+            findNodeStub.restore();
+            asyncDone();
+        });
+    });
+    
+    it('should check for all tuio types on refresh', (asyncDone) => {
+        let node = document,
+            listener = sinon.spy(),
+            findNodeStub = sinon.stub(findNode, 'fromPoint').returns(node),
+            tuioItems = [
+                {si: 1, constructor: TuioCursor, stub: 'getTuioCursors'},
+                {si: 2, constructor: TuioObject, stub: 'getTuioObjects'},
+                {si: 3, constructor: TuioPointer, stub: 'getTuioPointers'},
+                {si: 4, constructor: TuioToken, stub: 'getTuioTokens'}
+            ],
+            tuioClient = new TuioClient({host: connectionUrl});
+        
+        tuioItems.forEach((tuioItem, index) => {
+            let {constructor, si, stub} = tuioItem,
+                componentList;
+            let tuioComponent = new constructor({si});
+            if (index < 2) {
+                componentList = {};
+                componentList[si] = tuioComponent;
+            }
+            else {
+                componentList = [];
+                tuioComponent.getSessionId = function() {
+                    return index+1;
+                };
+                componentList.push(tuioComponent);
+            }
+            sinon.stub(tuioClient, stub).returns(componentList);
+        });
+        
+        tuioInput({tuioClient, findNode}).listen(listener);
+
+        setTimeout(() => {
+            tuioClient.trigger('refresh');
+            let args = listener.firstCall.args,
+                nodeInput = args[0],
+                documentInput = nodeInput.get(document);
+            
+            expect(documentInput.length).to.equal(4);
+            
+            let everySessionIdInInput = tuioItems.every(tuioItem => {
+                let {si} = tuioItem;
+                let s = documentInput.some(input => {
+                    return input.identifier === si;
+                });
+                return s;
+            });
+            expect(everySessionIdInInput).to.equal(true);
             
             findNodeStub.restore();
             asyncDone();
