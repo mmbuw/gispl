@@ -44,10 +44,8 @@ export default function tuioInput(params = {}) {
         }
     }
 
-    function notify(...args) {
-        listeners.forEach(callback => {
-            callback(...args);
-        });
+    function notify() {
+        listeners.forEach(callback => callback(...arguments));
     }
 
     // listen to tuio/websocket
@@ -118,10 +116,10 @@ function nodesInputHistory(params = {}) {
     // it will remove the first element from the list
     // but it is still in the list for an individual node history
     function removeDroppedInputObjectsFrom(historyForNode) {
-        historyForNode.forEach((inputObject, currentIndex) => {
-            let notStored = storedObjects.indexOf(inputObject) === -1;
+        historyForNode.forEach((historyInputObject, historyIndex) => {
+            let notStored = storedObjects.indexOf(historyInputObject) === -1;
             if (notStored) {
-                historyForNode.splice(currentIndex, 1);
+                historyForNode.splice(historyIndex, 1);
             }
         });
     }
