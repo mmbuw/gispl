@@ -44,8 +44,8 @@ export default function tuioInput(params = {}) {
         }
     }
 
-    function notify() {
-        listeners.forEach(callback => callback(...arguments));
+    function notify(...args) {
+        listeners.forEach(callback => callback(...args));
     }
 
     // listen to tuio/websocket
