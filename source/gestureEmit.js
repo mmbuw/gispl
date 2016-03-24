@@ -16,11 +16,14 @@ export function gestureEmition(params = {}) {
 
     function triggerOnLastKnownNode(inputObjects, event) {
         let lastKnownInputObject = inputObjects[0],
-            foundNode = findNode.fromPoint(lastKnownInputObject);
+            foundNode = findNode.fromPoint(lastKnownInputObject),
+            foundNodeWithParents = findNode.withParentsOf(foundNode);
             
-        findNode.withParentsOf(foundNode).forEach(
-            node => events.emit(node, event)
-        );
+        foundNodeWithParents.forEach(node => {
+            let inputState = {inputObjects}, 
+                eventObject = createEventObject({inputState});
+            events.emit(node, event, eventObject);
+        });
     }
     
     return {
