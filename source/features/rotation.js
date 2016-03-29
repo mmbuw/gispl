@@ -10,6 +10,7 @@ export function rotation(params) {
         baseFeature = featureBase(params),
         touchInput = [],
         objectInput = [],
+        rotationDirections = [],
         limit = lowerUpperLimit(constraints);
     
     function directionVector(first, second) {
@@ -69,9 +70,9 @@ export function rotation(params) {
     function calculateAverageAngleFrom(inputObjects) {
         let centroid = calculateCentroidFrom(inputObjects),
             inputCount = 0,
-            rotationDirections = [],
             averageAngle;
         
+        rotationDirections.length = 0;
         let totalAngle = inputObjects.reduce((angleSum, inputObject) => {
             let currentAngle = angleFromMovingAndFixedPoint(inputObject, centroid);
             
