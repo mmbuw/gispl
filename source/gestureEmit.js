@@ -51,7 +51,7 @@ export function gestureEmition(params = {}) {
             nodesInput.forEach((inputObjects, node) => {
                 userDefinedGestures.forEach(gesture => {
                     let inputHistory = nodesInputHistory.get(node),
-                        inputState = {inputObjects, inputHistory, node},
+                        inputState = createInputState(inputObjects, inputHistory, node),
                         nodesToEmitOn = gesture.load(inputState);
                     
                     if (nodesToEmitOn.length !== 0) {
@@ -66,4 +66,16 @@ export function gestureEmition(params = {}) {
             });
         }
     };
+}
+
+let inputState = {
+    inputObjects: undefined,
+    inputHistory: undefined,
+    node: undefined
+};
+function createInputState(inputObjects, inputHistory, node) {
+    inputState.inputObjects = inputObjects;
+    inputState.inputHistory = inputHistory;
+    inputState.node = node;
+    return inputState;
 }
