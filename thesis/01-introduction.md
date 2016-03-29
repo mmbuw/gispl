@@ -1,4 +1,4 @@
-#Introduction
+# Introduction
 
 Touchscreens have in the last decade, with the rise in popularity of smartphones, become one of the most common ways of interaction with machines. Interacting with a touchscreen based device is in some ways similar to using hardware such as a mouse -- e.g. for a double click there could be a double tap -- but it is usually more sophisticated. Gestures such as swipe or pinch have become as self explanatory as using a scroll wheel, and are often described as a natural way to interact with a computer.
 
