@@ -179,21 +179,6 @@ function nodesInputHistory(params = {}) {
             historyForNode.push(inputObject);
         }
     }
-    //
-    function storeNode(foundNode, inputObject) {
-        if (foundNode) {
-            toNodeInputCurrent(foundNode, inputObject);
-            toNodeInputHistory(foundNode, inputObject);
-        }
-    }
-    // filters out input objects on the screen
-    // that are not in the browser window
-    function inputInBrowserOnly(inputObject) {
-        let foundNode = findNode.fromPoint(inputObject);
-        // ideally should not be here
-        storeNode(foundNode, inputObject);
-        return !!foundNode;
-    }
         
     return {
         nodeHistoryInput() {
@@ -205,9 +190,17 @@ function nodesInputHistory(params = {}) {
         // returns an array of in browser inputObjects that correspond to tuioComponents
         store(tuioComponents) {
             nodesWithInput.clear();
-            return tuioComponents
-                        .map(convertToInputObject)
-                        .filter(inputInBrowserOnly);
+            let allCurrentInput = [];
+            for (let i = 0; i < tuioComponents.length; i += 1) {
+                let inputObject = convertToInputObject(tuioComponents[i]);
+                let foundNode = findNode.fromPoint(inputObject);
+                if (foundNode) {
+                    toNodeInputCurrent(foundNode, inputObject);
+                    toNodeInputHistory(foundNode, inputObject);
+                    allCurrentInput.push(inputObject);
+                }
+            }                      
+            return allCurrentInput;
         }
     };
 }
