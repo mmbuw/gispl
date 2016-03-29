@@ -19,11 +19,13 @@ export function gestureEmition(params = {}) {
             foundNode = findNode.fromPoint(lastKnownInputObject),
             foundNodeWithParents = findNode.withParentsOf(foundNode);
             
-        foundNodeWithParents.forEach(node => {
-            let inputState = {inputObjects}, 
+        for (let i = 0; i < foundNodeWithParents.length; i += 1) {
+            let node = foundNodeWithParents[i],
+                inputState = {inputObjects}, 
                 eventObject = createEventObject({inputState});
+                
             events.emit(node, event, eventObject);
-        });
+        }
     }
     
     return {
