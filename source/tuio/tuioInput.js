@@ -5,7 +5,8 @@ export default function tuioInput(params = {}) {
     let {tuioClient} = params,
         listeners = [],
         enabled = false,
-        tuioInputHistory = nodesInputHistory(params);
+        tuioInputHistory = nodesInputHistory(params),   
+        allTuioComponents = [];
 
     function onTuioRefresh() {
         let tuioComponents = fetchTuioData();        
@@ -22,19 +23,23 @@ export default function tuioInput(params = {}) {
             tokens = tuioClient.getTuioTokens(),
             objects = tuioClient.getTuioObjects();
             
-        let tuioComponents = pointers;
+        allTuioComponents.length = 0;
+            
+        for (let i = 0, length = pointers.length; i < length; i += 1) {
+            allTuioComponents.push(pointers[i]);
+        }
         for (let i = 0, length = tokens.length; i < length; i += 1) {
-            tuioComponents.push(tokens[i]);
+            allTuioComponents.push(tokens[i]);
         }
         // tuio v1 types are stored in an {} object
         for (let key in cursors) {
-            tuioComponents.push(cursors[key]);
+            allTuioComponents.push(cursors[key]);
         }
         for (let key in objects) {
-            tuioComponents.push(objects[key]);
+            allTuioComponents.push(objects[key]);
         }
         
-        return tuioComponents;
+        return allTuioComponents;
     }
 
     function enable() {
