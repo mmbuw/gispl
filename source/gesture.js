@@ -22,6 +22,7 @@ export function createGesture(gestureDefinition,
     let bubbleTopNodes = [],
         stickyTopNode = null,
         validTopNodesOnEmit = [],
+        result = [],
         features;
 
     // don't store gesture if definition invalid 
@@ -54,20 +55,25 @@ export function createGesture(gestureDefinition,
     }
 
     function resultingNodes() {
-        let result = [];
+        result.length = 0;
         if (propagation) {
             // find all parent nodes from all valid nodes
             // and add them only once
-            validTopNodesOnEmit.forEach(topNode => {
-                findNode.withParentsOf(topNode).forEach(node => {
+            for (let i = 0; i < validTopNodesOnEmit.length; i += 1) {
+                let topNode = validTopNodesOnEmit[i],
+                    topNodeWithParents = findNode.withParentsOf(topNode);
+                for (let j = 0; j < topNodeWithParents.length; j += 1) {
+                    let node = topNodeWithParents[j];
                     if (result.indexOf(node) === -1) {
                         result.push(node);
-                    }
-                });
-            });
+                    }   
+                }
+            }
         }
         else {
-            result = validTopNodesOnEmit;
+            for (let i = 0; i < validTopNodesOnEmit.length; i += 1) {
+                result.push(validTopNodesOnEmit[i]);
+            }
         }
         return result;
     }
@@ -117,7 +123,7 @@ export function createGesture(gestureDefinition,
                 }
                 if (flags.hasBubble()) {
                     if (!inputCheck.previouslyUsed()) {
-                        bubbleTopNodes = [];
+                        bubbleTopNodes.length = 0;
                     }
                     if (bubbleTopNodes.indexOf(node) === -1) {
                         bubbleTopNodes.push(node);
@@ -132,29 +138,32 @@ export function createGesture(gestureDefinition,
                         if (!inputCheck.previouslyMatched()) {
                             stickyTopNode = node;
                         }
-                        validTopNodesOnEmit = [stickyTopNode];
+                        validTopNodesOnEmit.length = 0;
+                        validTopNodesOnEmit.push(stickyTopNode);
                     }
                     else if (
                         // oneshot gestures will get here only once
                         flags.hasOneshot() ||
                         flags.hasNone()
                     ) {
-                        validTopNodesOnEmit = [node];
+                        validTopNodesOnEmit.length = 0;
+                        validTopNodesOnEmit.push(node);
                     }
                     // save currentInputIds for future reference
                     inputCheck.matched();
                 }
                 else {
-                    validTopNodesOnEmit = [];
+                    validTopNodesOnEmit.length = 0;
                 }
             }
             // will also include parent nodes of all nodes, if enabled 
             return resultingNodes();
         },
         featureValuesToObject(data) {
-            features.forEach(feature => {
+            for (let i = 0; i < features.length; i += 1) {
+                let feature = features[i];
                 feature.setValueToObject(data);
-            });
+            }
             return this;
         }
     };
