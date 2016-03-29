@@ -8,6 +8,8 @@ export function rotation(params) {
     
     let constraints = extractConstraintsFrom(params),
         baseFeature = featureBase(params),
+        touchInput = [],
+        objectInput = [],
         limit = lowerUpperLimit(constraints);
     
     function directionVector(first, second) {
@@ -101,20 +103,26 @@ export function rotation(params) {
         },
         load(inputState) {
             let inputObjects = baseFeature
-                                .inputObjectsFrom(inputState)
-                                .filter(baseFeature.checkAgainstDefinition),
-                touchInput = inputObjects.filter(inputObject => {
-                    return typeof inputObject.angle === 'undefined';
-                }),
-                objectInput = inputObjects.filter(inputObject => {
-                    return typeof inputObject.angle !== 'undefined';
-                }),
+                                .inputObjectsFrom(inputState),
                 match = false,
                 rotationValues = initRotationValues();
+            
+            touchInput.length = 0;
+            objectInput.length = 0;
+            for (let i = 0; i < inputObjects.length; i += 1) {
+                let inputObject = inputObjects[i];
+                if (baseFeature.checkAgainstDefinition(inputObject)) {
+                    if (typeof inputObject.angle === 'undefined') {
+                        touchInput.push(inputObject);
+                    }
+                    else {
+                        objectInput.push(inputObject);
+                    }
+                }
+            }
                 
             if (touchInput.length > 1) {
-                let averageAngle = calculateAverageAngleFrom(touchInput);
-                                
+                let averageAngle = calculateAverageAngleFrom(touchInput);   
                 match = matchWithValue(averageAngle);
                 if (match) {
                     rotationValues.touches = averageAngle;
