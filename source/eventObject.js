@@ -1,9 +1,5 @@
-export function createEventObject(params = {}) {
-    let {inputState = {},
-            gesture} = params,
-        {inputObjects,
-            allCurrentInput} = inputState,
-        featureValues = eventFeatures();
+export function createEventObject(inputObjects, gesture) {
+    let featureValues = eventFeatures();
     
     if (typeof gesture !== 'undefined') {
         gesture.featureValuesToObject(featureValues);   
@@ -11,7 +7,6 @@ export function createEventObject(params = {}) {
     
     return {
         input: inputObjects,
-        touches: allCurrentInput,
         featureValues
     };
 }

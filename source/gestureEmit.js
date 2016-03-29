@@ -21,8 +21,7 @@ export function gestureEmition(params = {}) {
             
         for (let i = 0; i < foundNodeWithParents.length; i += 1) {
             let node = foundNodeWithParents[i],
-                inputState = {inputObjects}, 
-                eventObject = createEventObject({inputState});
+                eventObject = createEventObject(inputObjects);
                 
             events.emit(node, event, eventObject);
         }
@@ -57,9 +56,7 @@ export function gestureEmition(params = {}) {
                     
                     if (nodesToEmitOn.length !== 0) {
                         let eventName = gesture.name(),
-                            eventObject = createEventObject({
-                                inputState, gesture
-                            });
+                            eventObject = createEventObject(inputObjects, gesture);
                                             
                         nodesToEmitOn.forEach(nodeToEmitOn => {
                             events.emit(nodeToEmitOn, eventName, eventObject);

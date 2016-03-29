@@ -15,9 +15,8 @@ describe('event object', () => {
     });
     
     it('should contain valid current input state information', () => {
-        let inputObjects = {},
-            inputState = {inputObjects},
-            event = createEventObject({inputState});
+        let inputObjects = [],
+            event = createEventObject(inputObjects);
         expect(event.input).to.equal(inputObjects);
     });
     
@@ -59,17 +58,11 @@ describe('event object', () => {
         let featureValuesToObject = sinon.spy(),
             gesture = {featureValuesToObject};
         
-        createEventObject({gesture});
+        createEventObject([], gesture);
         
         expect(featureValuesToObject.callCount).to.equal(1);
         let args = featureValuesToObject.firstCall.args;
         expect(args.length).to.equal(1);
         expect(args[0].hasOwnProperty('scale')).to.equal(true);
-    });
-    
-    it('should contain information about all current input touches', () => {
-        expect(
-            defaultEvent.hasOwnProperty('touches')
-        ).to.equal(true);
     });
 });
