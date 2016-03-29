@@ -50,7 +50,10 @@ export default function tuioInput(params = {}) {
     }
 
     function notify(...args) {
-        listeners.forEach(callback => callback(...args));
+        for (let i = 0; i < listeners.length; i += 1) {
+            let callback = listeners[i];
+            callback(...args);
+        }
     }
 
     // listen to tuio/websocket
@@ -92,27 +95,29 @@ export default function tuioInput(params = {}) {
 // it creates, keeps and updates instances of inputObjects
 // that correspond to tuioComponents like cursors or pointers
 function nodesInputHistory(params = {}) {
+        // limit for all stored objects
+    let {limit = 10,
+            findNode,
+            calibration} = params,
         // list of stored inputObject instances used by all nodes
-    let storedObjects = [],
+        storedObjects = [],
         // a map of node => [inputObjects]
         // all inputObjects that were in contact with the node at one point
         nodesWithInputHistory = new WeakMap(),
         // similar map, but only with nodes that have active input
-        nodesWithInput = new Map(),
-        // limit for all stored objects
-        {limit = 10,
-            findNode,
-            calibration} = params;
+        nodesWithInput = new Map();
     
     // find matching inputObject for a tuioComponent
     // matches per id
     function findIndexOf(tuioComponent) {
-        let indexOfComponent = -1;  
-        storedObjects.forEach((object, index) => {
+        let indexOfComponent = -1;
+        for (let index = 0; index < storedObjects.length; index += 1) {
+            let object = storedObjects[index];
             if (object.identifier === tuioComponent.getSessionId()) {
                 indexOfComponent = index;
+                break;
             }
-        });
+        }
         return indexOfComponent;
     }
     // removes an inputObject from node => [inputObjects]
@@ -121,12 +126,13 @@ function nodesInputHistory(params = {}) {
     // it will remove the first element from the list
     // but it is still in the list for an individual node history
     function removeDroppedInputObjectsFrom(historyForNode) {
-        historyForNode.forEach((historyInputObject, historyIndex) => {
-            let notStored = storedObjects.indexOf(historyInputObject) === -1;
+        for (let historyIndex = 0; historyIndex < historyForNode.length; historyIndex += 1) {
+            let historyInputObject = historyForNode[historyIndex],
+                notStored = storedObjects.indexOf(historyInputObject) === -1;
             if (notStored) {
                 historyForNode.splice(historyIndex, 1);
             }
-        });
+        }
     }
     // takes a tuioComponent and either
     // finds and updates a matching inputObject
