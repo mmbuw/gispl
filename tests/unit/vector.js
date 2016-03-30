@@ -8,19 +8,23 @@ describe('vector', () => {
         expect(nullVector.x).to.equal(0);
         expect(nullVector.y).to.equal(0);
 
-        let vectorWithX = vector({x: 1});
+        let vectorWithX = vector(1);
         expect(vectorWithX.x).to.equal(1);
         expect(vectorWithX.y).to.equal(0);
 
-        let vectorWithY = vector({y: 1});
+        let vectorWithY = vector(undefined, 1);
         expect(vectorWithY.x).to.equal(0);
         expect(vectorWithY.y).to.equal(1);
+
+        let secondVectorWithY = vector(null, 1);
+        expect(secondVectorWithY.x).to.equal(0);
+        expect(secondVectorWithY.y).to.equal(1);
     });
 
     it('should initialize x and y coordinates to the specified values', () => {
         let x = 1,
             y = 2,
-            someVector = vector({x, y});
+            someVector = vector(x, y);
 
         expect(someVector.x).to.equal(1);
         expect(someVector.y).to.equal(2);
@@ -29,7 +33,7 @@ describe('vector', () => {
     it('should not allow coordinates to be modified from the outside', () => {
         let x = 2,
             y = 1,
-            someVector = vector({x, y});
+            someVector = vector(x, y);
 
         expect(function() {
             someVector.x += 1;
@@ -42,11 +46,11 @@ describe('vector', () => {
     it('should throw when constructing from incorrect coordinates', () => {
 
         expect(function() {
-            vector({x: '1'});
+            vector('1');
         }).to.throw(Error, new RegExp(vectorException.ILLEGAL_COORDINATES));
 
         expect(function() {
-            vector({y: '1'});
+            vector(1, '1');
         }).to.throw(Error, new RegExp(vectorException.ILLEGAL_COORDINATES));
     });
 
@@ -93,7 +97,7 @@ describe('vector', () => {
             divideTwo = 1/multiplyTwo,
             x = 5,
             y = 5,
-            someVector = vector({x, y});
+            someVector = vector(x, y);
 
         someVector.scaleWith(multiplyTwo);
         expect(someVector.x).to.equal(x*multiplyTwo);
@@ -108,7 +112,7 @@ describe('vector', () => {
         let multiplyThree = 3,
             x = 5,
             y = 5,
-            someVector = vector({x, y});
+            someVector = vector(x, y);
 
         someVector.scaleX(multiplyThree);
         expect(someVector.x).to.equal(x*multiplyThree);
@@ -133,16 +137,16 @@ describe('vector', () => {
         let nullVector = vector();
         expect(nullVector.length()).to.equal(0);
 
-        let unitVector = vector({x: 1, y: 0});
+        let unitVector = vector(1, 0);
         expect(unitVector.length()).to.equal(1);
 
-        let vectorOfLength5 = vector({x: 3, y: 4});
+        let vectorOfLength5 = vector(3, 4);
         expect(vectorOfLength5.length()).to.equal(5);
     });
     
     it('should support dot product', () => {
-        let first = vector({x: 1, y: 1}),
-            second = vector({x: 10, y: 10}),
+        let first = vector(1, 1),
+            second = vector(10, 10),
             expectedValue = 20;
         
         expect(first.dot(second)).to.equal(expectedValue);
@@ -155,15 +159,15 @@ describe('vector', () => {
     });
     
     it('should be able to reset coordinates to 0, 0', () => {
-        let someVector = vector({x: 1, y: 1});
+        let someVector = vector(1, 1);
         someVector.setCoordinates();
         expect(someVector.x).to.equal(0);
         expect(someVector.y).to.equal(0);
     });
     
     it('should be able to set coordinates to any value', () => {
-        let someVector = vector({x: 2, y: 2});
-        someVector.setCoordinates({x: 1, y: 1});
+        let someVector = vector(2, 2);
+        someVector.setCoordinates(1, 1);
         expect(someVector.x).to.equal(1);
         expect(someVector.y).to.equal(1);
     });
@@ -177,7 +181,7 @@ describe('vector', () => {
             if (i+1 === vectorCount) {
                 x = 10, y = 10;
             }
-            vectors.push(vector({x, y}));
+            vectors.push(vector(x, y));
         }
         
         expect(vectors[0]).to.equal(vectors[100]);

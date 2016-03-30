@@ -14,11 +14,11 @@ export function rotation(params) {
         limit = lowerUpperLimit(constraints);
     
     function directionVector(first, second) {
-        return vector({
-            x: second.relativeScreenX - first.relativeScreenX,
-            // tuio has origin top left, convert to bottom left
-            y: first.relativeScreenY - second.relativeScreenY
-        });
+        return vector(
+                second.relativeScreenX - first.relativeScreenX,
+                // tuio has origin top left, convert to bottom left
+                first.relativeScreenY - second.relativeScreenY
+        );
     }
     
     function normalizeAngle(value) {
@@ -75,7 +75,6 @@ export function rotation(params) {
         rotationDirections.length = 0;
         let totalAngle = inputObjects.reduce((angleSum, inputObject) => {
             let currentAngle = angleFromMovingAndFixedPoint(inputObject, centroid);
-            
             if (currentAngle !== 0) {
                 angleSum += currentAngle;
                 inputCount += 1;
@@ -123,7 +122,7 @@ export function rotation(params) {
             }
                 
             if (touchInput.length > 1) {
-                let averageAngle = calculateAverageAngleFrom(touchInput);   
+                let averageAngle = calculateAverageAngleFrom(touchInput);  
                 match = matchWithValue(averageAngle);
                 if (match) {
                     rotationValues.touches = averageAngle;

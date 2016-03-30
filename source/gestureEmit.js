@@ -57,10 +57,10 @@ export function gestureEmition(params = {}) {
                     if (nodesToEmitOn.length !== 0) {
                         let eventName = gesture.name(),
                             eventObject = createEventObject(inputObjects, gesture);
-                                            
-                        nodesToEmitOn.forEach(nodeToEmitOn => {
-                            events.emit(nodeToEmitOn, eventName, eventObject);
-                        });   
+                        
+                        for (let i = 0; i < nodesToEmitOn.length; i += 1) {
+                            events.emit(nodesToEmitOn[i], eventName, eventObject);
+                        }
                     }
                 });
             });

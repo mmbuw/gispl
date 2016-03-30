@@ -98,7 +98,7 @@ export function pointToPointDistance(first, second) {
     let scale = 10000,
         x = (first.relativeScreenX * scale - second.relativeScreenX * scale),
         y = (first.relativeScreenY * scale - second.relativeScreenY * scale),
-        directionVector = vector({x, y});
+        directionVector = vector(x, y);
         
     return directionVector.length() / scale;
 }

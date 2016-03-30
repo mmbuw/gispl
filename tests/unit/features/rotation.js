@@ -3,7 +3,6 @@ import {buildInputFromPointer} from '../../helpers/pointer';
 import {inputObjectFromTuio,
             tuioObjectUpdate} from '../../../source/tuio/tuioInputObject';
 import TuioObject from 'tuio/src/TuioObject';
-import TuioToken from 'tuio/src/TuioToken';
 
 describe('feature', () => {
     describe('rotation', () => {

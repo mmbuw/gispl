@@ -1,18 +1,21 @@
 let vectorPool = [],
     usedVectors = 0;
+// needs to be fixed
 const vectorPoolSize = 100;
         
 for (let i = 0; i < vectorPoolSize; i += 1) {
     vectorPool.push(vectorConstructor());
 }
 
-export function vector(params = {}) {
+export function vector(x = 0, y = 0) {
     
-    let {x = 0, y = 0} = params;
-
+    if (x === null) {
+        x = 0;
+    }
+    
     if (!validVector(x, y)) {
         throw new Error(`${vectorException.ILLEGAL_COORDINATES}.
-                            Instead using ${params}`);
+                            Instead using ${x} ${y}`);
     }
     
     if (usedVectors === vectorPoolSize) {
@@ -21,7 +24,7 @@ export function vector(params = {}) {
     
     let vectorObject = vectorPool[usedVectors];
     
-    vectorObject.setCoordinates(params);
+    vectorObject.setCoordinates(x, y);
     usedVectors += 1;
     
     return vectorObject;
@@ -71,8 +74,7 @@ function vectorConstructor(params = {}) {
             }
             return _x * x + _y * y;
         },
-        setCoordinates(toValues = {}) {
-            let {x = 0, y = 0} = toValues;
+        setCoordinates(x = 0, y = 0) {
             _x = x;
             _y = y;
             return this;
