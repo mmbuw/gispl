@@ -1,7 +1,12 @@
-import {vector,
-            vectorException} from '../../source/vector';
+import {vector} from '../../source/vector';
 
 describe('vector', () => {
+    
+    let instance;
+    
+    beforeEach(() => {
+        instance = vector();
+    });
 
     it('should initialize x and y coordinates to 0 0 if not specified', () => {
         let nullVector = vector();
@@ -15,10 +20,6 @@ describe('vector', () => {
         let vectorWithY = vector(undefined, 1);
         expect(vectorWithY.x).to.equal(0);
         expect(vectorWithY.y).to.equal(1);
-
-        let secondVectorWithY = vector(null, 1);
-        expect(secondVectorWithY.x).to.equal(0);
-        expect(secondVectorWithY.y).to.equal(1);
     });
 
     it('should initialize x and y coordinates to the specified values', () => {
@@ -30,28 +31,15 @@ describe('vector', () => {
         expect(someVector.y).to.equal(2);
     });
 
-    it('should not allow coordinates to be modified from the outside', () => {
-        let x = 2,
-            y = 1,
-            someVector = vector(x, y);
-
-        expect(function() {
-            someVector.x += 1;
-        }).to.throw();
-        expect(function() {
-            someVector.y += 1;
-        }).to.throw();
-    });
-
     it('should throw when constructing from incorrect coordinates', () => {
 
         expect(function() {
             vector('1');
-        }).to.throw(Error, new RegExp(vectorException.ILLEGAL_COORDINATES));
+        }).to.throw(Error, new RegExp(instance.exceptions.ILLEGAL_COORDINATES));
 
         expect(function() {
             vector(1, '1');
-        }).to.throw(Error, new RegExp(vectorException.ILLEGAL_COORDINATES));
+        }).to.throw(Error, new RegExp(instance.exceptions.ILLEGAL_COORDINATES));
     });
 
     it('should support vector addition', () => {
@@ -69,7 +57,7 @@ describe('vector', () => {
 
         expect(function() {
             nullVector.add();
-        }).to.throw(Error, new RegExp(vectorException.ILLEGAL_ADD));
+        }).to.throw(Error, new RegExp(instance.exceptions.ILLEGAL_ADD));
 
         expect(function() {
             nullVector.add({});
@@ -126,11 +114,11 @@ describe('vector', () => {
 
         expect(function() {
             nullVector.scaleWith();
-        }).to.throw(Error, new RegExp(vectorException.ILLEGAL_SCALAR));
+        }).to.throw(Error, new RegExp(instance.exceptions.ILLEGAL_SCALAR));
 
         expect(function() {
             nullVector.scaleWith('1');
-        }).to.throw(Error, new RegExp(vectorException.ILLEGAL_SCALAR));
+        }).to.throw(Error, new RegExp(instance.exceptions.ILLEGAL_SCALAR));
     });
 
     it('should support vector length calculation', () => {
@@ -155,7 +143,7 @@ describe('vector', () => {
         expect(function () {
             let invalidVector = {};
             first.dot(invalidVector);
-        }).to.throw(Error, new RegExp(vectorException.INVALID_VECTOR));
+        }).to.throw(Error, new RegExp(instance.exceptions.INVALID_VECTOR));
     });
     
     it('should be able to reset coordinates to 0, 0', () => {
