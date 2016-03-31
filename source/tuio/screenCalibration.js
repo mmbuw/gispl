@@ -4,7 +4,15 @@ export default function screenCalibration(params = {}) {
 
     let listenForInputEvent = true,
         {mouseEvent,
-         pause: inputEventPause = 2000} = params;
+         pause: inputEventPause = 2000} = params,
+        browserCoordinates = {
+            screenX: undefined,
+            screenY: undefined,
+            clientX: undefined,
+            clientY: undefined,
+            pageX: undefined,
+            pageY: undefined
+        };
 
     function viewportPositionTop() {
         return mouseEvent.screenY - mouseEvent.clientY;
@@ -57,11 +65,16 @@ export default function screenCalibration(params = {}) {
 
         screenToBrowserCoordinates(screenX, screenY) {
             let clientX = screenX - viewportPositionLeft(),
-                clientY = screenY - viewportPositionTop(),
-                pageX = clientX + window.pageXOffset,
-                pageY = clientY + window.pageYOffset;
+                clientY = screenY - viewportPositionTop();
+                
+            browserCoordinates.clientX = clientX;
+            browserCoordinates.clientY = clientY;
+            browserCoordinates.screenX = screenX;
+            browserCoordinates.screenY = screenY;
+            browserCoordinates.pageX = clientX + window.pageXOffset,
+            browserCoordinates.pageY = clientY + window.pageYOffset;
 
-            return {clientX, clientY, pageX, pageY};
+            return browserCoordinates;
         },
 
         isScreenUsable() {
