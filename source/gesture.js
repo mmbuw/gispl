@@ -31,7 +31,11 @@ export function createGesture(gestureDefinition,
     // a valid gesture has every feature valid
     features = initializeFeaturesFrom(gestureDefinition);
     // initialize flags
-    let flags = initializeFlagsFrom(gestureDefinition),
+    let flags = extractFlagsFrom(gestureDefinition),
+        hasOneshotFlag = flags.indexOf(gestureFlags.ONESHOT) !== -1,
+        hasBubbleFlag = flags.indexOf(gestureFlags.BUBBLE) !== -1,
+        hasStickyFlag = flags.indexOf(gestureFlags.STICKY) !== -1,
+        hasNoFlag = flags.length === 0,
         duration = extractDurationFrom(gestureDefinition),
         // whether the gesture should be triggered on the found top nodes
         // or on top nodes and all the parent nodes
@@ -53,22 +57,26 @@ export function createGesture(gestureDefinition,
 
         return inputObjects;
     }
+    
+    // find all parent nodes from all valid nodes
+    // and add them only once
+    function nodeWithParents() {
+        for (let i = 0; i < validTopNodesOnEmit.length; i += 1) {
+            let topNode = validTopNodesOnEmit[i],
+                topNodeWithParents = findNode.withParentsOf(topNode);
+            for (let j = 0; j < topNodeWithParents.length; j += 1) {
+                let node = topNodeWithParents[j];
+                if (result.indexOf(node) === -1) {
+                    result.push(node);
+                }   
+            }
+        }
+    }
 
     function resultingNodes() {
         result.length = 0;
         if (propagation) {
-            // find all parent nodes from all valid nodes
-            // and add them only once
-            for (let i = 0; i < validTopNodesOnEmit.length; i += 1) {
-                let topNode = validTopNodesOnEmit[i],
-                    topNodeWithParents = findNode.withParentsOf(topNode);
-                for (let j = 0; j < topNodeWithParents.length; j += 1) {
-                    let node = topNodeWithParents[j];
-                    if (result.indexOf(node) === -1) {
-                        result.push(node);
-                    }   
-                }
-            }
+            nodeWithParents();
         }
         else {
             for (let i = 0; i < validTopNodesOnEmit.length; i += 1) {
@@ -92,7 +100,7 @@ export function createGesture(gestureDefinition,
         },
 
         flags() {
-            return flags.all();
+            return flags;
         },
 
         duration() {
@@ -114,14 +122,14 @@ export function createGesture(gestureDefinition,
                 // gestures with oneshot flags should be triggered once
                 // until the identifiers change (e.g. tuio session ids)
                 let everyFeatureMatches = false,
-                    oneshotFlagFulfilled = flags.hasOneshot() &&
+                    oneshotFlagFulfilled = hasOneshotFlag &&
                                                 inputCheck.previouslyMatched();
                 // the gesture should not match if it is oneshot
                 // and already triggered
                 if (!oneshotFlagFulfilled) {
                     everyFeatureMatches = validateEveryFeatureFor(inputState);
                 }
-                if (flags.hasBubble()) {
+                if (hasBubbleFlag) {
                     if (!inputCheck.previouslyUsed()) {
                         bubbleTopNodes.length = 0;
                     }
@@ -130,10 +138,10 @@ export function createGesture(gestureDefinition,
                     }
                 }
                 if (everyFeatureMatches) {
-                    if (flags.hasBubble()) {
+                    if (hasBubbleFlag) {
                         validTopNodesOnEmit = bubbleTopNodes;
                     }
-                    else if (flags.hasSticky()) {
+                    else if (hasStickyFlag) {
                         // if input the same use the already known sticky node
                         if (!inputCheck.previouslyMatched()) {
                             stickyTopNode = node;
@@ -143,8 +151,8 @@ export function createGesture(gestureDefinition,
                     }
                     else if (
                         // oneshot gestures will get here only once
-                        flags.hasOneshot() ||
-                        flags.hasNone()
+                        hasOneshotFlag ||
+                        hasNoFlag
                     ) {
                         validTopNodesOnEmit.length = 0;
                         validTopNodesOnEmit.push(node);
@@ -268,27 +276,6 @@ export function extractDurationFrom(definitionObject) {
 // check if inputObjects are an array with at least one element
 function validInput(inputObjects = []) {
     return !!inputObjects.length;
-}
-
-function initializeFlagsFrom(gestureDefinition) {
-    let flags = extractFlagsFrom(gestureDefinition);
-    return {
-        hasOneshot() {
-            return flags.indexOf(gestureFlags.ONESHOT) !== -1;
-        },
-        hasBubble() {
-            return flags.indexOf(gestureFlags.BUBBLE) !== -1;
-        },
-        hasSticky() {
-            return flags.indexOf(gestureFlags.STICKY) !== -1;
-        },
-        hasNone() {
-            return flags.length === 0;
-        },
-        all() {
-            return flags;
-        }
-    };
 }
 
 export function validInputFromDuration(inputObjects = [], duration) {
