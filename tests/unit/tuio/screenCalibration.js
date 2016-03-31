@@ -96,7 +96,7 @@ describe('screenCalibration', () => {
             clientY = screenY - (event.screenY - event.clientY);
 
         calibration.mouseEvent(event);
-        let browserCoords = calibration.screenToBrowserCoordinates({screenX, screenY});
+        let browserCoords = calibration.screenToBrowserCoordinates(screenX, screenY);
         expect(browserCoords.clientX).to.equal(clientX);
         expect(browserCoords.clientY).to.equal(clientY);
     });
@@ -116,7 +116,7 @@ describe('screenCalibration', () => {
             pageY = screenY - (event.screenY - event.clientY) + window.pageYOffset;
 
         calibration.mouseEvent(event);
-        let browserCoords = calibration.screenToBrowserCoordinates({screenX, screenY});
+        let browserCoords = calibration.screenToBrowserCoordinates(screenX, screenY);
         expect(browserCoords.pageX).to.equal(pageX);
         expect(browserCoords.pageY).to.equal(pageY);
     });

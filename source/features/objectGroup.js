@@ -37,7 +37,7 @@ export function objectgroup(params) {
         screenY /= inputCount;
         
         let {clientX, clientY,
-                pageX, pageY} = calibration.screenToBrowserCoordinates({screenX, screenY});
+                pageX, pageY} = calibration.screenToBrowserCoordinates(screenX, screenY);
                                     
         return {screenX, screenY,
                     pageX, pageY,
