@@ -4,7 +4,7 @@ let globalEventCache = {
         
         let cachedEvents = this.map.get(element);
         if (typeof cachedEvents === 'undefined') {
-            cachedEvents = {};
+            cachedEvents = new Map();
             this.map.set(element, cachedEvents);
         }
 
