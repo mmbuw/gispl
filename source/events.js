@@ -1,8 +1,7 @@
 let globalEventCache = {
     map: new WeakMap(),
-    getListeners(params = {}) {
-        let {element, event} = params;
-
+    getListeners(element, event) {
+        
         let cachedEvents = this.map.get(element);
         if (typeof cachedEvents === 'undefined') {
             cachedEvents = {};
@@ -17,34 +16,31 @@ let globalEventCache = {
 
         return cachedListeners;
     },
-    callListeners(params = {}) {
-        let {args, element} = params;
-        this.getListeners(params)
-            .forEach(listener => listener.apply(element, args));
-    },
-    addListener(params = {}) {
-        let {listener} = params;
-        if (typeof listener === 'function') {
-            this.getListeners(params).push(listener);
+    callListeners(element, event, args) {
+        let listeners = this.getListeners(element, event);
+        for (let i = 0; i < listeners.length; i += 1) {
+            listeners[i].apply(element, args);
         }
     },
-    removeListener(params = {}) {
-        let {listener} = params,
-            listeners = this.getListeners(params);
+    addListener(element, event, listener) {
+        if (typeof listener === 'function') {
+            this.getListeners(element, event).push(listener);
+        }
+    },
+    removeListener(element, event, listener) {
+        let listeners = this.getListeners(element, event);
 
         let indexOfListener = listeners.indexOf(listener);
         if (indexOfListener !== -1) {
             listeners.splice(indexOfListener, 1);
         }
     },
-    removeListeners(params = {}) {
-        let {element, event, listener} = params;
-
+    removeListeners(element, event, listener) {
         if (typeof listener !== 'undefined') {
-            this.removeListener(params);
+            this.removeListener(element, event, listener);
             return;
         }
-
+        
         let cachedEvents = this.map.get(element);
         if (typeof cachedEvents !== 'undefined') {
             delete cachedEvents[event];
@@ -57,20 +53,14 @@ let globalEventCache = {
 
 export let events = {
     emit(element, event, ...args) {
-        globalEventCache.callListeners({element,
-                                            event,
-                                            args});
+        globalEventCache.callListeners(element, event, args);
     },
     on(element, event, listener) {
-        globalEventCache.addListener({element,
-                                        event,
-                                        listener});
+        globalEventCache.addListener(element, event, listener);
 
     },
     off(element, event, listener) {
-        globalEventCache.removeListeners({element,
-                                            event,
-                                            listener});
+        globalEventCache.removeListeners(element, event, listener);
     },
     clearGlobalEventsCache() {
         globalEventCache.clear();
