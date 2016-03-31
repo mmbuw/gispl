@@ -20,7 +20,7 @@ $(document).ready(() => {
         imageRotations.set(element, 0);
     });
     
-    gispl(images$).on(fingerRotation, function(event) {
+    gispl(images$).on(fingerRotation, function fingerRotationCallback(event) {
         let rotation = event.featureValues.rotation.touches,
             degrees = rotation / Math.PI * 180;
         

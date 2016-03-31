@@ -45,7 +45,10 @@ export function gestureEmition(params = {}) {
                                 builtInEvents.INPUTCHANGE);
             }
             
-            allPreviousInput = allCurrentInput;
+            allPreviousInput.length = 0;
+            for (let i = 0; i < allCurrentInput.length; i += 1) {
+                allPreviousInput[i] = allCurrentInput[i];
+            }
         },
         userDefined(nodesInput, nodesInputHistory) {
             nodesInput.forEach(function forAllNodes(inputObjects, node) {

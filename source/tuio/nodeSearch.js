@@ -1,6 +1,7 @@
 export default function nodeSearch(params = {}) {
 
-    let {calibration} = params;
+    let {calibration} = params,
+        result = [];
 
     function coordinatesFromParams(params = {}) {
         let {clientX, clientY, screenX, screenY} = params;
@@ -30,8 +31,8 @@ export default function nodeSearch(params = {}) {
             return foundElement;
         },
         withParentsOf(node) {
-            let existingNode = node,
-                result = [];
+            let existingNode = node;
+            result.length = 0;
                 
             while (existingNode) {
                 result.push(existingNode);

@@ -105,7 +105,8 @@ function nodesInputHistory(params = {}) {
         // all inputObjects that were in contact with the node at one point
         nodesWithInputHistory = new WeakMap(),
         // similar map, but only with nodes that have active input
-        nodesWithInput = new Map();
+        nodesWithInput = new Map(),
+        allCurrentInput = [];
     
     // find matching inputObject for a tuioComponent
     // matches per id
@@ -190,7 +191,7 @@ function nodesInputHistory(params = {}) {
         // returns an array of in browser inputObjects that correspond to tuioComponents
         store(tuioComponents) {
             nodesWithInput.clear();
-            let allCurrentInput = [];
+            allCurrentInput.length = 0;
             for (let i = 0; i < tuioComponents.length; i += 1) {
                 let inputObject = convertToInputObject(tuioComponents[i]);
                 let foundNode = findNode.fromPoint(inputObject);
