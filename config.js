@@ -3,8 +3,10 @@ System.config({
   transpiler: "babel",
   babelOptions: {
     "optional": [
-      "runtime",
       "optimisation.modules.system"
+    ],
+    "loose": [
+      "es6.classes"
     ]
   },
   paths: {
