@@ -12,9 +12,7 @@ const gestureFlags = Object.freeze({
 });
 
 const gestureFlagNames = Object.freeze(
-    Object.keys(gestureFlags).map(key => {
-        return gestureFlags[key];
-    })
+    Object.keys(gestureFlags).map(key => gestureFlags[key])
 );
 
 export function createGesture(gestureDefinition,
@@ -45,7 +43,12 @@ export function createGesture(gestureDefinition,
     let inputCheck = inputComparison();
 
     function validateEveryFeatureFor(inputState) {
-        return features.every(feature => feature.load(inputState));
+        for (let i = 0; i < features.length; i += 1) {
+            if (!features[i].load(inputState)) {
+                return false;
+            } 
+        }
+        return true;
     }
 
     function inputObjectsFrom(inputState) {
