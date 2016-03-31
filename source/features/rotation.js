@@ -1,8 +1,8 @@
 import {vector} from '../vector';
 import {featureBase,
             lowerUpperLimit,
-            calculateCentroidFrom,
             extractConstraintsFrom} from '../feature';
+import screenCalibration from '../tuio/screenCalibration';
 
 export function rotation(params) {
     
@@ -11,14 +11,37 @@ export function rotation(params) {
         touchInput = [],
         objectInput = [],
         rotationDirections = [],
+        calibration = screenCalibration.instance(),
         limit = lowerUpperLimit(constraints);
+        
+    function calculateCentroidFrom(inputObjects) {
+        let inputCount = inputObjects.length,
+            screenX = 0,
+            screenY = 0;
+        
+        for (let i = 0; i < inputCount; i += 1) {
+            let firstInPath = inputObjects[i].path[0];
+            screenX += firstInPath.screenX;
+            screenY += firstInPath.screenY;
+        }
+        
+        screenX /= inputCount;
+        screenY /= inputCount;
+        
+        let {clientX, clientY,
+                pageX, pageY} = calibration.screenToBrowserCoordinates({screenX, screenY});
+                                    
+        return {screenX, screenY,
+                    pageX, pageY,
+                    clientX, clientY};
+    }
     
     function directionVector(first, second) {
-        return vector(
-                second.relativeScreenX - first.relativeScreenX,
-                // tuio has origin top left, convert to bottom left
-                first.relativeScreenY - second.relativeScreenY
-        );
+        let x = second.screenX - first.screenX,
+            // tuio has origin top left, convert to bottom left
+            y = first.screenY - second.screenY,
+            screenRatio = window.screen.width / window.screen.height;
+        return vector(x, parseInt(y * screenRatio, 10));
     }
     
     function normalizeAngle(value) {
@@ -48,7 +71,7 @@ export function rotation(params) {
         let path = moving.path,
             firstPoint = path[0],
             lastPoint = path[path.length-1];
-    
+            
         let fixedToFirstPoint = directionVector(fixed, firstPoint),
             fixedToLastPoint = directionVector(fixed, lastPoint);
             
@@ -64,24 +87,29 @@ export function rotation(params) {
     
     function allValuesIdentical(array) {
         let first = array[0];
-        return array.every(current => current === first);
+        for (let i = 1; i < array.length; i += 1) {
+            if (first !== array[i]) {
+                return false;
+            }
+        }
+        return true;
     }
     
     function calculateAverageAngleFrom(inputObjects) {
         let centroid = calculateCentroidFrom(inputObjects),
             inputCount = 0,
-            averageAngle;
+            totalAngle = 0,
+            averageAngle = 0;
         
         rotationDirections.length = 0;
-        let totalAngle = inputObjects.reduce((angleSum, inputObject) => {
-            let currentAngle = angleFromMovingAndFixedPoint(inputObject, centroid);
+        for (let i = 0; i < inputObjects.length; i += 1) {
+            let currentAngle = angleFromMovingAndFixedPoint(inputObjects[i], centroid);
             if (currentAngle !== 0) {
-                angleSum += currentAngle;
+                totalAngle += currentAngle;
                 inputCount += 1;
                 rotationDirections.push(isClockwise(currentAngle));
             }
-            return angleSum;
-        }, 0);
+        }
                 
         if (inputCount !== 0 &&
                 allValuesIdentical(rotationDirections)) {
