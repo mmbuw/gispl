@@ -48,8 +48,8 @@ export function gestureEmition(params = {}) {
             allPreviousInput = allCurrentInput;
         },
         userDefined(nodesInput, nodesInputHistory) {
-            nodesInput.forEach((inputObjects, node) => {
-                userDefinedGestures.forEach(gesture => {
+            nodesInput.forEach(function forAllNodes(inputObjects, node) {
+                userDefinedGestures.forEach(function forAllGestures(gesture) {
                     let inputHistory = nodesInputHistory.get(node),
                         inputState = createInputState(inputObjects, inputHistory, node),
                         nodesToEmitOn = gesture.load(inputState);
