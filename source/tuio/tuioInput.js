@@ -9,22 +9,16 @@ export default function tuioInput(params = {}) {
         allTuioComponents = [];
 
     function onTuioRefresh() {
-        let tuioComponents = fetchTuioData();        
-        let allCurrentInput = tuioInputHistory.store(tuioComponents);
+        fetchTuioData();        
+        let allCurrentInput = tuioInputHistory.store(allTuioComponents);
 
         notify(tuioInputHistory.nodeCurrentInput(),
                 tuioInputHistory.nodeHistoryInput(),
                 allCurrentInput);
     }
     
-    function fetchTuioData() {
-        let pointers = tuioClient.getTuioPointers(),
-            cursors = tuioClient.getTuioCursors(),
-            tokens = tuioClient.getTuioTokens(),
-            objects = tuioClient.getTuioObjects();
-            
-        allTuioComponents.length = 0;
-            
+    function copyCurrentTuioComponents(pointers, cursors, tokens, objects) {
+        allTuioComponents.length = 0;   
         for (let i = 0, length = pointers.length; i < length; i += 1) {
             allTuioComponents.push(pointers[i]);
         }
@@ -38,8 +32,14 @@ export default function tuioInput(params = {}) {
         for (let key in objects) {
             allTuioComponents.push(objects[key]);
         }
-        
-        return allTuioComponents;
+    }
+    
+    function fetchTuioData() {
+        let pointers = tuioClient.getTuioPointers(),
+            cursors = tuioClient.getTuioCursors(),
+            tokens = tuioClient.getTuioTokens(),
+            objects = tuioClient.getTuioObjects();
+        copyCurrentTuioComponents(pointers, cursors, tokens, objects);
     }
 
     function enable() {
