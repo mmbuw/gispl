@@ -141,23 +141,23 @@ export function createGesture(gestureDefinition,
                     }
                 }
                 if (everyFeatureMatches) {
+                    validTopNodesOnEmit.length = 0;
                     if (hasBubbleFlag) {
-                        validTopNodesOnEmit = bubbleTopNodes;
+                        for (let i = 0; i < bubbleTopNodes.length; i += 1) {
+                            validTopNodesOnEmit[i] = bubbleTopNodes[i];
+                        }
                     }
                     else if (hasStickyFlag) {
                         // if input the same use the already known sticky node
                         if (!inputCheck.previouslyMatched()) {
                             stickyTopNode = node;
                         }
-                        validTopNodesOnEmit.length = 0;
                         validTopNodesOnEmit.push(stickyTopNode);
                     }
                     else if (
                         // oneshot gestures will get here only once
-                        hasOneshotFlag ||
-                        hasNoFlag
+                        hasOneshotFlag || hasNoFlag
                     ) {
-                        validTopNodesOnEmit.length = 0;
                         validTopNodesOnEmit.push(node);
                     }
                     // save currentInputIds for future reference
