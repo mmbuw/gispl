@@ -90,15 +90,15 @@ export function rotation(params) {
         return true;
     }
     
-    function calculateAverageAngleFrom(inputObjects) {
-        let centroid = calculateCentroidFrom(inputObjects),
+    function calculateTouchAngle() {
+        let centroid = calculateCentroidFrom(touchInput),
             inputCount = 0,
             totalAngle = 0,
             averageAngle = 0;
         
         rotationDirections.length = 0;
-        for (let i = 0; i < inputObjects.length; i += 1) {
-            let currentAngle = angleFromMovingAndFixedPoint(inputObjects[i], centroid);
+        for (let i = 0; i < touchInput.length; i += 1) {
+            let currentAngle = angleFromMovingAndFixedPoint(touchInput[i], centroid);
             if (currentAngle !== 0) {
                 totalAngle += currentAngle;
                 inputCount += 1;
@@ -120,6 +120,38 @@ export function rotation(params) {
         };
     }
     
+    function sortTouchObjectInput(inputObjects) {
+        touchInput.length = 0;
+        objectInput.length = 0;
+        for (let i = 0; i < inputObjects.length; i += 1) {
+            let inputObject = inputObjects[i];
+            if (baseFeature.checkAgainstDefinition(inputObject)) {
+                if (typeof inputObject.angle === 'undefined') {
+                    touchInput.push(inputObject);
+                }
+                else {
+                    objectInput.push(inputObject);
+                }
+            }
+        }
+    }
+    
+    function calculateObjectAngles(rotationValues) {
+        var atLeastOneMatch = false;
+        for (let i = 0; i < objectInput.length; i += 1) {
+            let path = objectInput[i].path,
+                firstAngle = path[0].angle,
+                lastAngle = path[path.length-1].angle;
+            
+            let angle = normalizeAngle(lastAngle - firstAngle);
+            if (matchWithValue(angle)) {
+                atLeastOneMatch = true;
+                rotationValues.objects[objectInput[i].componentId] = angle;
+            }
+        }
+        return atLeastOneMatch;
+    }
+    
     return {
         type() {
             return 'Rotation';
@@ -130,22 +162,10 @@ export function rotation(params) {
                 match = false,
                 rotationValues = initRotationValues();
             
-            touchInput.length = 0;
-            objectInput.length = 0;
-            for (let i = 0; i < inputObjects.length; i += 1) {
-                let inputObject = inputObjects[i];
-                if (baseFeature.checkAgainstDefinition(inputObject)) {
-                    if (typeof inputObject.angle === 'undefined') {
-                        touchInput.push(inputObject);
-                    }
-                    else {
-                        objectInput.push(inputObject);
-                    }
-                }
-            }
+            sortTouchObjectInput(inputObjects);
                 
             if (touchInput.length > 1) {
-                let averageAngle = calculateAverageAngleFrom(touchInput);  
+                let averageAngle = calculateTouchAngle();  
                 match = matchWithValue(averageAngle);
                 if (match) {
                     rotationValues.touches = averageAngle;
@@ -153,17 +173,8 @@ export function rotation(params) {
             }
             
             if (objectInput.length !== 0) {
-                objectInput.forEach(inputObject => {
-                    let path = inputObject.path,
-                        firstAngle = path[0].angle,
-                        lastAngle = path[path.length-1].angle;
-                    
-                    let angle = normalizeAngle(lastAngle - firstAngle);
-                    if (matchWithValue(angle)) {
-                        match = true;
-                        rotationValues.objects[inputObject.componentId] = angle;
-                    }
-                });
+                let objectMatch = calculateObjectAngles(rotationValues);
+                match = match || objectMatch;
             }
             
             if (match) {
