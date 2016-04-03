@@ -1,4 +1,3 @@
-import {vector} from '../vector';
 import {featureBase,
         lowerUpperLimit} from '../feature';
 import screenCalibration from '../tuio/screenCalibration';
@@ -14,14 +13,6 @@ export function objectgroup(params) {
         // maybe pass in an instance somehow
         calibration = screenCalibration.instance(),
         radius = constraints[2];
-    
-    function pointToPointDistance(first, second) {
-        let x = (first.screenX - second.screenX),
-            y = (first.screenY - second.screenY),
-            directionVector = vector(x, y);
-            
-        return directionVector.length();
-    }
 
     function calculateCentroidFrom(inputObjects) {
         let inputCount = inputObjects.length,
@@ -51,7 +42,7 @@ export function objectgroup(params) {
             
             if (inputObjects.length > 1) {
                 let centroid = calculateCentroidFrom(inputObjects),
-                    distance = pointToPointDistance(centroid, inputObjects[0], true);
+                    distance = baseFeature.pointToPointDistance(centroid, inputObjects[0]);
                     
                 match = Math.floor(distance) <= radius &&
                         count >= limit.lower &&

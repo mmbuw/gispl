@@ -2,6 +2,7 @@ import * as features from './features';
 import {extractDurationFrom,
         validInputFromDuration} from './gesture';
 import {DollarRecognizer} from './libs/dollar';
+import {vector} from './vector';
 
 let singleRecognizerInstance = new DollarRecognizer();
 
@@ -67,6 +68,13 @@ export function featureBase(params) {
             if (typeof featureValues === 'object') {
                 featureValues[type.toLowerCase()] = matchedValue;
             }
+        },
+        pointToPointDistance(first, second) {
+            let x = (first.screenX - second.screenX),
+                y = (first.screenY - second.screenY),
+                directionVector = vector(x, y);
+                
+            return directionVector.length();
         }
     };
 }

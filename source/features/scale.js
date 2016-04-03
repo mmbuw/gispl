@@ -2,7 +2,6 @@ import {featureBase,
             extractConstraintsFrom,
             lowerUpperLimit} from '../feature';
 import screenCalibration from '../tuio/screenCalibration';
-import {vector} from '../vector';
 
 export function scale(params) {
     
@@ -11,14 +10,6 @@ export function scale(params) {
         limit = lowerUpperLimit(constraints),
         calibration = screenCalibration.instance(),
         centroid;
-    
-    function pointToPointDistance(first, second) {
-        let x = (first.screenX - second.screenX),
-            y = (first.screenY - second.screenY),
-            directionVector = vector(x, y);
-            
-        return directionVector.length();
-    }
         
     function calculateCentroidFrom(inputObjects) {
         let inputCount = inputObjects.length,
@@ -48,8 +39,8 @@ export function scale(params) {
             firstPoint = path[0],
             lastPoint = path[path.length - 1];
             
-        let originalDistance = pointToPointDistance(centroid, firstPoint),
-            currentDistance = pointToPointDistance(centroid, lastPoint),
+        let originalDistance = baseFeature.pointToPointDistance(centroid, firstPoint),
+            currentDistance = baseFeature.pointToPointDistance(centroid, lastPoint),
             currentPointScaleFactor = currentDistance / originalDistance;
             
         return totalScaleFactor + currentPointScaleFactor;
