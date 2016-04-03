@@ -1,8 +1,6 @@
 import {featureFactory} from '../../../source/feature';
 import {buildInputFromPointer} from '../../helpers/pointer';
 
-window.screen = {width: 1024, height: 768};
-
 describe('feature', () => {
     describe('scale', () => {
         
