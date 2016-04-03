@@ -1,15 +1,41 @@
 import {featureBase,
             extractConstraintsFrom,
-            calculateCentroidFrom,
-            pointToPointDistance,
             lowerUpperLimit} from '../feature';
+import screenCalibration from '../tuio/screenCalibration';
+import {vector} from '../vector';
 
 export function scale(params) {
     
     let constraints = extractConstraintsFrom(params),
         baseFeature = featureBase(params),
         limit = lowerUpperLimit(constraints),
+        calibration = screenCalibration.instance(),
         centroid;
+    
+    function pointToPointDistance(first, second) {
+        let x = (first.screenX - second.screenX),
+            y = (first.screenY - second.screenY),
+            directionVector = vector(x, y);
+            
+        return directionVector.length();
+    }
+        
+    function calculateCentroidFrom(inputObjects) {
+        let inputCount = inputObjects.length,
+            screenX = 0,
+            screenY = 0;
+        
+        for (let i = 0; i < inputCount; i += 1) {
+            let firstInPath = inputObjects[i].path[0];
+            screenX += firstInPath.screenX;
+            screenY += firstInPath.screenY;
+        }
+        
+        screenX /= inputCount;
+        screenY /= inputCount;
+        
+        return calibration.screenToBrowserCoordinates(screenX, screenY);
+    }
     
     function matchWithValue(scale) {
         return scale !== 1 &&
