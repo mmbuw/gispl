@@ -2,7 +2,6 @@ import {vector} from '../vector';
 import {featureBase,
             lowerUpperLimit,
             extractConstraintsFrom} from '../feature';
-import screenCalibration from '../tuio/screenCalibration';
 
 export function rotation(params) {
     
@@ -11,25 +10,7 @@ export function rotation(params) {
         touchInput = [],
         objectInput = [],
         rotationDirections = [],
-        calibration = screenCalibration.instance(),
         limit = lowerUpperLimit(constraints);
-        
-    function calculateCentroidFrom(inputObjects) {
-        let inputCount = inputObjects.length,
-            screenX = 0,
-            screenY = 0;
-        
-        for (let i = 0; i < inputCount; i += 1) {
-            let firstInPath = inputObjects[i].path[0];
-            screenX += firstInPath.screenX;
-            screenY += firstInPath.screenY;
-        }
-        
-        screenX /= inputCount;
-        screenY /= inputCount;
-        
-        return calibration.screenToBrowserCoordinates(screenX, screenY);
-    }
     
     function directionVector(first, second) {
         let x = second.screenX - first.screenX,
@@ -91,7 +72,7 @@ export function rotation(params) {
     }
     
     function calculateTouchAngle() {
-        let centroid = calculateCentroidFrom(touchInput),
+        let centroid = baseFeature.calculateCentroid(touchInput, true),
             inputCount = 0,
             totalAngle = 0,
             averageAngle = 0;

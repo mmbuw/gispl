@@ -1,6 +1,5 @@
 import {featureBase,
         lowerUpperLimit} from '../feature';
-import screenCalibration from '../tuio/screenCalibration';
 
 export function objectgroup(params) {
     
@@ -9,26 +8,7 @@ export function objectgroup(params) {
     let {constraints} = params,
         baseFeature = featureBase(params),
         limit = lowerUpperLimit(constraints),
-        // TODO
-        // maybe pass in an instance somehow
-        calibration = screenCalibration.instance(),
         radius = constraints[2];
-
-    function calculateCentroidFrom(inputObjects) {
-        let inputCount = inputObjects.length,
-            screenX = 0,
-            screenY = 0;
-        
-        inputObjects.forEach(inputObject => {
-            screenX += inputObject.screenX;
-            screenY += inputObject.screenY;
-        });
-        
-        screenX /= inputCount;
-        screenY /= inputCount;
-        
-        return calibration.screenToBrowserCoordinates(screenX, screenY);
-    }
     
     return {
         type() {
@@ -41,7 +21,7 @@ export function objectgroup(params) {
                 match = false;
             
             if (inputObjects.length > 1) {
-                let centroid = calculateCentroidFrom(inputObjects),
+                let centroid = baseFeature.calculateCentroid(inputObjects),
                     distance = baseFeature.pointToPointDistance(centroid, inputObjects[0]);
                     
                 match = Math.floor(distance) <= radius &&

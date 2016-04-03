@@ -1,32 +1,13 @@
 import {featureBase,
             extractConstraintsFrom,
             lowerUpperLimit} from '../feature';
-import screenCalibration from '../tuio/screenCalibration';
 
 export function scale(params) {
     
     let constraints = extractConstraintsFrom(params),
         baseFeature = featureBase(params),
         limit = lowerUpperLimit(constraints),
-        calibration = screenCalibration.instance(),
         centroid;
-        
-    function calculateCentroidFrom(inputObjects) {
-        let inputCount = inputObjects.length,
-            screenX = 0,
-            screenY = 0;
-        
-        for (let i = 0; i < inputCount; i += 1) {
-            let firstInPath = inputObjects[i].path[0];
-            screenX += firstInPath.screenX;
-            screenY += firstInPath.screenY;
-        }
-        
-        screenX /= inputCount;
-        screenY /= inputCount;
-        
-        return calibration.screenToBrowserCoordinates(screenX, screenY);
-    }
     
     function matchWithValue(scale) {
         return scale !== 1 &&
@@ -59,7 +40,7 @@ export function scale(params) {
             let inputCount = inputObjects.length;
                 
             if (inputCount > 1) {
-                centroid = calculateCentroidFrom(inputObjects);
+                centroid = baseFeature.calculateCentroid(inputObjects, true);
                 
                 let totalScaleFactor = inputObjects.reduce(totalInputObjectsScale, 0),
                     averageScaleFactor = totalScaleFactor / inputCount;

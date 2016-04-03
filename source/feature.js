@@ -3,6 +3,7 @@ import {extractDurationFrom,
         validInputFromDuration} from './gesture';
 import {DollarRecognizer} from './libs/dollar';
 import {vector} from './vector';
+import screenCalibration from './tuio/screenCalibration';
 
 let singleRecognizerInstance = new DollarRecognizer();
 
@@ -27,7 +28,10 @@ export function featureBase(params) {
     let {filters,
             type} = params,
         duration = extractDurationFrom(params),
-        matchedValue;
+        matchedValue,
+        // TODO
+        // maybe pass in an instance somehow
+        calibration = screenCalibration.instance();
     
     
     function matchFiltersWith(inputObject) {
@@ -75,6 +79,25 @@ export function featureBase(params) {
                 directionVector = vector(x, y);
                 
             return directionVector.length();
+        }, 
+        calculateCentroid(inputObjects, useFirstPointInPath = false) {
+            let inputCount = inputObjects.length,
+                screenX = 0,
+                screenY = 0;
+            
+            for (let i = 0; i < inputCount; i += 1) {
+                let object = inputObjects[i];
+                if (useFirstPointInPath) {
+                    object = object.path[0];
+                }
+                screenX += object.screenX;
+                screenY += object.screenY;
+            }
+            
+            screenX /= inputCount;
+            screenY /= inputCount;
+            
+            return calibration.screenToBrowserCoordinates(screenX, screenY);
         }
     };
 }
