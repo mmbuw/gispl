@@ -13,11 +13,19 @@ $(document).ready(() => {
         ]
     });
     
+    let images$ = $('img');
+    
     let lastScaleFactors = {},
         useScaleFactors = {},
-        lastIdentifiers = {};
+        lastIdentifiers = {},
+        drawing = false,
+        imageScales = new WeakMap();
+        
+    images$.each(function(index, element) {
+        imageScales.set(element, 1);
+    });
     
-    gispl('img').on(enlarge, function(event) {
+    gispl(images$).on(enlarge, function(event) {
         let image$ = $(this),
             {input} = event,
             identifier = input[input.length-1].identifier,
@@ -33,13 +41,28 @@ $(document).ready(() => {
         }
             
         let scaleFactor = scaleValue * useScaleFactor;
-        image$.css({
-            transform: `scale(${scaleFactor})`
-        });
+        imageScales.set(this, scaleFactor);
     
         lastScaleFactors[key] = scaleFactor;
         lastIdentifiers[key] = identifier;
+        requestDraw();
     });
+    
+    function requestDraw() {
+        if (!drawing) {
+            requestAnimationFrame(draw);
+            drawing = true;
+        }
+    }
+    
+    function draw() {
+        for (let i = 0; i < images$.length; i += 1) {
+            let element = images$[i],
+                scale = imageScales.get(element);
+            element.style.transform = `scale(${scale})`;
+        }
+        drawing = false;
+    }
 
     gispl.initTuio({
         host: 'ws://localhost:8080'
