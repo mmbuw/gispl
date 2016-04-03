@@ -254,7 +254,7 @@ describe('feature', () => {
                 });
             
             //rotate +90 degrees (clockwise) 
-            firstPointer.moveTo({x: 0.6, y: 0.4});
+            firstPointer.moveTo({x: 0.61, y: 0.4});
             secondPointer.moveTo({x: 0.4, y: 0.6});
             
             let inputObjects = [

@@ -1,6 +1,8 @@
 import {featureFactory} from '../../../source/feature';
 import {buildInputFromPointer} from '../../helpers/pointer';
 
+window.screen = {width: 1024, height: 768};
+
 describe('feature', () => {
     describe('scale', () => {
         
@@ -70,7 +72,7 @@ describe('feature', () => {
                 firstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
                 secondInput = buildInputFromPointer({x: 0.6, y: 0.6});
             
-            firstInput.moveTo({x: 0.30, y: 0.30});
+            firstInput.moveTo({x: 0.31, y: 0.31});
             secondInput.moveTo({x: 0.7, y: 0.7});
             
             let inputObjects = [
@@ -295,11 +297,13 @@ describe('feature', () => {
                 secondInput.finished()
             ],
                 featureValues = {},
-                expectedScaleValue = 2;
+                expectedScaleValue = 2,
+                epsilon = .01;
             
             scaleFeature.load({inputObjects}); // valid feature
             scaleFeature.setValueToObject(featureValues);
-            expect(featureValues.scale).to.equal(expectedScaleValue);
+            expect(featureValues.scale).to.be.above(expectedScaleValue - epsilon);
+            expect(featureValues.scale).to.be.below(expectedScaleValue + epsilon);
         });
     });
 });
