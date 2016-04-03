@@ -36,7 +36,7 @@ export function rotation(params) {
             // tuio has origin top left, convert to bottom left
             y = first.screenY - second.screenY,
             screenRatio = window.screen.width / window.screen.height;
-        return vector(x, parseInt(y * screenRatio, 10));
+        return vector(x, Math.floor(y * screenRatio));
     }
     
     function normalizeAngle(value) {
