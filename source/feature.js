@@ -88,7 +88,10 @@ export function featureBase(params) {
             for (let i = 0; i < inputCount; i += 1) {
                 let object = inputObjects[i];
                 if (useFirstPointInPath) {
-                    object = object.path[0];
+                    if (object.path.length < 2) {
+                        return;
+                    }
+                    object = object.path[object.path.length-2];
                 }
                 screenX += object.screenX;
                 screenY += object.screenY;
@@ -117,24 +120,6 @@ export function extractConstraintsFrom(params) {
         constraints.push(defaultUpperLimit);
     }
     return constraints;
-}
-
-export function calculateCentroidFrom(inputObjects) {
-    let inputCount = inputObjects.length,
-        // check above scale comment
-        scale = 10000,
-        relativeScreenX = 0,
-        relativeScreenY = 0;
-    
-    inputObjects.forEach(inputObject => {
-        relativeScreenX += inputObject.path[0].relativeScreenX * scale;
-        relativeScreenY += inputObject.path[0].relativeScreenY * scale;
-    });
-    
-    relativeScreenX /= inputCount * scale;
-    relativeScreenY /= inputCount * scale;
-    
-    return {relativeScreenX, relativeScreenY};
 }
 
 export function lowerUpperLimit(constraints = []) {

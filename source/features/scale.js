@@ -25,7 +25,6 @@ export function scale(params) {
                 
             let previousDistance = baseFeature.pointToPointDistance(centroid, previousPoint),
                 currentDistance = baseFeature.pointToPointDistance(centroid, currentPoint);
-            
             currentPointScaleFactor = currentDistance / previousDistance;
         }
             
@@ -46,13 +45,14 @@ export function scale(params) {
                 
             if (inputCount > 1) {
                 centroid = baseFeature.calculateCentroid(inputObjects, true);
-                
-                let totalScaleFactor = inputObjects.reduce(totalInputObjectsScale, 0),
-                    averageScaleFactor = totalScaleFactor / inputCount;
-                
-                match = matchWithValue(averageScaleFactor);
-                if (match) {
-                    baseFeature.setMatchedValue(averageScaleFactor);
+                if (centroid) {
+                    let totalScaleFactor = inputObjects.reduce(totalInputObjectsScale, 0),
+                        averageScaleFactor = totalScaleFactor / inputCount;
+                    
+                    match = matchWithValue(averageScaleFactor);
+                    if (match) {
+                        baseFeature.setMatchedValue(averageScaleFactor);
+                    }
                 }
             }
             

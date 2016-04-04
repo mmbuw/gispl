@@ -82,20 +82,22 @@ export function rotation(params) {
             inputCount = 0,
             totalAngle = 0,
             averageAngle = 0;
-        
         rotationDirections.length = 0;
-        for (let i = 0; i < touchInput.length; i += 1) {
-            let currentAngle = angleFromMovingAndFixedPoint(touchInput[i], centroid);
-            if (currentAngle !== 0) {
-                totalAngle += currentAngle;
-                inputCount += 1;
-                rotationDirections.push(isClockwise(currentAngle));
+        
+        if (centroid) {
+            for (let i = 0; i < touchInput.length; i += 1) {
+                let currentAngle = angleFromMovingAndFixedPoint(touchInput[i], centroid);
+                if (currentAngle !== 0) {
+                    totalAngle += currentAngle;
+                    inputCount += 1;
+                    rotationDirections.push(isClockwise(currentAngle));
+                }
             }
-        }
-                
-        if (inputCount !== 0 &&
-                allValuesIdentical(rotationDirections)) {
-            averageAngle = totalAngle / inputCount;
+                    
+            if (inputCount !== 0 &&
+                    allValuesIdentical(rotationDirections)) {
+                averageAngle = totalAngle / inputCount;
+            }
         }
         return averageAngle; 
     }
