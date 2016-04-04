@@ -17,12 +17,17 @@ export function scale(params) {
     
     function totalInputObjectsScale(totalScaleFactor, inputObject) {
         let path = inputObject.path,
-            firstPoint = path[0],
-            lastPoint = path[path.length - 1];
+            currentPointScaleFactor = 1;
+        
+        if (path.length > 1) {
+            let previousPoint = path[path.length - 2],
+                currentPoint = path[path.length - 1];
+                
+            let previousDistance = baseFeature.pointToPointDistance(centroid, previousPoint),
+                currentDistance = baseFeature.pointToPointDistance(centroid, currentPoint);
             
-        let originalDistance = baseFeature.pointToPointDistance(centroid, firstPoint),
-            currentDistance = baseFeature.pointToPointDistance(centroid, lastPoint),
-            currentPointScaleFactor = currentDistance / originalDistance;
+            currentPointScaleFactor = currentDistance / previousDistance;
+        }
             
         return totalScaleFactor + currentPointScaleFactor;
     }
@@ -48,6 +53,8 @@ export function scale(params) {
                 match = matchWithValue(averageScaleFactor);
                 if (match) {
                     baseFeature.setMatchedValue(averageScaleFactor);
+                } else {
+                    console.log(false, averageScaleFactor);
                 }
             }
             

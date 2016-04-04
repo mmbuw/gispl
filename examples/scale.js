@@ -8,43 +8,23 @@ $(document).ready(() => {
         name: enlarge,
         features: [
             {type: 'Count', constraints: [2,2]},
-            {type: 'Scale', constraints:[]},
-            {type: 'Motion', constraints: [[-1,-1], [1, 1]]}
+            {type: 'Scale', constraints:[]}
         ]
     });
     
     let images$ = $('img');
     
-    let lastScaleFactors = {},
-        useScaleFactors = {},
-        lastIdentifiers = {},
-        drawing = false,
-        imageScales = new WeakMap();
+    let drawing = false,
+        scaleChanges = new WeakMap();
         
     images$.each(function(index, element) {
-        imageScales.set(element, 1);
+        scaleChanges.set(element, 1);
     });
     
     gispl(images$).on(enlarge, function(event) {
-        let image$ = $(this),
-            {input} = event,
-            identifier = input[input.length-1].identifier,
-            scaleValue = event.featureValues.scale,
-            key = image$.attr('src');
-            
-        let lastScaleFactor = lastScaleFactors[key] ? lastScaleFactors[key] : 1,
-            useScaleFactor = useScaleFactors[key] ? useScaleFactors[key] : 1,
-            lastIdentifier = lastIdentifiers[key] ? lastIdentifiers[key] : 0;
-            
-        if (identifier !== lastIdentifier) {
-            useScaleFactor = useScaleFactors[key] = lastScaleFactor;
-        }
-            
-        let scaleFactor = scaleValue * useScaleFactor;
-        imageScales.set(this, scaleFactor);
-    
-        lastScaleFactors[key] = scaleFactor;
-        lastIdentifiers[key] = identifier;
+        let scale = event.featureValues.scale;
+        let previousScale = scaleChanges.get(this);
+        scaleChanges.set(this, scale * previousScale);
         requestDraw();
     });
     
@@ -58,7 +38,7 @@ $(document).ready(() => {
     function draw() {
         for (let i = 0; i < images$.length; i += 1) {
             let element = images$[i],
-                scale = imageScales.get(element);
+                scale = scaleChanges.get(element);
             element.style.transform = `scale(${scale})`;
         }
         drawing = false;
