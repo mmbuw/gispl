@@ -22,15 +22,22 @@ export function objectgroup(params) {
             
             if (inputObjects.length > 1) {
                 let centroid = baseFeature.calculateCentroid(inputObjects),
-                    distance = baseFeature.pointToPointDistance(centroid, inputObjects[0]);
+                    largestDistance = 0;
+                
+                for (let i = 0; i < count; i += 1) {
+                    let distance = baseFeature.pointToPointDistance(inputObjects[i], centroid);
+                    if (distance > largestDistance) {
+                        largestDistance = distance;
+                    }
+                }
                     
-                match = Math.floor(distance) <= radius &&
+                match = Math.floor(largestDistance) <= radius &&
                         count >= limit.lower &&
                         count <= limit.upper;
             
                 if (match) {
                     baseFeature.setMatchedValue({
-                        radius: distance,
+                        radius: largestDistance,
                         midpoint: centroid
                     });
                 }   
