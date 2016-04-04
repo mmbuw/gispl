@@ -23,8 +23,8 @@ $(document).ready(() => {
     gispl(images$).on(fingerRotation, function fingerRotationCallback(event) {
         let rotation = event.featureValues.rotation.touches,
             degrees = rotation / Math.PI * 180;
-        
-        imageRotations.set(this, degrees);
+        let previousDegrees = imageRotations.get(this);
+        imageRotations.set(this, previousDegrees + degrees);
         requestDraw();
     });
     

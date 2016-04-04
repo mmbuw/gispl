@@ -43,18 +43,24 @@ export function rotation(params) {
                     angle <= limit.upper;
     }
     
-    function angleFromMovingAndFixedPoint(moving, fixed) {
-        let path = moving.path,
-            firstPoint = path[0],
-            lastPoint = path[path.length-1];
-            
-        let fixedToFirstPoint = directionVector(fixed, firstPoint),
-            fixedToLastPoint = directionVector(fixed, lastPoint);
-            
-        return directedAngleBetweenVectors(
-                    fixedToFirstPoint,
-                    fixedToLastPoint
-        );
+    function angleFromMovingAndFixedPoint(movingPoint, fixedPoint) {
+        let path = movingPoint.path,
+            angle = 0;
+        
+        if (path.length > 1) {
+            let secondToLastPoint = path[path.length-2],
+                lastPoint = path[path.length-1];
+                
+            let fixedToSecondToLast = directionVector(fixedPoint, secondToLastPoint),
+                fixedToLast = directionVector(fixedPoint, lastPoint);
+                
+            angle = directedAngleBetweenVectors(
+                        fixedToSecondToLast,
+                        fixedToLast
+            );
+        }
+        
+        return angle;
     }
     
     function isClockwise(angle) {
