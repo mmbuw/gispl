@@ -53,8 +53,6 @@ export function scale(params) {
                 match = matchWithValue(averageScaleFactor);
                 if (match) {
                     baseFeature.setMatchedValue(averageScaleFactor);
-                } else {
-                    console.log(false, averageScaleFactor);
                 }
             }
             
