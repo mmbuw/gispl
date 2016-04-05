@@ -7,7 +7,23 @@ export function objectparent(params) {
     
     let {constraints} = params,
         baseFeature = featureBase(params),
-        limit = lowerUpperLimit(constraints);
+        limit = lowerUpperLimit(constraints),
+        userIds = [];
+        
+    function userIdWithinRange(inputObject) {
+        let userId = inputObject.user,
+            match = userId >= limit.lower &&
+                    userId <= limit.upper;
+        return match;
+    }
+    
+    function extractUserIdsFrom(inputObjects) {
+        userIds.length = 0;
+        for (let i = 0; i < inputObjects.length; i += 1) {
+            userIds.push(inputObjects[i].user);
+        }
+        return userIds;
+    }
     
     return {
         type() {
@@ -15,21 +31,13 @@ export function objectparent(params) {
         },
         load(inputState) {
             let inputObjects = baseFeature.inputObjectsFrom(inputState)
-                                            .filter(baseFeature.checkAgainstDefinition),
-                matchedValues = [];
+                                            .filter(baseFeature.checkAgainstDefinition);
             
             let match = inputObjects.length !== 0 &&
-                        inputObjects.every(inputObject => {
-                            let userId = inputObject.user,
-                                match = userId >= limit.lower &&
-                                        userId <= limit.upper;
-                            if (match) {
-                                matchedValues.push(userId);
-                            }
-                            return match;
-                        });
+                        inputObjects.every(userIdWithinRange);
             if (match) {
-                baseFeature.setMatchedValue(matchedValues);
+                let userIds = extractUserIdsFrom(inputObjects);
+                baseFeature.setMatchedValue(userIds);
             }
             return match;
         },
