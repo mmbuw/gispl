@@ -5,13 +5,7 @@ $(document).ready(() => {
     let anyMotion = 'any-motion',
         stickyMotion = 'sticky-motion';
 
-    gispl.addGesture({
-        name: anyMotion,
-        features: [
-            {type: 'Motion'},
-            {type: 'Count', constraints: [2,3]}
-        ]
-    });
+
     
     gispl.addGesture({
         name: stickyMotion,

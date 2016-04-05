@@ -17,13 +17,13 @@ $(document).ready(() => {
     gispl.addGesture({
         name: fingerRotation,
         features: [
-            {type: 'Rotation'}
+            {type: 'Rotation'},
+            {type: 'Count', constraints: [2,2]}
         ]
     });
     
     gispl.addGesture({
         name: stickyMotion,
-        flags: 'sticky',
         features: [
             {type: 'Motion'},
             {type: 'Count', constraints: [2,2]}
