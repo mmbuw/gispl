@@ -17,14 +17,12 @@ export function delay(params) {
         return totalTimeDiff + timeDiff;
     }
     
-    function inputWithinConstraint(inputObjects) {
-        return inputObjects.every(function(inputObject) {
-            let currentTime = Date.now(),
-                timeDiff = currentTime - inputObject.startingTime;
-            
-            return timeDiff >= limit.lower &&
-                    timeDiff <= limit.upper; 
-        });
+    function inputWithinConstraints(inputObject) {
+        let currentTime = Date.now(),
+            timeDiff = currentTime - inputObject.startingTime;
+        
+        return timeDiff >= limit.lower &&
+                timeDiff <= limit.upper;
     }
     
     return {
@@ -37,7 +35,7 @@ export function delay(params) {
             let match = false;
             
             if (inputObjects.length > 0) {
-                match = inputWithinConstraint(inputObjects);
+                match = inputObjects.every(inputWithinConstraints);
                 if (match) {
                     let totalTimeDiff = inputObjects.reduce(getTotalTimeDiff, 0);
                     let averageTimeDiff = totalTimeDiff / inputObjects.length;
