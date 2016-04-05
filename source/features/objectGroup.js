@@ -10,6 +10,17 @@ export function objectgroup(params) {
         limit = lowerUpperLimit(constraints),
         radius = constraints[2];
     
+    function centroidToInputDistance(inputObjects, centroid) {
+        let largestDistance = 0;
+        for (let i = 0; i < inputObjects.length; i += 1) {
+            let distance = baseFeature.pointToPointDistance(inputObjects[i], centroid);
+            if (distance > largestDistance) {
+                largestDistance = distance;
+            }
+        }
+        return largestDistance;
+    }
+    
     return {
         type() {
             return 'ObjectGroup';
@@ -22,14 +33,7 @@ export function objectgroup(params) {
             
             if (inputObjects.length > 1) {
                 let centroid = baseFeature.calculateCentroid(inputObjects),
-                    largestDistance = 0;
-                
-                for (let i = 0; i < count; i += 1) {
-                    let distance = baseFeature.pointToPointDistance(inputObjects[i], centroid);
-                    if (distance > largestDistance) {
-                        largestDistance = distance;
-                    }
-                }
+                    largestDistance = centroidToInputDistance(inputObjects, centroid);
                     
                 match = Math.floor(largestDistance) <= radius &&
                         count >= limit.lower &&
