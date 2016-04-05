@@ -7,7 +7,23 @@ export function objectid(params) {
     
     let {constraints} = params,
         baseFeature = featureBase(params),
-        limit = lowerUpperLimit(constraints);
+        limit = lowerUpperLimit(constraints),
+        componentIds = [];
+        
+    function idWithinRange(inputObject) {
+        let {componentId} = inputObject,
+            match = componentId >= limit.lower &&
+                    componentId <= limit.upper;
+        return match;
+    }
+    
+    function extractComponentIdsFrom(inputObjects) {
+        componentIds.length = 0;
+        for (let i = 0; i < inputObjects.length; i += 1) {
+            componentIds.push(inputObjects[i].componentId);
+        }
+        return componentIds;
+    }
     
     return {
         type() {
@@ -15,20 +31,12 @@ export function objectid(params) {
         },
         load(inputState) {
             let inputObjects = baseFeature.inputObjectsFrom(inputState)
-                                            .filter(baseFeature.checkAgainstDefinition),
-                idValues = [];
+                                            .filter(baseFeature.checkAgainstDefinition);
             
             let match = inputObjects.length !== 0 &&
-                        inputObjects.every(inputObject => {
-                            let {componentId} = inputObject,
-                                match = componentId >= limit.lower &&
-                                        componentId <= limit.upper;
-                            if (match) {
-                                idValues.push(componentId);
-                            }
-                            return match;
-                        });
+                        inputObjects.every(idWithinRange);
             if (match) {
+                let idValues = extractComponentIdsFrom(inputObjects);
                 baseFeature.setMatchedValue(idValues);
             } 
             return match;
