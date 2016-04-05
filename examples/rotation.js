@@ -2,8 +2,7 @@ import gispl from '../source/gispl';
 import $ from 'jquery';
 
 $(document).ready(() => {
-    let fingerRotation = 'finger-rotation',
-        objectRotation = 'object-rotation';
+    let fingerRotation = 'finger-rotation';
     
     gispl.addGesture({
         name: fingerRotation,

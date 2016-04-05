@@ -40,11 +40,11 @@ $(document).ready(() => {
     
     let eventBox = $('#events');
     
-    gispl(document).on(doubleTap, function(event) {
+    gispl(document).on(doubleTap, function() {
         eventBox.append('<div>double tap</div>');
     });
     
-    gispl(document).on(tripleTap, function(event) {
+    gispl(document).on(tripleTap, function() {
         eventBox.append('<div>triple tap</div>');
     });
 
