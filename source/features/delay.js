@@ -10,6 +10,23 @@ export function delay(params) {
         baseFeature = featureBase(params),
         limit = lowerUpperLimit(constraints);
     
+    function getTotalTimeDiff(totalTimeDiff, inputObject) {
+        let currentTime = Date.now(),
+            timeDiff = currentTime - inputObject.startingTime;
+        
+        return totalTimeDiff + timeDiff;
+    }
+    
+    function inputWithinConstraint(inputObjects) {
+        return inputObjects.every(function(inputObject) {
+            let currentTime = Date.now(),
+                timeDiff = currentTime - inputObject.startingTime;
+            
+            return timeDiff >= limit.lower &&
+                    timeDiff <= limit.upper; 
+        });
+    }
+    
     return {
         type() {
             return 'Delay';
@@ -20,17 +37,9 @@ export function delay(params) {
             let match = false;
             
             if (inputObjects.length > 0) {
-                let totalTimeDiff = 0;
-                match = inputObjects.every(inputObject => {
-                    let currentTime = Date.now(),
-                        timeDiff = currentTime - inputObject.startingTime;
-                    
-                    totalTimeDiff += timeDiff;
-                    
-                    return timeDiff >= limit.lower &&
-                            timeDiff <= limit.upper;
-                });
+                match = inputWithinConstraint(inputObjects);
                 if (match) {
+                    let totalTimeDiff = inputObjects.reduce(getTotalTimeDiff, 0);
                     let averageTimeDiff = totalTimeDiff / inputObjects.length;
                     baseFeature.setMatchedValue(averageTimeDiff);
                 }
