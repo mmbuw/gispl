@@ -4,6 +4,7 @@ import $ from 'jquery';
 $(document).ready(() => {
     let stamp = 'stamp',
         washingMachine = 'washing-machine',
+        washingTokenId = 3,
         distanceAsGroup = 'distance-group';
     
     gispl.addGesture({
@@ -11,7 +12,7 @@ $(document).ready(() => {
         flags: 'oneshot',
         features: [
             {type: 'Count', constraints: [1, 1]},
-            //{type: 'ObjectId', constraints: []}
+            {type: 'ObjectId', constraints: [0, 0]}
         ]
     });
     
@@ -19,7 +20,9 @@ $(document).ready(() => {
         name: washingMachine,
         features: [
             {type: 'Rotation'},
-            //{type: 'ObjectId', constraints: []}
+            {type: 'ObjectId', constraints: [
+                washingTokenId, washingTokenId
+            ]}
         ]
     });
     
@@ -27,7 +30,7 @@ $(document).ready(() => {
         name: distanceAsGroup,
         features: [
             {type: 'ObjectGroup', constraints: [2, 2, window.screen.width]},
-            //{type: 'ObjectId', constraints: []}
+            {type: 'ObjectId', constraints: [1, 2]}
         ]
     });
     
@@ -49,8 +52,7 @@ $(document).ready(() => {
     });
     
     gispl(canvas).on(washingMachine, function(event) {
-        let rotation = event.featureValues.rotation.touches * 180 / Math.PI;
-        washingRotation += rotation;
+        washingRotation = event.featureValues.rotation.objects[washingTokenId] * 180 / Math.PI;
         washingRotation = washingRotation % 360;
         requestDraw();
     });
@@ -74,25 +76,34 @@ $(document).ready(() => {
         
         if (typeof pageX !== 'undefined' &&
             typeof pageY !== 'undefined') {
-            ctx.fillRect(stampPosition.pageX, stampPosition.pageY, width, height);   
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.arc(pageX, pageY, 55, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
         }
     }
     
     function drawWashingMachine() {
         // all values totally scientific
         ctx.clearRect(0, 0, 280, 50);
+        ctx.fillStyle = 'black';
         ctx.font = '40px sans-serif';
         ctx.textBaseline = 'top';
-        ctx.fillText( `Washing: ${Math.round(washingRotation)}`, 10, 10);
+        ctx.fillText(`Washing: ${Math.round(washingRotation)}`, 10, 10);
     }
     
     function drawDistanceAsRadius() {
         let left = 10,
             top = canvas.height - 50;
         ctx.clearRect(left, top, 420, 50);
+        ctx.fillStyle = 'black';
         ctx.font = '40px sans-serif';
         ctx.textBaseline = 'top';
-        ctx.fillText( `Radius distance: ${Math.round(distanceRadius) * 2}`, left, top);
+        // 146 is the distance between the markers when they touch
+        let adjustedDistance = Math.round(distanceRadius) * 2 - 146;
+        adjustedDistance = (adjustedDistance < 0) ? 0 : adjustedDistance;
+        ctx.fillText( `Radius distance: ${adjustedDistance}`, left, top);
     }
     
     function draw() {
@@ -101,6 +112,7 @@ $(document).ready(() => {
         drawDistanceAsRadius();
         drawing = false;
     }
+    requestDraw();
 
     gispl.initTuio({
         host: 'ws://localhost:8080'
