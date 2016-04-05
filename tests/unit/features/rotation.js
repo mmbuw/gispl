@@ -129,7 +129,7 @@ describe('feature', () => {
             expect(featureValues.rotation.touches).to.be.below(expectedValue + 0.01);
         });
         
-        it('should be able to set its last known value in the feature values object', () => {
+        it('should be able to set its last known pointer rotation value in the feature values object', () => {
             // centroid is 0.5
             let firstPointer = buildInputFromPointer({x: 0.4, y: 0.4}),
                 secondPointer = buildInputFromPointer({x: 0.6, y: 0.6}),
@@ -139,6 +139,8 @@ describe('feature', () => {
             //rotate +90 degrees (clockwise) 
             firstPointer.moveTo({x: 0.6, y: 0.4});
             secondPointer.moveTo({x: 0.4, y: 0.6});
+            firstStaticPointer.moveTo({x: 0.6, y: 0.4});
+            secondStaticPointer.moveTo({x: 0.4, y: 0.6});
             
             let expectedValue = Math.PI / 2;
             
@@ -165,6 +167,7 @@ describe('feature', () => {
             
             //rotate +90 degrees (clockwise) 
             movingPointer.moveTo({x: 0.4, y: 0.6});
+            staticPointer.moveTo({x: 0.4, y: 0.4});
             
             let inputObjects = [
                 staticPointer.finished(),
