@@ -3,19 +3,29 @@ import $ from 'jquery';
 
 $(document).ready(() => {
     let doubleTap = 'double-tap',
-        tripleTap = 'triple-tap',
+        fasterDoubleTap = 'faster-double-tap',
+        superFastDoubleTap = 'super-fast-double-tap',
         singleTap = 'single-tap';
     
     gispl.addGesture({
-        name: tripleTap,
+        name: superFastDoubleTap,
         flags: 'oneshot',
         features: [
-            {type: 'Count', constraints:[1,1], duration: [1/30]},
-            {type: 'Count', constraints:[0,0], duration: [200, 1/30]},
-            {type: 'Count', constraints:[1,1], duration: [400, 200]},
-            {type: 'Count', constraints:[0,0], duration: [600, 400]},
-            {type: 'Count', constraints:[1,1], duration: [800, 600]},
-            {type: 'Count', constraints:[0,0], duration: [1200, 800]}
+            {type: 'Count', constraints:[1,1], duration: [16]},
+            {type: 'Count', constraints:[0,0], duration: [50, 16]},
+            {type: 'Count', constraints:[1,1], duration: [100, 50]},
+            {type: 'Count', constraints:[0,0], duration: [200, 100]}
+        ]
+    });
+    
+    gispl.addGesture({
+        name: fasterDoubleTap,
+        flags: 'oneshot',
+        features: [
+            {type: 'Count', constraints:[1,1], duration: [16]},
+            {type: 'Count', constraints:[0,0], duration: [100, 16]},
+            {type: 'Count', constraints:[1,1], duration: [200, 100]},
+            {type: 'Count', constraints:[0,0], duration: [400, 200]}
         ]
     });
     
@@ -23,8 +33,8 @@ $(document).ready(() => {
         name: doubleTap,
         flags: 'oneshot',
         features: [
-            {type: 'Count', constraints:[1,1], duration: [1/30]},
-            {type: 'Count', constraints:[0,0], duration: [200, 1/30]},
+            {type: 'Count', constraints:[1,1], duration: [16]},
+            {type: 'Count', constraints:[0,0], duration: [200, 16]},
             {type: 'Count', constraints:[1,1], duration: [400, 200]},
             {type: 'Count', constraints:[0,0], duration: [800, 400]}
         ]
@@ -34,7 +44,8 @@ $(document).ready(() => {
         name: singleTap,
         flags: 'oneshot',
         features: [
-            {type: 'Count', constraints:[1,1], duration: [1/30]}
+            {type: 'Count', constraints:[1,1], duration: [16]},
+            {type: 'Count', constraints:[0,0], duration: [400, 16]}
         ]
     });
     
@@ -48,8 +59,12 @@ $(document).ready(() => {
         eventBox.append('<div>double tap</div>');
     });
     
-    gispl(document).on(tripleTap, function() {
-        eventBox.append('<div>triple tap</div>');
+    gispl(document).on(fasterDoubleTap, function() {
+        eventBox.append('<div>faster double tap</div>');
+    });
+    
+    gispl(document).on(superFastDoubleTap, function() {
+        eventBox.append('<div>super fast double tap</div>');
     });
 
     gispl.initTuio({
