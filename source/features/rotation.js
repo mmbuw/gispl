@@ -128,14 +128,16 @@ export function rotation(params) {
     function calculateObjectAngles(rotationValues) {
         var atLeastOneMatch = false;
         for (let i = 0; i < objectInput.length; i += 1) {
-            let path = objectInput[i].path,
-                firstAngle = path[0].angle,
-                lastAngle = path[path.length-1].angle;
-            
-            let angle = normalizeAngle(lastAngle - firstAngle);
-            if (matchWithValue(angle)) {
-                atLeastOneMatch = true;
-                rotationValues.objects[objectInput[i].componentId] = angle;
+            let path = objectInput[i].path;
+            if (path.length > 1) {
+                let firstAngle = path[path.length-2].angle,
+                    lastAngle = path[path.length-1].angle;
+                
+                let angle = normalizeAngle(lastAngle - firstAngle);
+                if (matchWithValue(angle)) {
+                    atLeastOneMatch = true;
+                    rotationValues.objects[objectInput[i].componentId] = angle;
+                }   
             }
         }
         return atLeastOneMatch;
