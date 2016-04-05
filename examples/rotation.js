@@ -28,20 +28,6 @@ $(document).ready(() => {
         requestDraw();
     });
     
-    gispl(images$).on(objectRotation, function(event) {
-        let objects = event.featureValues.rotation.objects,
-            rotation = 0;
-            
-        for (var key in objects) {
-            rotation = objects[key];
-            break;
-        }
-        let degrees = rotation / Math.PI * 180;
-        
-        imageRotations.set(this, degrees);
-        requestDraw();
-    });
-    
     function requestDraw() {
         if (!drawing) {
             requestAnimationFrame(draw);
