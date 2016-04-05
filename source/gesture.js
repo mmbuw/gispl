@@ -283,7 +283,7 @@ function validInput(inputObjects = []) {
 
 export function validInputFromDuration(inputObjects = [], duration) {
     let validInputObjects = [],
-        currentTime = new Date().getTime();
+        currentTime = Date.now();
 
     inputObjects.forEach(inputObject => {
         let validInputPath = inputObject.path.filter(point => {

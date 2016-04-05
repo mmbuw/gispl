@@ -7,7 +7,7 @@ export function inputObjectFromTuio(params) {
     let {tuioComponent} = params;
 
     let identifier = tuioComponent.getSessionId(),
-        point = pointInformation(params, new Date().getTime()),
+        point = pointInformation(params, Date.now()),
         path = [point],
         componentType = componentTypeInformation(tuioComponent),
         componentId = componentIdInformation(tuioComponent),
@@ -48,7 +48,7 @@ export function inputObjectFromPath(params = {}) {
 export function tuioObjectUpdate(params) {
     let {inputObject} = params;
     // update path
-    let lastPoint = pointInformation(params, new Date().getTime());
+    let lastPoint = pointInformation(params, Date.now());
     inputObject.path.push(lastPoint);
     // update point information (screenX, clientX...)
     // but keep the original starting time
