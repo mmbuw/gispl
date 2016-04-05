@@ -70,9 +70,7 @@ $(document).ready(() => {
     }
     
     function drawStamp() {
-        let width = 50,
-            height = 50,
-            {pageX, pageY} = stampPosition;
+        let {pageX, pageY} = stampPosition;
         
         if (typeof pageX !== 'undefined' &&
             typeof pageY !== 'undefined') {
