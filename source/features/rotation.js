@@ -102,10 +102,12 @@ export function rotation(params) {
         return averageAngle; 
     }
     
+    let objectRotations = new Map();
     function initRotationValues() {
+        objectRotations.clear();
         return {
             touches: undefined,
-            objects: {}
+            objects: objectRotations
         };
     }
     
