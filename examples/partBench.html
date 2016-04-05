@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+    <head>
+        <script src="/jspm_packages/system.js"></script>
+        <script>
+            System.config({
+                baseURL: '/'
+            });
+        </script>
+        <script src="/config.js"></script>
+        <script>
+            System.import('examples/partBench.js');
+        </script>
+        <style>
+            body, html {margin: 0; padding: 0; height: 100%; overflow: hidden;}
+            img {display: block;}
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+</html>
