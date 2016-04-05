@@ -59,6 +59,7 @@ export function rotation(params) {
                         fixedToLast
             );
         }
+        
         return angle;
     }
     
@@ -132,7 +133,7 @@ export function rotation(params) {
                 let firstAngle = path[path.length-2].angle,
                     lastAngle = path[path.length-1].angle;
                 
-                let angle = lastAngle - firstAngle;
+                let angle = normalizeAngle(lastAngle - firstAngle);
                 if (matchWithValue(angle)) {
                     atLeastOneMatch = true;
                     rotationValues.objects[objectInput[i].componentId] = angle;
@@ -173,6 +174,7 @@ export function rotation(params) {
             
             return match;
         },
+        
         setValueToObject: baseFeature.setValueToObject
     };
 }
