@@ -171,7 +171,7 @@ System.config({
       "path": "github:jspm/nodelibs-path@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
-    "npm:bl@1.0.3": {
+    "npm:bl@1.1.2": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
       "readable-stream": "npm:readable-stream@2.0.6",
       "util": "github:jspm/nodelibs-util@0.1.0"
@@ -638,7 +638,7 @@ System.config({
       "mime": "npm:mime@1.3.4",
       "path": "github:jspm/nodelibs-path@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2",
-      "request": "npm:request@2.69.0"
+      "request": "npm:request@2.70.0"
     },
     "npm:node-pre-gyp@0.6.25": {
       "child_process": "github:jspm/nodelibs-child_process@0.1.0",
@@ -650,7 +650,7 @@ System.config({
       "path": "github:jspm/nodelibs-path@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2",
       "rc": "npm:rc@1.1.6",
-      "request": "npm:request@2.69.0",
+      "request": "npm:request@2.70.0",
       "rimraf": "npm:rimraf@2.5.2",
       "semver": "npm:semver@5.1.0",
       "systemjs-json": "github:systemjs/plugin-json@0.1.0",
@@ -800,10 +800,10 @@ System.config({
       "string_decoder": "npm:string_decoder@0.10.31",
       "util-deprecate": "npm:util-deprecate@1.0.2"
     },
-    "npm:request@2.69.0": {
+    "npm:request@2.70.0": {
       "aws-sign2": "npm:aws-sign2@0.6.0",
       "aws4": "npm:aws4@1.3.2",
-      "bl": "npm:bl@1.0.3",
+      "bl": "npm:bl@1.1.2",
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
       "caseless": "npm:caseless@0.11.0",
       "combined-stream": "npm:combined-stream@1.0.5",
@@ -824,7 +824,7 @@ System.config({
       "node-uuid": "npm:node-uuid@1.4.7",
       "oauth-sign": "npm:oauth-sign@0.8.1",
       "process": "github:jspm/nodelibs-process@0.1.2",
-      "qs": "npm:qs@6.0.2",
+      "qs": "npm:qs@6.1.0",
       "querystring": "github:jspm/nodelibs-querystring@0.1.0",
       "stream": "github:jspm/nodelibs-stream@0.1.0",
       "stringstream": "npm:stringstream@0.0.5",
