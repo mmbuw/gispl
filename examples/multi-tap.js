@@ -26,7 +26,7 @@ $(document).ready(() => {
             {type: 'Count', constraints:[1,1], duration: [1/30]},
             {type: 'Count', constraints:[0,0], duration: [200, 1/30]},
             {type: 'Count', constraints:[1,1], duration: [400, 200]},
-            {type: 'Count', constraints:[0,0], duration: [800, 400]},
+            {type: 'Count', constraints:[0,0], duration: [800, 400]}
         ]
     });
     
@@ -39,6 +39,10 @@ $(document).ready(() => {
     });
     
     let eventBox = $('#events');
+    
+    gispl(document).on(singleTap, function() {
+        eventBox.append('<div>single tap</div>');
+    });
     
     gispl(document).on(doubleTap, function() {
         eventBox.append('<div>double tap</div>');
