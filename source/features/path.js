@@ -10,9 +10,26 @@ export function path(params) {
         // name will be something lik
         // "0,0,10,10" from [[0,0], [10,10]]
         name = params.constraints.toString(),
-        constraints = dollarPointsFrom(params.constraints);
+        constraints = dollarPointsFrom(params.constraints),
+        // value is empirical
+        // TODO allow it to be user defined
+        validThreshold = 1.9;
 
     recognizer.AddGesture(name, constraints);
+    
+    function coordinatesToPoint(point) {
+        return new Point(point.screenX, point.screenY);
+    }
+    
+    function toTotalScore(totalScore, inputObject) {
+        let $points = inputObject.path.map(coordinatesToPoint);
+        let result = recognizer.Recognize($points, true);
+        
+        if (result.Name === name) {
+            totalScore += result.Score;   
+        }
+        return totalScore;
+    }
 
     return {
         type() {
@@ -20,31 +37,17 @@ export function path(params) {
         },
 
         load(inputState) {
-            let inputObjects = baseFeature.inputObjectsFrom(inputState),
-                totalScore = 0;
+            let inputObjects = baseFeature.inputObjectsFrom(inputState)
+                                            .filter(baseFeature.checkAgainstDefinition),
+                match = false;
 
-            let match = inputObjects.every(inputObject => {
-                let inputObjectMatch = false;
-
-                if (baseFeature.checkAgainstDefinition(inputObject)) {
-                    let $points = inputObject.path.map(point => {
-                        return new Point(point.screenX, point.screenY);
-                    });
-
-                    let result = recognizer.Recognize($points, true);
-                    
-                    totalScore += result.Score;
-                    inputObjectMatch = (result.Name === name &&
-                                // value is empirical
-                                // TODO allow it to be user defined
-                                result.Score > 1.9);
+            if (inputObjects.length !== 0) {
+                let totalScore = inputObjects.reduce(toTotalScore, 0);
+                let averageScore = totalScore / inputObjects.length;
+                if (averageScore > validThreshold) {
+                    match = true;
+                    baseFeature.setMatchedValue(totalScore / inputObjects.length);
                 }
-
-                return inputObjectMatch;
-            });
-            
-            if (match) {
-                baseFeature.setMatchedValue(totalScore / inputObjects.length);
             }
             
             return match;
