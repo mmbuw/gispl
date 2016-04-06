@@ -29,13 +29,10 @@ export function inputObjectFromTuio(tuioComponent, calibration) {
     };
 }
 
-export function inputObjectFromPath(params = {}) {
-    let {inputObject,
-            path} = params,
-        {identifier,
-            type} = inputObject;
-            
-    let firstPointInPath = path[0];
+export function inputObjectFromPath(inputObject, path) {
+    let {identifier,
+            type} = inputObject,
+        firstPointInPath = path[0];
     
     return {
         identifier, path, type,

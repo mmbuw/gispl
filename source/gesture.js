@@ -292,10 +292,7 @@ export function validInputFromDuration(inputObjects = [], duration) {
                 timeDiff >= duration.end);
         });
         if (validInputPath.length !== 0) {
-            let validInputObject = inputObjectFromPath({
-                inputObject,
-                path: validInputPath
-            });
+            let validInputObject = inputObjectFromPath(inputObject, validInputPath);
             validInputObjects.push(validInputObject);
         }
     });
