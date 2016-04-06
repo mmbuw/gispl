@@ -70,10 +70,7 @@ export function buildInputFromPointer(params) {
     return {
         moveTo: function(params) {
             pointerBuilder.moveTo(params);
-            tuioObjectUpdate({
-                inputObject,
-                tuioComponent: pointerBuilder.finished()
-            });
+            tuioObjectUpdate(inputObject, pointerBuilder.finished());
             return this;
         },
         newSessionId: function() {

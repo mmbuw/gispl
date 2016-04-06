@@ -157,7 +157,7 @@ function nodesInputHistory(params = {}) {
         }
         else {
             inputObject = storedObjects[indexOfComponent];
-            tuioObjectUpdate({inputObject, tuioComponent, calibration});
+            tuioObjectUpdate(inputObject, tuioComponent, calibration);
         }
         return inputObject;
     }

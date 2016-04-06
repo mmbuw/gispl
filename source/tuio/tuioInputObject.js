@@ -4,10 +4,10 @@ import TuioToken from 'tuio/src/TuioToken';
 import TuioObject from 'tuio/src/TuioObject';
 
 export function inputObjectFromTuio(params) {
-    let {tuioComponent} = params;
+    let {tuioComponent, calibration} = params;
 
     let identifier = tuioComponent.getSessionId(),
-        point = pointInformation(params, Date.now()),
+        point = pointInformation(tuioComponent, calibration, Date.now()),
         path = [point],
         componentType = componentTypeInformation(tuioComponent),
         componentId = componentIdInformation(tuioComponent),
@@ -45,19 +45,16 @@ export function inputObjectFromPath(params = {}) {
     };
 }
 
-export function tuioObjectUpdate(params) {
-    let {inputObject} = params;
+export function tuioObjectUpdate(inputObject, tuioComponent, calibration) {
     // update path
-    let lastPoint = pointInformation(params, Date.now());
+    let lastPoint = pointInformation(tuioComponent, calibration, Date.now());
     inputObject.path.push(lastPoint);
     // update point information (screenX, clientX...)
     // but keep the original starting time
-    Object.assign(inputObject, pointInformation(params, inputObject.startingTime));
+    Object.assign(inputObject, pointInformation(tuioComponent, calibration, inputObject.startingTime));
 }
 
-function pointInformation(params, startingTime) {
-    let {tuioComponent,
-            calibration} = params;
+function pointInformation(tuioComponent, calibration, startingTime) {
 
     let relativeScreenX = tuioComponent.getX(),
         relativeScreenY = tuioComponent.getY(),
