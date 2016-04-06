@@ -89,7 +89,6 @@ $(document).ready(() => {
             if (distanceTokensOnScreen !== 2) {
                 distanceRadius = 0;
             }
-            console.log(washingTokensOnScreen);
             requestDraw();
         }
     });
