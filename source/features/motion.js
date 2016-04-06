@@ -5,6 +5,7 @@ import {vector} from '../vector';
 export function motion(params) {
     let baseFeature = featureBase(params),
         {constraints} = params,
+        tempVector = vector(),
         limit;
 
     if (typeof constraints !== 'undefined') {
@@ -24,22 +25,23 @@ export function motion(params) {
         }
         return match;
     }
-    
+    // not a bug
+    // tuio coordinates are with top left origin
+    // if we want a vector with bottom left origin
+    // which for y equals previous - current
     function totalInputObjectsMotion(vectorSum, inputObject) {
         let path = inputObject.path;
-        let lastPoint = path[path.length-1],
-            beforeLastPoint = path[path.length-2];
-
-        // use relative position because for very small movements
-        // different relative position will translate to the same screen pixel
-        let x = lastPoint.screenX - beforeLastPoint.screenX,
-            // not a bug
-            // tuio coordinates are with top left origin
-            // so last - beforeLast, is actually (1-last) - (1-beforeLast)
-            // if we want a vector with bottom left origin
-            // which equals beforeLast - last
-            y = beforeLastPoint.screenY - lastPoint.screenY;
-        return vectorSum.add({x, y});
+        if (path.length > 1) {
+            let currentPoint = path[path.length-1],
+                previousPoint = path[path.length-2];
+                
+            let x = currentPoint.screenX - previousPoint.screenX,
+                y = previousPoint.screenY - currentPoint.screenY;
+            
+            tempVector.setCoordinates(x, y);
+            vectorSum.add(tempVector);
+        }
+        return vectorSum;
     }
 
     return {
@@ -49,8 +51,7 @@ export function motion(params) {
 
         load(inputState) {
             let inputObjects = baseFeature.inputObjectsFrom(inputState)
-                                            .filter(baseFeature.checkAgainstDefinition)
-                                            .filter(inputObject => inputObject.path.length > 1),
+                                            .filter(baseFeature.checkAgainstDefinition),
                 match = false;
 
             if (inputObjects.length !== 0) {
