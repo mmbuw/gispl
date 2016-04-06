@@ -43,7 +43,7 @@ export function inputObjectFromPath(inputObject, path) {
 export function tuioObjectUpdate(inputObject, tuioComponent, calibration) {
     // update path
     let lastPoint = pointInformation(tuioComponent, calibration, Date.now());
-    inputObject.path.push(lastPoint);
+    inputObject.path[inputObject.path.length] = lastPoint;
     // update point information (screenX, clientX...)
     // but keep the original starting time
     Object.assign(inputObject, pointInformation(tuioComponent, calibration, inputObject.startingTime));

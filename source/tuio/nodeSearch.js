@@ -35,7 +35,7 @@ export default function nodeSearch(params = {}) {
             result.length = 0;
                 
             while (existingNode) {
-                result.push(existingNode);
+                result[result.length] = existingNode;
                 existingNode = existingNode.parentNode;
             }
             

@@ -70,7 +70,7 @@ export function createGesture(gestureDefinition,
             for (let j = 0; j < topNodeWithParents.length; j += 1) {
                 let node = topNodeWithParents[j];
                 if (result.indexOf(node) === -1) {
-                    result.push(node);
+                    result[result.length] = node;
                 }   
             }
         }
@@ -83,7 +83,7 @@ export function createGesture(gestureDefinition,
         }
         else {
             for (let i = 0; i < validTopNodesOnEmit.length; i += 1) {
-                result.push(validTopNodesOnEmit[i]);
+                result[result.length] = validTopNodesOnEmit[i];
             }
         }
         return result;
@@ -137,7 +137,7 @@ export function createGesture(gestureDefinition,
                         bubbleTopNodes.length = 0;
                     }
                     if (bubbleTopNodes.indexOf(node) === -1) {
-                        bubbleTopNodes.push(node);
+                        bubbleTopNodes[bubbleTopNodes.length] = node;
                     }
                 }
                 if (everyFeatureMatches) {
@@ -152,13 +152,13 @@ export function createGesture(gestureDefinition,
                         if (!inputCheck.previouslyMatched()) {
                             stickyTopNode = node;
                         }
-                        validTopNodesOnEmit.push(stickyTopNode);
+                        validTopNodesOnEmit[validTopNodesOnEmit.length] = stickyTopNode;
                     }
                     else if (
                         // oneshot gestures will get here only once
                         hasOneshotFlag || hasNoFlag
                     ) {
-                        validTopNodesOnEmit.push(node);
+                        validTopNodesOnEmit[validTopNodesOnEmit.length] = node;
                     }
                     // save currentInputIds for future reference
                     inputCheck.matched();
@@ -288,7 +288,7 @@ function validInputPathFromDuration(inputObject, duration, currentTime) {
         let timeDiff = currentTime - point.startingTime;
         if (timeDiff <= duration.start &&
             timeDiff >= duration.end) {
-            validInputPath.push(point);
+            validInputPath[validInputPath.length] = point;
         }
     }
     
@@ -306,7 +306,7 @@ export function validInputFromDuration(inputObjects = [], duration) {
                                                         currentTime);
         if (validInputPath.length !== 0) {
             let validInputObject = inputObjectFromPath(inputObject, validInputPath);
-            validInputObjects.push(validInputObject);
+            validInputObjects[validInputObjects.length] = validInputObject;
         }
     }
 

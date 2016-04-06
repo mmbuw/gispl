@@ -20,7 +20,7 @@ export function objectparent(params) {
     function extractUserIdsFrom(inputObjects) {
         userIds.length = 0;
         for (let i = 0; i < inputObjects.length; i += 1) {
-            userIds.push(inputObjects[i].user);
+            userIds[i] = inputObjects[i].user;
         }
         return userIds;
     }

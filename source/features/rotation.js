@@ -90,7 +90,7 @@ export function rotation(params) {
                 if (currentAngle !== 0) {
                     totalAngle += currentAngle;
                     inputCount += 1;
-                    rotationDirections.push(isClockwise(currentAngle));
+                    rotationDirections[rotationDirections.length] = isClockwise(currentAngle);
                 }
             }
                     
@@ -118,10 +118,10 @@ export function rotation(params) {
             let inputObject = inputObjects[i];
             if (baseFeature.checkAgainstDefinition(inputObject)) {
                 if (typeof inputObject.angle === 'undefined') {
-                    touchInput.push(inputObject);
+                    touchInput[touchInput.length] = inputObject;
                 }
                 else {
-                    objectInput.push(inputObject);
+                    objectInput[objectInput.length] = inputObject;
                 }
             }
         }

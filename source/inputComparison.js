@@ -32,7 +32,7 @@ export function inputComparison() {
         for (let i = 0; i < inputObjects.length; i += 1) {
             let inputObject = inputObjects[i];
             if (inputObject) {
-                currentInputIds.push(inputObject.identifier);
+                currentInputIds[currentInputIds.length] = inputObject.identifier;
             }
         }
     }
@@ -40,7 +40,7 @@ export function inputComparison() {
     function setSecondAsFirst(first, second) {
         first.length = 0;
         for (let i = 0; i < second.length; i += 1) {
-            first.push(second[i]);
+            first[i] = second[i];
         }
     }
 

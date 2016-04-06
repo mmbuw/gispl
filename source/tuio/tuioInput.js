@@ -20,17 +20,17 @@ export default function tuioInput(params = {}) {
     function copyCurrentTuioComponents(pointers, cursors, tokens, objects) {
         allTuioComponents.length = 0;   
         for (let i = 0, length = pointers.length; i < length; i += 1) {
-            allTuioComponents.push(pointers[i]);
+            allTuioComponents[allTuioComponents.length] = pointers[i];
         }
         for (let i = 0, length = tokens.length; i < length; i += 1) {
-            allTuioComponents.push(tokens[i]);
+            allTuioComponents[allTuioComponents.length] = tokens[i];
         }
         // tuio v1 types are stored in an {} object
         for (let key in cursors) {
-            allTuioComponents.push(cursors[key]);
+            allTuioComponents[allTuioComponents.length] = cursors[key];
         }
         for (let key in objects) {
-            allTuioComponents.push(objects[key]);
+            allTuioComponents[allTuioComponents.length] = objects[key];
         }
     }
     
@@ -150,7 +150,7 @@ function nodesInputHistory(params = {}) {
             if (storeLimitReached) {
                 storedObjects.shift();
             }
-            storedObjects.push(inputObject);
+            storedObjects[storedObjects.length] = inputObject;
         }
         else {
             inputObject = storedObjects[indexOfComponent];
@@ -163,7 +163,8 @@ function nodesInputHistory(params = {}) {
         if (!nodesWithInput.has(node)) {
             nodesWithInput.set(node, []);
         }
-        nodesWithInput.get(node).push(inputObject);
+        let inputObjects = nodesWithInput.get(node);
+        inputObjects[inputObjects.length] = inputObject;
     }
     //
     function toNodeInputHistory(node, inputObject) {
@@ -174,7 +175,7 @@ function nodesInputHistory(params = {}) {
             inputObjectNotInHistory = historyForNode.indexOf(inputObject) === -1;
         if (inputObjectNotInHistory) {
             removeDroppedInputObjectsFrom(historyForNode);
-            historyForNode.push(inputObject);
+            historyForNode[historyForNode.length] = inputObject;
         }
     }
         
@@ -195,7 +196,7 @@ function nodesInputHistory(params = {}) {
                 if (foundNode) {
                     toNodeInputCurrent(foundNode, inputObject);
                     toNodeInputHistory(foundNode, inputObject);
-                    allCurrentInput.push(inputObject);
+                    allCurrentInput[allCurrentInput.length] = inputObject;
                 }
             }                      
             return allCurrentInput;

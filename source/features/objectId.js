@@ -20,7 +20,7 @@ export function objectid(params) {
     function extractComponentIdsFrom(inputObjects) {
         componentIds.length = 0;
         for (let i = 0; i < inputObjects.length; i += 1) {
-            componentIds.push(inputObjects[i].componentId);
+            componentIds[i] = inputObjects[i].componentId;
         }
         return componentIds;
     }
