@@ -59,17 +59,19 @@ $(document).ready(() => {
             requestDraw();
         })
         .on(washingMachine, function onWashingMachine(event) {
-            washingRotation = event.featureValues.rotation.objects[washingTokenId] * 180 / Math.PI;
+            let rotation = event.featureValues.rotation.objects[washingTokenId] * 180 / Math.PI;
+            washingRotation += rotation;
             washingRotation = washingRotation % 360;
             requestDraw();
         })
         .on(distanceAsGroup, function onDistanceAsGroup(event) {
             distanceRadius = event.featureValues.objectgroup.radius;
             requestDraw();
-        })
-        .on('inputend', function onInputEnd(event) {
-            let {input} = event,
-                washingTokensOnScreen = 0,
+        });
+    gispl(document).on('inputchange', function onInputEnd(event = {}) {
+        let {input} = event;
+        if (input) {
+            let washingTokensOnScreen = 0,
                 distanceTokensOnScreen = 0;
             for (let i = 0; i < input.length; i += 1) {
                 let componentId = input[i].componentId;
@@ -87,8 +89,10 @@ $(document).ready(() => {
             if (distanceTokensOnScreen !== 2) {
                 distanceRadius = 0;
             }
+            console.log(washingTokensOnScreen);
             requestDraw();
-        });
+        }
+    });
     
     function requestDraw() {
         if (!drawing) {
