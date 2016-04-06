@@ -87,6 +87,7 @@ $(document).ready(() => {
             if (distanceTokensOnScreen !== 2) {
                 distanceRadius = 0;
             }
+            requestDraw();
         });
     
     function requestDraw() {
