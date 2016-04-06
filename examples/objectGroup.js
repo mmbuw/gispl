@@ -21,11 +21,15 @@ $(document).ready(() => {
     canvas.width = document.body.clientWidth;
     canvas.height = document.body.clientHeight;
     
-    gispl(canvas).on(radius250, function(event) {
-        radius = event.featureValues.objectgroup.radius,
-        center = event.featureValues.objectgroup.midpoint;
-        requestDraw();
-    });
+    gispl(canvas)
+        .on(radius250, function(event) {
+            radius = event.featureValues.objectgroup.radius,
+            center = event.featureValues.objectgroup.midpoint;
+            requestDraw();
+        })
+        .on('inputend', function() {
+            clear();
+        });
     
     function requestDraw() {
         if (!drawing) {
