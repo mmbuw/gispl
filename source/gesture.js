@@ -281,21 +281,34 @@ function validInput(inputObjects = []) {
     return !!inputObjects.length;
 }
 
+function validInputPathFromDuration(inputObject, duration, currentTime) {
+    let validInputPath = [];
+    for (let j = 0; j < inputObject.path.length; j += 1) {
+        let point = inputObject.path[j];
+        let timeDiff = currentTime - point.startingTime;
+        if (timeDiff <= duration.start &&
+            timeDiff >= duration.end) {
+            validInputPath.push(point);
+        }
+    }
+    
+    return validInputPath;
+}
+
 export function validInputFromDuration(inputObjects = [], duration) {
     let validInputObjects = [],
         currentTime = Date.now();
 
-    inputObjects.forEach(inputObject => {
-        let validInputPath = inputObject.path.filter(point => {
-            let timeDiff = currentTime - point.startingTime;
-            return (timeDiff <= duration.start &&
-                timeDiff >= duration.end);
-        });
+    for (let i = 0; i < inputObjects.length; i += 1) {
+        let inputObject = inputObjects[i];
+        let validInputPath = validInputPathFromDuration(inputObject,
+                                                        duration,
+                                                        currentTime);
         if (validInputPath.length !== 0) {
             let validInputObject = inputObjectFromPath(inputObject, validInputPath);
             validInputObjects.push(validInputObject);
         }
-    });
+    }
 
     return validInputObjects;
 }
