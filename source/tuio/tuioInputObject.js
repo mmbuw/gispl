@@ -3,9 +3,7 @@ import TuioCursor from 'tuio/src/TuioCursor';
 import TuioToken from 'tuio/src/TuioToken';
 import TuioObject from 'tuio/src/TuioObject';
 
-export function inputObjectFromTuio(params) {
-    let {tuioComponent, calibration} = params;
-
+export function inputObjectFromTuio(tuioComponent, calibration) {
     let identifier = tuioComponent.getSessionId(),
         point = pointInformation(tuioComponent, calibration, Date.now()),
         path = [point],

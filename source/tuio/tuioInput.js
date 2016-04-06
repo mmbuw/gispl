@@ -146,10 +146,7 @@ function nodesInputHistory(params = {}) {
         
         if (newComponent) {
             let storeLimitReached = storedObjects.length === limit;
-            inputObject = inputObjectFromTuio({
-                tuioComponent,
-                calibration
-            });
+            inputObject = inputObjectFromTuio(tuioComponent, calibration);
             if (storeLimitReached) {
                 storedObjects.shift();
             }

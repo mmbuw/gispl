@@ -61,9 +61,7 @@ export function buildInputFromPointer(params) {
     let pointerBuilder = buildPointer(params);
     
     function tuioInputObject() {
-        return inputObjectFromTuio({
-            tuioComponent: pointerBuilder.finished()
-        });
+        return inputObjectFromTuio(pointerBuilder.finished());
     }
     let inputObject = tuioInputObject();
 

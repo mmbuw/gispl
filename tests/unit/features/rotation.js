@@ -310,7 +310,7 @@ describe('feature', () => {
         it('should recognize rotation of objects(tokens)', () => {
             let angle = Math.PI,
                 tuioObject = new TuioObject({a: angle}),
-                inputObject = inputObjectFromTuio({tuioComponent: tuioObject});
+                inputObject = inputObjectFromTuio(tuioObject);
             
             tuioObject.update({a: angle+1});
             tuioObjectUpdate(inputObject, tuioObject);
@@ -322,7 +322,7 @@ describe('feature', () => {
         it('should not recognize rotation of objects if they do not rotate', () => {
             let angle = Math.PI,
                 object = new TuioObject({a: angle}),
-                inputObject = inputObjectFromTuio({tuioComponent: object}); 
+                inputObject = inputObjectFromTuio(object); 
             let inputObjects = [inputObject];
             expect(anyRotation.load({inputObjects})).to.equal(false);
         });
@@ -330,7 +330,7 @@ describe('feature', () => {
         it(`should not recognize object rotation if input is not above the lower limit`, () => {
             let angle = 0,
                 tuioObject = new TuioObject({a: angle}),
-                inputObject = inputObjectFromTuio({tuioComponent: tuioObject}),
+                inputObject = inputObjectFromTuio(tuioObject),
                 rotateMin91degClockwise = featureFactory({
                     type,
                     constraints: [91/180 * Math.PI]
@@ -347,7 +347,7 @@ describe('feature', () => {
         it(`should recognize object rotation if input is above/equal to lower limit`, () => {
             let angle = 0,
                 tuioObject = new TuioObject({a: angle}),
-                inputObject = inputObjectFromTuio({tuioComponent: tuioObject}),
+                inputObject = inputObjectFromTuio(tuioObject),
                 rotateMin90degClockwise = featureFactory({
                     type,
                     constraints: [90/180 * Math.PI]
@@ -366,7 +366,7 @@ describe('feature', () => {
                 angleIncrement = Math.PI / 2,
                 sym = 10,
                 tuioObject = new TuioObject({a: angle, sym}),
-                inputObject = inputObjectFromTuio({tuioComponent: tuioObject}),
+                inputObject = inputObjectFromTuio(tuioObject),
                 rotateMin90degClockwise = featureFactory({
                     type,
                     constraints: [90/180 * Math.PI]
@@ -387,7 +387,7 @@ describe('feature', () => {
         it('should recognize counter-clockwise rotation of objects(tokens)', () => {
             let angle = Math.PI,
                 tuioObject = new TuioObject({a: angle}),
-                inputObject = inputObjectFromTuio({tuioComponent: tuioObject});
+                inputObject = inputObjectFromTuio(tuioObject);
             
             tuioObject.update({a: angle-1});
             tuioObjectUpdate(inputObject, tuioObject);
