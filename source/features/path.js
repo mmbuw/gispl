@@ -18,6 +18,8 @@ export function path(params) {
     recognizer.AddGesture(name, constraints);
     
     function coordinatesToPoint(point) {
+        // could create a pool to avoid creating objectws
+        // but the $1 recognizer already creates new instances when resampling
         return new Point(point.screenX, point.screenY);
     }
     
