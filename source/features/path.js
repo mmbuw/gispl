@@ -7,10 +7,11 @@ export function path(params) {
 
     let baseFeature = featureBase(params),
         {recognizer} = params,
-        // name will be something lik
+        // name will be something like
         // "0,0,10,10" from [[0,0], [10,10]]
         name = params.constraints.toString(),
         constraints = dollarPointsFrom(params.constraints),
+        allScores = [],
         // value is empirical
         // TODO allow it to be user defined
         validThreshold = 1.9;
@@ -18,19 +19,23 @@ export function path(params) {
     recognizer.AddGesture(name, constraints);
     
     function coordinatesToPoint(point) {
-        // could create a pool to avoid creating objectws
+        // could create a pool to avoid creating objects
         // but the $1 recognizer already creates new instances when resampling
         return new Point(point.screenX, point.screenY);
     }
     
-    function toTotalScore(totalScore, inputObject) {
+    function toAllScores(allScores, inputObject) {
         let $points = inputObject.path.map(coordinatesToPoint);
         let result = recognizer.Recognize($points, true);
-        
-        if (result.Name === name) {
-            totalScore += result.Score;   
+        if (result.Name === name &&
+            result.Score > validThreshold) {
+            allScores[allScores.length] = result.Score;
         }
-        return totalScore;
+        return allScores;
+    }
+    
+    function toTotalScore(previous, current) {
+        return previous + current;
     }
 
     return {
@@ -44,11 +49,17 @@ export function path(params) {
                 match = false;
 
             if (inputObjects.length !== 0) {
-                let totalScore = inputObjects.reduce(toTotalScore, 0);
-                let averageScore = totalScore / inputObjects.length;
-                if (averageScore > validThreshold) {
-                    match = true;
-                    baseFeature.setMatchedValue(totalScore / inputObjects.length);
+                allScores.length = 0;
+                // calculate scores of valid inputs
+                let allCurrentScores = inputObjects.reduce(toAllScores, allScores);
+                // calculate total score if all inputs valid
+                if (allCurrentScores.length === inputObjects.length) {
+                    let totalScore = allCurrentScores.reduce(toTotalScore);
+                    let averageScore = totalScore / inputObjects.length;
+                    if (averageScore > validThreshold) {
+                        match = true;
+                        baseFeature.setMatchedValue(totalScore / inputObjects.length);
+                    }   
                 }
             }
             
