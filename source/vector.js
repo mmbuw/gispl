@@ -10,16 +10,19 @@ class Vector {
         this.x = x;
         this.y = y;
     }
-    
     validVector(x, y) {
         return (typeof x === 'number' &&
                     typeof y === 'number');
     }
-
     validScalar(value) {
         if (typeof value !== 'number') {
             throw new Error(`${this.exceptions.ILLEGAL_SCALAR}. Instead using: ${value}`);
         }
+    }
+    vectorInvalid(error = this.exceptions.INVALID_VECTOR) {
+        throw new Error(`${error}.
+                                Expecting {x: Number, y: Number}.
+                                Received ${typeof x} ${typeof y}`);
     }
     add(vectorToAdd = {}) {
         let {x, y} = vectorToAdd;
@@ -54,17 +57,13 @@ class Vector {
     dot(withVector = {}) {
         let {x, y} = withVector;
         if (!this.validVector(x, y)) {
-            throw new Error(`${this.exceptions.INVALID_VECTOR}.
-                                Expecting {x: Number, y: Number}.
-                                Received ${typeof x} ${typeof y}`);
+            this.vectorInvalid();
         }
         return this.x * x + this.y * y;
     }
     setCoordinates(x = 0, y = 0) {
         if (!this.validVector(x, y)) {
-            throw new Error(`${this.exceptions.ILLEGAL_COORDINATES}.
-                                Expecting {x: Number, y: Number}.
-                                Received ${typeof x} ${typeof y}`);
+            this.vectorInvalid(this.exceptions.ILLEGAL_COORDINATES);
         }
         this.x = x;
         this.y = y;
