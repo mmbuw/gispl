@@ -41,12 +41,12 @@ describe('feature', () => {
                 the points in constraints`, () => {
             // origin is bottom left
             let drawRectangleFromTopLeftCounterClockwise = [
-                [0, 100],
-                [0, 0],
-                [100, 0],
-                [100, 100],
-                [0, 100]
-            ],
+                    [0, 100],
+                    [0, 0],
+                    [100, 0],
+                    [100, 100],
+                    [0, 100]
+                ],
                 rectanglePath = featureFactory({
                     type,
                     constraints: drawRectangleFromTopLeftCounterClockwise
@@ -73,12 +73,12 @@ describe('feature', () => {
                 the points in constraints`, () => {
             // origin is bottom left
             let drawRectangleFromTopLeftCounterClockwise = [
-                [0, 100],
-                [0, 0],
-                [100, 0],
-                [100, 100],
-                [0, 100]
-            ],
+                    [0, 100],
+                    [0, 0],
+                    [100, 0],
+                    [100, 100],
+                    [0, 100]
+                ],
                 rectanglePath = featureFactory({
                     type,
                     constraints: drawRectangleFromTopLeftCounterClockwise
@@ -105,12 +105,12 @@ describe('feature', () => {
                 the points in constraints`, () => {
             // origin is bottom left
             let drawRectangleFromTopLeftCounterClockwise = [
-                [0, 100],
-                [0, 0],
-                [100, 0],
-                [100, 100],
-                [0, 100]
-            ],
+                    [0, 100],
+                    [0, 0],
+                    [100, 0],
+                    [100, 100],
+                    [0, 100]
+                ],
                 rectanglePath = featureFactory({
                     type,
                     constraints: drawRectangleFromTopLeftCounterClockwise
@@ -152,12 +152,12 @@ describe('feature', () => {
                 the defined filter`, () => {
             // origin is bottom left
             let drawRectangleFromTopLeftCounterClockwise = [
-                [0, 100],
-                [0, 0],
-                [100, 0],
-                [100, 100],
-                [0, 100]
-            ],
+                    [0, 100],
+                    [0, 0],
+                    [100, 0],
+                    [100, 100],
+                    [0, 100]
+                ],
                 tuioRightThumbFinger = 0b10000,
                 tuioRightIndexFinger = 0b1,
                 filteredPath = featureFactory({
@@ -187,12 +187,12 @@ describe('feature', () => {
         it('should be able to set its last known value in the feature values object', () => {
             // origin is bottom left
             let drawRectangleFromTopLeftCounterClockwise = [
-                [0, 100],
-                [0, 0],
-                [100, 0],
-                [100, 100],
-                [0, 100]
-            ],
+                    [0, 100],
+                    [0, 0],
+                    [100, 0],
+                    [100, 100],
+                    [0, 100]
+                ],
                 rectanglePath = featureFactory({
                     type,
                     constraints: drawRectangleFromTopLeftCounterClockwise
