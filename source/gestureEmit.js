@@ -13,18 +13,22 @@ export function gestureEmition(params = {}) {
     
     let allPreviousInput = [],
         {findNode} = params;
+    
+    function triggerCollection(nodesToEmitOn, eventName, eventObject) {
+        for (let i = 0; i < nodesToEmitOn.length; i += 1) {
+            let currentNode = nodesToEmitOn[i];
+            eventObject.currentTarget = currentNode;
+            events.emit(currentNode, eventName, eventObject);
+        }
+    }
 
     function triggerOnLastKnownNode(inputObjects, event) {
         let lastKnownInputObject = inputObjects[0],
             foundNode = findNode.fromPoint(lastKnownInputObject),
-            foundNodeWithParents = findNode.withParentsOf(foundNode);
-            
-        for (let i = 0; i < foundNodeWithParents.length; i += 1) {
-            let node = foundNodeWithParents[i],
-                eventObject = createEventObject(inputObjects);
-                
-            events.emit(node, event, eventObject);
-        }
+            foundNodeWithParents = findNode.withParentsOf(foundNode),
+            eventObject = createEventObject(inputObjects, foundNode);
+        
+        triggerCollection(foundNodeWithParents, event, eventObject);
     }
     
     return {
@@ -60,12 +64,7 @@ export function gestureEmition(params = {}) {
                     if (nodesToEmitOn.length !== 0) {
                         let eventName = gesture.name(),
                             eventObject = createEventObject(inputObjects, nodesToEmitOn[0], gesture);
-                        
-                        for (let i = 0; i < nodesToEmitOn.length; i += 1) {
-                            let currentNode = nodesToEmitOn[i];
-                            eventObject.currentTarget = currentNode;
-                            events.emit(currentNode, eventName, eventObject);
-                        }
+                        triggerCollection(nodesToEmitOn, eventName, eventObject);
                     }
                 });
             });
