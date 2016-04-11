@@ -45,8 +45,8 @@ export function gestureEmition(params = {}) {
             }
             else if (!compareInput(allCurrentInput,
                                             allPreviousInput)) {
-                events.emit(document,
-                                builtInEvents.INPUTCHANGE);
+                triggerOnLastKnownNode(allCurrentInput,
+                                        builtInEvents.INPUTCHANGE);
             }
             
             allPreviousInput.length = 0;
