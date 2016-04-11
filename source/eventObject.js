@@ -1,5 +1,7 @@
 import * as features from './features';
 
+let propagationStopped = new WeakMap();
+
 class EventObject {
     constructor(input, node, gesture) {
         this.input = input;
@@ -10,6 +12,13 @@ class EventObject {
             gesture.featureValuesToObject(this.featureValues);
         }
     }
+    stopPropagation() {
+        propagationStopped.set(this, true);
+    }
+}
+
+export function eventPropagates(eventObject) {
+    return !propagationStopped.get(eventObject);
 }
 
 export function createEventObject(inputObjects, originalNode, gesture) {

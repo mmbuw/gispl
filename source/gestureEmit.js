@@ -1,6 +1,7 @@
 import {events} from './events';
 import {compareInput} from './inputComparison';
-import {createEventObject} from './eventObject';
+import {createEventObject,
+        eventPropagates} from './eventObject';
 import {userDefinedGestures} from './gesture';
 
 const builtInEvents = Object.freeze({
@@ -16,9 +17,11 @@ export function gestureEmition(params = {}) {
     
     function triggerCollection(nodesToEmitOn, eventName, eventObject) {
         for (let i = 0; i < nodesToEmitOn.length; i += 1) {
-            let currentNode = nodesToEmitOn[i];
-            eventObject.currentTarget = currentNode;
-            events.emit(currentNode, eventName, eventObject);
+            if (eventPropagates(eventObject)) {
+                let currentNode = nodesToEmitOn[i];
+                eventObject.currentTarget = currentNode;
+                events.emit(currentNode, eventName, eventObject);
+            }
         }
     }
 
