@@ -154,7 +154,7 @@ describe('gispl', () => {
         gispl.addGesture({
             name: motionName,
             features: [
-                {type:"Motion"}
+                {type:'Motion'}
             ]
         });
         gispl(document).on(motionName, spy);
@@ -191,7 +191,7 @@ describe('gispl', () => {
         gispl.addGesture({
             name: motionName,
             features: [
-                {type:"Motion"}
+                {type:'Motion'}
             ]
         });
         gispl(document).on(motionName, spy);
@@ -228,13 +228,12 @@ describe('gispl', () => {
             sessionId = 10,
             xPos = 0.2,
             yPos = 0.2,
-            frameId = 1,
             host = 'test-socket-url';
 
         gispl.addGesture({
             name: motionName,
             features: [
-                {type:"Motion"}
+                {type:'Motion'}
             ]
         });
         gispl(document).on(motionName, spy);
@@ -248,7 +247,6 @@ describe('gispl', () => {
             //move pointer
             xPos += 0.5;
             yPos += 0.5;
-            frameId += 1;
             sendPointerBundle(server, {sessionId, xPos, yPos});
             let callbackArgs = spy.lastCall.args;
             expect(callbackArgs.length).to.equal(1);
@@ -258,6 +256,89 @@ describe('gispl', () => {
             
             expect(featureValues).to.be.an('object');
             expect(featureValues.motion).to.be.an('object');
+
+            server.close();
+            asyncDone();
+        }, 0);
+    });
+
+    it(`should pass the feature values in the gesture callback`, (asyncDone) => {
+        let spy = sinon.spy(),
+            motionName = 'motion',
+            sessionId = 10,
+            xPos = 0.2,
+            yPos = 0.2,
+            host = 'test-socket-url';
+
+        gispl.addGesture({
+            name: motionName,
+            features: [
+                {type:'Motion'}
+            ]
+        });
+        gispl(document).on(motionName, spy);
+        window.WebSocket = WebMocket;
+        gispl.initTuio({host, calibration});
+
+        let server = new MocketServer(host);
+
+        setTimeout(() => {
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            //move pointer
+            xPos += 0.5;
+            yPos += 0.5;
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            let callbackArgs = spy.lastCall.args;
+            expect(callbackArgs.length).to.equal(1);
+
+            let eventObject = callbackArgs[0],
+                {featureValues} = eventObject;
+            
+            expect(featureValues).to.be.an('object');
+            expect(featureValues.motion).to.be.an('object');
+
+            server.close();
+            asyncDone();
+        }, 0);
+    });
+
+    it(`should contain target and currentTarget information`, (asyncDone) => {
+        let spy = sinon.spy(),
+            motionName = 'motion',
+            sessionId = 10,
+            xPos = 0.2,
+            yPos = 0.2,
+            host = 'test-socket-url';
+
+        gispl.addGesture({
+            name: motionName,
+            features: [
+                {type:'Motion'}
+            ]
+        });
+        gispl(document).on(motionName, spy);
+        window.WebSocket = WebMocket;
+        gispl.initTuio({host, calibration});
+
+        let server = new MocketServer(host);
+
+        setTimeout(() => {
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            //move pointer
+            xPos += 0.5;
+            yPos += 0.5;
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            let callbackArgs = spy.lastCall.args;
+            expect(callbackArgs.length).to.equal(1);
+
+            let eventObject = callbackArgs[0],
+                {target,
+                    currentTarget} = eventObject;
+            
+            // gesture triggered on html root
+            expect(target).to.equal(document.documentElement);
+            // but called on document node
+            expect(currentTarget).to.equal(document);
 
             server.close();
             asyncDone();

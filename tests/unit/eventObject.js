@@ -58,7 +58,7 @@ describe('event object', () => {
         let featureValuesToObject = sinon.spy(),
             gesture = {featureValuesToObject};
         
-        createEventObject([], gesture);
+        createEventObject([], 'target', gesture);
         
         expect(featureValuesToObject.callCount).to.equal(1);
         let args = featureValuesToObject.firstCall.args;

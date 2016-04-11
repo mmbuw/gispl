@@ -59,10 +59,12 @@ export function gestureEmition(params = {}) {
                     
                     if (nodesToEmitOn.length !== 0) {
                         let eventName = gesture.name(),
-                            eventObject = createEventObject(inputObjects, gesture);
+                            eventObject = createEventObject(inputObjects, nodesToEmitOn[0], gesture);
                         
                         for (let i = 0; i < nodesToEmitOn.length; i += 1) {
-                            events.emit(nodesToEmitOn[i], eventName, eventObject);
+                            let currentNode = nodesToEmitOn[i];
+                            eventObject.currentTarget = currentNode;
+                            events.emit(currentNode, eventName, eventObject);
                         }
                     }
                 });
