@@ -334,10 +334,9 @@ describe('gispl', () => {
                     currentTarget} = eventObject;
             
             // gesture triggered on html root
-            expect(target).to.equal(document.documentElement);
+            expect(target.nodeName).to.equal(document.documentElement.nodeName);
             // but called on document node
-            expect(currentTarget).to.equal(document);
-
+            expect(currentTarget.nodeName).to.equal(document.nodeName);
             server.close();
             asyncDone();
         }, 0);

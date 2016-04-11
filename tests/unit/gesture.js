@@ -58,9 +58,8 @@ describe('gesture', () => {
 
         let gesture = createGesture(motionGestureDefinition),
             mockedFeatures = gesture.features()
-                                        .map(feature => {
-                return sinon.mock(feature)
-                                .expects('load').once();
+            .map(feature => {
+                return sinon.mock(feature).expects('load').once();
             });
         expect(mockedFeatures.length).to.equal(3);
 
@@ -83,7 +82,7 @@ describe('gesture', () => {
 
         let gesture = createGesture(motionGestureDefinition);
 
-        gesture.features().forEach((feature, index) => {
+        gesture.features().forEach((feature) => {
             return sinon.stub(feature, 'load').returns(true);
         });
 
@@ -194,39 +193,6 @@ describe('gesture', () => {
                 addDurationToGesture(durationOfStrings)
             );
         }).to.throw(Error, new RegExp(gestureException.INVALID_DURATION));
-    });
-    
-    it('should trigger gesture event on parent element if propagation enabled', () => {
-        // propagation is enabled by default
-        let gesture = createGesture(motionGestureDefinition);
-
-        gesture.features().forEach((feature, index) => {
-            return sinon.stub(feature, 'load').returns(true);
-        });
-        
-        let mockInput = [null],
-            node = document.body;
-        expect(gesture.load({
-            inputObjects: mockInput,
-            node
-        })).to.deep.equal([node, document.documentElement, document]);
-    });
-    
-    it('should not trigger gesture event on parent element if propagation disabled', () => {
-        let gesture = createGesture($.extend(
-            {}, motionGestureDefinition, {propagation: false}
-        ));
-
-        gesture.features().forEach((feature, index) => {
-            return sinon.stub(feature, 'load').returns(true);
-        });
-        
-        let mockInput = [null],
-            node = document.body;
-        expect(gesture.load({
-            inputObjects: mockInput,
-            node
-        })).to.deep.equal([node]);
     });
     
     it('should update an object with current values by calling all of its features', () => {

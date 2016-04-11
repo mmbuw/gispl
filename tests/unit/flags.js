@@ -392,7 +392,7 @@ describe('gesture with flags', () => {
                 inputObjects: [movingPointerInput.finished()],
                 node: secondNodeToAdd
             }) 
-        ).to.deep.equal([firstNodeToAdd, document.documentElement, document]);
+        ).to.deep.equal([firstNodeToAdd, document.documentElement]);
     });
     
     it(`should be triggered once on all nodes in the path, when

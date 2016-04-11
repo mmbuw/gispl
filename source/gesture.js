@@ -1,7 +1,6 @@
 import {featureFactory} from './feature';
 import {inputObjectFromPath} from './tuio/tuioInputObject';
 import {inputComparison} from './inputComparison';
-import nodeSearch from './tuio/nodeSearch';
 
 export let userDefinedGestures = new Map();
 
@@ -15,12 +14,10 @@ const gestureFlagNames = Object.freeze(
     Object.keys(gestureFlags).map(key => gestureFlags[key])
 );
 
-export function createGesture(gestureDefinition,
-                                findNode = nodeSearch()) {
+export function createGesture(gestureDefinition) {
     let bubbleTopNodes = [],
         stickyTopNode = null,
         validTopNodesOnEmit = [],
-        result = [],
         features;
 
     // don't store gesture if definition invalid 
@@ -34,11 +31,7 @@ export function createGesture(gestureDefinition,
         hasBubbleFlag = flags.indexOf(gestureFlags.BUBBLE) !== -1,
         hasStickyFlag = flags.indexOf(gestureFlags.STICKY) !== -1,
         hasNoFlag = flags.length === 0,
-        duration = extractDurationFrom(gestureDefinition),
-        // whether the gesture should be triggered on the found top nodes
-        // or on top nodes and all the parent nodes
-        // as with native event propagation
-        {propagation = true} = gestureDefinition;
+        duration = extractDurationFrom(gestureDefinition);
     
     let inputCheck = inputComparison();
 
@@ -59,34 +52,6 @@ export function createGesture(gestureDefinition,
         }
 
         return inputObjects;
-    }
-    
-    // find all parent nodes from all valid nodes
-    // and add them only once
-    function nodeWithParents() {
-        for (let i = 0; i < validTopNodesOnEmit.length; i += 1) {
-            let topNode = validTopNodesOnEmit[i],
-                topNodeWithParents = findNode.withParentsOf(topNode);
-            for (let j = 0; j < topNodeWithParents.length; j += 1) {
-                let node = topNodeWithParents[j];
-                if (result.indexOf(node) === -1) {
-                    result[result.length] = node;
-                }   
-            }
-        }
-    }
-
-    function resultingNodes() {
-        result.length = 0;
-        if (propagation) {
-            nodeWithParents();
-        }
-        else {
-            for (let i = 0; i < validTopNodesOnEmit.length; i += 1) {
-                result[result.length] = validTopNodesOnEmit[i];
-            }
-        }
-        return result;
     }
 
     return {
@@ -167,8 +132,7 @@ export function createGesture(gestureDefinition,
                     validTopNodesOnEmit.length = 0;
                 }
             }
-            // will also include parent nodes of all nodes, if enabled 
-            return resultingNodes();
+            return validTopNodesOnEmit;
         },
         featureValuesToObject(data) {
             for (let i = 0; i < features.length; i += 1) {
