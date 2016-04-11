@@ -342,7 +342,7 @@ describe('gispl', () => {
         }, 0);
     });
 
-    it(`should allow a callback to prevent the gesture from further bubbling`, (asyncDone) => {
+    it(`should allow a callback to prevent the gesture from bubbling to parents`, (asyncDone) => {
         let spy = sinon.spy(),
             motionName = 'motion',
             sessionId = 10,
@@ -377,6 +377,53 @@ describe('gispl', () => {
             
             expect(spy.callCount).to.equal(0);
 
+            server.close();
+            asyncDone();
+        }, 0);
+    });
+
+    it(`should allow a callback on parents to prevent the gesture from bubbling further`, (asyncDone) => {
+        let spy = sinon.spy(),
+            motionName = 'motion',
+            sessionId = 10,
+            xPos = 0.2,
+            yPos = 0.2,
+            host = 'test-socket-url';
+
+        gispl.addGesture({
+            name: motionName,
+            features: [
+                {type:'Motion'}
+            ]
+        });
+        // ensure hitting body
+        let body$ = $('body, html');
+        body$.css({
+            width: '100%',
+            height: '100%'
+        });
+        // calling stopPropagation will prevent the event from bubbling
+        // to document
+        gispl(document.documentElement).on(motionName, function(event) {
+            event.stopPropagation();
+        });
+        // spy should not be called
+        gispl(document).on(motionName, spy);
+        window.WebSocket = WebMocket;
+        gispl.initTuio({host, calibration});
+
+        let server = new MocketServer(host);
+
+        setTimeout(() => {
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            //move pointer
+            xPos += 0.5;
+            yPos += 0.5;
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            
+            expect(spy.callCount).to.equal(0);
+            
+            body$.removeAttr('style');
             server.close();
             asyncDone();
         }, 0);

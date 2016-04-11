@@ -22,9 +22,11 @@ export function gestureEmition(params = {}) {
             if (eventPropagates(eventObject)) {
                 let parents = findNode.withParentsOf(currentNode);
                 for (let j = 1; j < parents.length; j += 1) {
-                    let parent = parents[j];
-                    eventObject.currentTarget = parent;
-                    events.emit(parent, eventName, eventObject);
+                    if (eventPropagates(eventObject)) {
+                        let parent = parents[j];
+                        eventObject.currentTarget = parent;
+                        events.emit(parent, eventName, eventObject);
+                    }
                 }
             }
         }
