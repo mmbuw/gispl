@@ -1,22 +1,17 @@
+class EventObject {
+    constructor(input, node, gesture) {
+        this.input = input;
+        this.target = node;
+        this.currentTarget = node;
+        this.featureValues = eventFeatures();
+        if (typeof gesture === 'object') {
+            gesture.featureValuesToObject(this.featureValues);
+        }
+    }
+}
+
 export function createEventObject(inputObjects, originalNode, gesture) {
-    let featureValues = eventFeatures();
-    
-    if (typeof gesture === 'object') {
-        gesture.featureValuesToObject(featureValues);
-    }
-    
-    let target,
-        currentTarget;
-    if (typeof originalNode !== 'undefined') {
-        target = originalNode;
-    }
-    
-    return {
-        input: inputObjects,
-        featureValues,
-        target,
-        currentTarget
-    };
+    return new EventObject(inputObjects, originalNode, gesture);
 }
 
 function eventFeatures() {
