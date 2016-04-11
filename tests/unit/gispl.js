@@ -328,10 +328,8 @@ describe('gispl', () => {
             xPos += 0.5;
             yPos += 0.5;
             sendPointerBundle(server, {sessionId, xPos, yPos});
-            let callbackArgs = spy.lastCall.args;
-            expect(callbackArgs.length).to.equal(1);
-
-            let eventObject = callbackArgs[0],
+            let callbackArgs = spy.lastCall.args,
+                eventObject = callbackArgs[0],
                 {target,
                     currentTarget} = eventObject;
             
@@ -339,6 +337,46 @@ describe('gispl', () => {
             expect(target).to.equal(document.documentElement);
             // but called on document node
             expect(currentTarget).to.equal(document);
+
+            server.close();
+            asyncDone();
+        }, 0);
+    });
+
+    it(`should allow a callback to prevent the gesture from further bubbling`, (asyncDone) => {
+        let spy = sinon.spy(),
+            motionName = 'motion',
+            sessionId = 10,
+            xPos = 0.2,
+            yPos = 0.2,
+            host = 'test-socket-url';
+
+        gispl.addGesture({
+            name: motionName,
+            features: [
+                {type:'Motion'}
+            ]
+        });
+        // calling stopPropagation will prevent the event from bubbling
+        // to document
+        gispl(document.documentElement).on(motionName, function(event) {
+            event.stopPropagation();
+        });
+        // spy should not be called
+        gispl(document).on(motionName, spy);
+        window.WebSocket = WebMocket;
+        gispl.initTuio({host, calibration});
+
+        let server = new MocketServer(host);
+
+        setTimeout(() => {
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            //move pointer
+            xPos += 0.5;
+            yPos += 0.5;
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            
+            expect(spy.callCount).to.equal(0);
 
             server.close();
             asyncDone();
