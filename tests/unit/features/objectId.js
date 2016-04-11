@@ -15,9 +15,7 @@ describe('feature', () => {
                 objectIdFeature = featureFactory({type, constraints});
             
             let object = new TuioObject({sym: id}),
-                inputObject = inputObjectFromTuio({
-                    tuioComponent: object
-                });
+                inputObject = inputObjectFromTuio(object);
             
             let inputObjects = [inputObject];
             expect(objectIdFeature.load({inputObjects})).to.equal(true);
@@ -29,9 +27,7 @@ describe('feature', () => {
                 objectIdFeature = featureFactory({type, constraints});
             
             let object = new TuioObject({sym: id}),
-                inputObject = inputObjectFromTuio({
-                    tuioComponent: object
-                });
+                inputObject = inputObjectFromTuio(object);
             
             let inputObjects = [inputObject];
             expect(objectIdFeature.load({inputObjects})).to.equal(true);
@@ -45,9 +41,7 @@ describe('feature', () => {
         //         objectIdFeature = featureFactory({type, constraints});
             
         //     let token = new TuioToken({sym: id}),
-        //         inputObject = inputObjectFromTuio({
-        //             tuioComponent: token
-        //         });
+        //         inputObject = inputObjectFromTuio(token);
             
         //     let inputObjects = [inputObject];
         //     expect(objectIdFeature.load({inputObjects})).to.equal(true);
@@ -60,9 +54,7 @@ describe('feature', () => {
                 objectIdFeature = featureFactory({type, constraints});
             
             let object = new TuioObject({sym: id}),
-                inputObject = inputObjectFromTuio({
-                    tuioComponent: object
-                });
+                inputObject = inputObjectFromTuio(object);
             
             let inputObjects = [inputObject];
             expect(objectIdFeature.load({inputObjects})).to.equal(false);
@@ -105,12 +97,10 @@ describe('feature', () => {
                 objectIdFeature = featureFactory({type, constraints});
             
             let object = new TuioObject({sym: id}),
-                inputObject = inputObjectFromTuio({
-                    tuioComponent: object
-                });
+                inputObject = inputObjectFromTuio(object);
             
             let inputObjects = [inputObject];
-            objectIdFeature.load({inputObjects})
+            objectIdFeature.load({inputObjects});
             
             let featureValues = {},
                 expectedObjectIdValue = [id];

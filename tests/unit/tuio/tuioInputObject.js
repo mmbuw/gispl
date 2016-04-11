@@ -13,9 +13,7 @@ describe('tuioInputObject', () => {
     it('should have a session identifier', () => {
         let sessionId = 10,
             pointer = buildPointer({sessionId}).finished(),
-            input = inputObjectFromTuio({
-                tuioComponent: pointer
-            });
+            input = inputObjectFromTuio(pointer);
 
         expect(input.identifier).to.equal(sessionId);
     });
@@ -23,9 +21,7 @@ describe('tuioInputObject', () => {
     it('should have a type identifier', () => {
         let typeId = 5,
             pointer = buildPointer({typeId}).finished(),
-            input = inputObjectFromTuio({
-                tuioComponent: pointer
-            });
+            input = inputObjectFromTuio(pointer);
 
         expect(input.type).to.equal(typeId);
     });
@@ -34,9 +30,7 @@ describe('tuioInputObject', () => {
         let x = 0.5,
             y = 0.5,
             pointer = buildPointer({x, y}).finished(),
-            input = inputObjectFromTuio({
-                tuioComponent: pointer
-            });
+            input = inputObjectFromTuio(pointer);
 
         expect(input.screenX).to.equal(x*window.screen.width);
         expect(input.screenY).to.equal(y*window.screen.height);
@@ -46,9 +40,7 @@ describe('tuioInputObject', () => {
         let x = Math.random(),
             y = Math.random(),
             pointer = buildPointer({x, y}).finished(),
-            input = inputObjectFromTuio({
-                tuioComponent: pointer
-            });
+            input = inputObjectFromTuio(pointer);
         
         expect(input.relativeScreenX).to.equal(x);
         expect(input.relativeScreenY).to.equal(y);
@@ -61,10 +53,7 @@ describe('tuioInputObject', () => {
             clientY = 100,
             pointer = buildPointer({x, y}).finished(),
             calibration = getCalibrationMock({clientX, clientY}),
-            input = inputObjectFromTuio({
-                tuioComponent: pointer,
-                calibration
-            });
+            input = inputObjectFromTuio(pointer, calibration);
 
         expect(input.clientX).to.equal(clientX);
         expect(input.clientY).to.equal(clientY);
@@ -77,10 +66,7 @@ describe('tuioInputObject', () => {
             clientY = 100,
             pointer = buildPointer({x, y}).finished(),
             calibration = getCalibrationMock({clientX, clientY}),
-            input = inputObjectFromTuio({
-                tuioComponent: pointer,
-                calibration
-            });
+            input = inputObjectFromTuio(pointer, calibration);
         // exactly how it is implemented,
         // maybe irrelevant test
         expect(input.pageX).to.equal(clientX + window.pageXOffset);
@@ -93,10 +79,7 @@ describe('tuioInputObject', () => {
             y = null,
             pointer = buildPointer({x, y}).finished(),
             calibration,
-            input = inputObjectFromTuio({
-                tuioComponent: pointer,
-                calibration
-            });
+            input = inputObjectFromTuio(pointer, calibration);
         expect(input.clientX).to.be.an('undefined');
         expect(input.clientY).to.be.an('undefined');
         expect(input.pageX).to.be.an('undefined');
@@ -112,10 +95,7 @@ describe('tuioInputObject', () => {
             clientX = 100,
             clientY = 100,
             calibration = getCalibrationMock({clientX, clientY}),
-            inputWithHistory = inputObjectFromTuio({
-                tuioComponent: movingPointer.finished(),
-                calibration
-            });
+            inputWithHistory = inputObjectFromTuio(movingPointer.finished(), calibration);
 
         expect(inputWithHistory.path.length).to.deep.equal(path.length);
         expect(inputWithHistory.path[0].screenX).to.equal(path[0].screenX);
@@ -127,11 +107,11 @@ describe('tuioInputObject', () => {
         path.push(
                 {screenX: 0.5*window.screen.width, screenY: 0.5*window.screen.height}
         );
-        tuioObjectUpdate({
-            tuioComponent: movingPointer.finished(),
-            inputObject: inputWithHistory,
+        tuioObjectUpdate(
+            inputWithHistory,
+            movingPointer.finished(),
             calibration
-        });
+        );
         
         expect(inputWithHistory.path.length).to.equal(path.length);
         expect(inputWithHistory.path[1].screenX).to.equal(path[1].screenX);
@@ -143,16 +123,14 @@ describe('tuioInputObject', () => {
     it('should update the path when new points added', () => {
         
         let movingPointer = buildPointer({x: 0, y: 0}),
-            inputObject = inputObjectFromTuio({
-                tuioComponent: movingPointer.finished()
-            });
+            inputObject = inputObjectFromTuio(movingPointer.finished());
         expect(inputObject.path.length).to.equal(1);
         
         let x = 0.1, y = 0.1;
         movingPointer.moveTo({x, y});
-        tuioObjectUpdate({
-            inputObject, tuioComponent: movingPointer.finished()
-        });
+        tuioObjectUpdate(
+            inputObject, movingPointer.finished()
+        );
         expect(inputObject.path.length).to.equal(2);
         expect(inputObject.path[1].relativeScreenX).to.equal(x);
         expect(inputObject.path[1].relativeScreenY).to.equal(y);
@@ -161,17 +139,15 @@ describe('tuioInputObject', () => {
     it('should update the path property with new points, not create new path', () => {
         
         let movingPointer = buildPointer({x: 0, y: 0}),
-            inputObject = inputObjectFromTuio({
-                tuioComponent: movingPointer.finished()
-            });
+            inputObject = inputObjectFromTuio(movingPointer.finished());
         
         let firstPointInPath = inputObject.path[0];
         
         movingPointer.moveTo({x: 0.5, y: 0.4});
-        tuioObjectUpdate({
+        tuioObjectUpdate(
             inputObject,
-            tuioComponent: movingPointer.finished()
-        });
+            movingPointer.finished()
+        );
         
         expect(firstPointInPath).to.equal(inputObject.path[0]);
     });
@@ -180,18 +156,16 @@ describe('tuioInputObject', () => {
         let startingTime = 300,
             timeAfterOneSecond = startingTime + 1000,
             movingPointer = buildPointer({time: startingTime}),
-            inputObject = inputObjectFromTuio({
-                tuioComponent: movingPointer.finished()
-            }),
+            inputObject = inputObjectFromTuio(movingPointer.finished()),
             path = inputObject.path;
         
         expect(path[0].tuioTime).to.equal(startingTime);
         
         movingPointer.moveTo({time: timeAfterOneSecond});
-        tuioObjectUpdate({
-            tuioComponent: movingPointer.finished(),
-            inputObject
-        })
+        tuioObjectUpdate(
+            inputObject,
+            movingPointer.finished()
+        );
         
         expect(path[1].tuioTime).to.equal(timeAfterOneSecond);
     });
@@ -201,9 +175,7 @@ describe('tuioInputObject', () => {
             tuioTime = 1000,
             clock = sinon.useFakeTimers(realTime),
             pointer = buildPointer({time: tuioTime}).finished(),
-            input = inputObjectFromTuio({
-                tuioComponent: pointer
-            });
+            input = inputObjectFromTuio(pointer);
             
         expect(input.startingTime).to.equal(realTime);
         
@@ -215,9 +187,7 @@ describe('tuioInputObject', () => {
             tuioTime = 1000,
             clock = sinon.useFakeTimers(startingTime),
             pointer = buildPointer({x: 0, y: 0, time: tuioTime}),
-            inputObject = inputObjectFromTuio({
-                tuioComponent: pointer.finished()
-            });
+            inputObject = inputObjectFromTuio(pointer.finished());
             
         expect(inputObject.path[0].startingTime).to.equal(startingTime);
         
@@ -226,10 +196,10 @@ describe('tuioInputObject', () => {
         pointer.moveTo({x: 0.5, y: 0.5, time: tuioTime});
         clock.tick(elapsedTime);
         
-        tuioObjectUpdate({
-            tuioComponent: pointer.finished(),
-            inputObject
-        });
+        tuioObjectUpdate(
+            inputObject,
+            pointer.finished()
+        );
         expect(inputObject.path[1].startingTime).to.equal(startingTime + elapsedTime);
         
         clock.restore();
@@ -240,9 +210,7 @@ describe('tuioInputObject', () => {
             tuioTime = 1000,
             clock = sinon.useFakeTimers(startingTime),
             pointer = buildPointer({x: 0, y: 0, time: tuioTime}),
-            inputObject = inputObjectFromTuio({
-                tuioComponent: pointer.finished()
-            });
+            inputObject = inputObjectFromTuio(pointer.finished());
         
         expect(inputObject.startingTime).to.equal(startingTime);
         
@@ -251,10 +219,10 @@ describe('tuioInputObject', () => {
         pointer.moveTo({x: 0.5, y: 0.5, time: tuioTime});
         clock.tick(elapsedTime);
         
-        tuioObjectUpdate({
-            tuioComponent: pointer.finished(),
-            inputObject
-        });
+        tuioObjectUpdate(
+            inputObject,
+            pointer.finished()
+        );
         
         expect(inputObject.startingTime).to.equal(startingTime);
         clock.restore();
@@ -262,27 +230,19 @@ describe('tuioInputObject', () => {
     
     it('should contain tuio component information', () => {
         let pointer = new TuioPointer(),
-            objectFromPointer = inputObjectFromTuio({
-                tuioComponent: pointer
-            });
+            objectFromPointer = inputObjectFromTuio(pointer);
         expect(objectFromPointer.componentType).to.equal(inputType.POINTER);
         
         let cursor = new TuioCursor({}),
-            objectFromCursor = inputObjectFromTuio({
-                tuioComponent: cursor
-            });
+            objectFromCursor = inputObjectFromTuio(cursor);
         expect(objectFromCursor.componentType).to.equal(inputType.CURSOR);
         
         let object = new TuioObject({}),
-            objectFromObject = inputObjectFromTuio({
-                tuioComponent: object
-            });
+            objectFromObject = inputObjectFromTuio(object);
         expect(objectFromObject.componentType).to.equal(inputType.OBJECT);
         
         let token = new TuioToken(),
-            objectFromToken = inputObjectFromTuio({
-                tuioComponent: token
-            });
+            objectFromToken = inputObjectFromTuio(token);
         expect(objectFromToken.componentType).to.equal(inputType.TOKEN);
     });
     
@@ -290,22 +250,22 @@ describe('tuioInputObject', () => {
         let angle = Math.PI, 
             object = new TuioObject({a: angle});
         
-        let inputObject = inputObjectFromTuio({tuioComponent: object});
+        let inputObject = inputObjectFromTuio(object);
         expect(inputObject.angle).to.equal(angle);
         
         let cursor = new TuioCursor({});
-        let inputObjectFromPointer = inputObjectFromTuio({tuioComponent: cursor});
+        let inputObjectFromPointer = inputObjectFromTuio(cursor);
         expect(inputObjectFromPointer.angle).to.be.an('undefined');
     });
     
     it('should contain angle information in path', () => {
         let angle = Math.PI, 
-            object = new TuioObject({a: angle});
+            tuioObject = new TuioObject({a: angle});
         
-        let inputObject = inputObjectFromTuio({tuioComponent: object});
+        let inputObject = inputObjectFromTuio(tuioObject);
         
-        object.update({a: angle+1});
-        tuioObjectUpdate({tuioComponent: object, inputObject});
+        tuioObject.update({a: angle+1});
+        tuioObjectUpdate(inputObject, tuioObject);
         
         expect(inputObject.path.length).to.equal(2);
         expect(inputObject.path[0].angle).to.equal(angle);
@@ -316,7 +276,7 @@ describe('tuioInputObject', () => {
         let sym = 99,
             object = new TuioObject({sym});
         
-        let inputObject = inputObjectFromTuio({tuioComponent: object});
+        let inputObject = inputObjectFromTuio(object);
         
         expect(inputObject.componentId).to.equal(sym);
     });
@@ -325,7 +285,7 @@ describe('tuioInputObject', () => {
         let userId = 10,
             object = new TuioPointer({ui: userId});
         
-        let inputObject = inputObjectFromTuio({tuioComponent: object});
+        let inputObject = inputObjectFromTuio(object);
         
         expect(inputObject.user).to.equal(userId);
     });

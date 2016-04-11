@@ -70,7 +70,7 @@ describe('feature', () => {
                 firstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
                 secondInput = buildInputFromPointer({x: 0.6, y: 0.6});
             
-            firstInput.moveTo({x: 0.30, y: 0.30});
+            firstInput.moveTo({x: 0.31, y: 0.31});
             secondInput.moveTo({x: 0.7, y: 0.7});
             
             let inputObjects = [
@@ -281,25 +281,28 @@ describe('feature', () => {
         it('should be able to set its last known value in the feature values object', () => {
             let params = {
                     type,
-                    constraints: [2]
+                    constraints: []
                 },
                 scaleFeature = featureFactory(params),
-                firstInput = buildInputFromPointer({x: 0.4, y: 0.4}),
-                secondInput = buildInputFromPointer({x: 0.6, y: 0.6});
+                firstInput = buildInputFromPointer({x: 0.4, y: 0.5}),
+                secondInput = buildInputFromPointer({x: 0.6, y: 0.5});
             
-            firstInput.moveTo({x: 0.30, y: 0.30});
-            secondInput.moveTo({x: 0.7, y: 0.7});
+            firstInput.moveTo({x: 0.30, y: 0.50});
+            secondInput.moveTo({x: 0.7, y: 0.5});
             
             let inputObjects = [
-                firstInput.finished(),
-                secondInput.finished()
-            ],
+                    firstInput.finished(),
+                    secondInput.finished()
+                ],
                 featureValues = {},
-                expectedScaleValue = 2;
+                expectedScaleValue = 2,
+                epsilon = .01;
             
             scaleFeature.load({inputObjects}); // valid feature
             scaleFeature.setValueToObject(featureValues);
-            expect(featureValues.scale).to.equal(expectedScaleValue);
+            expect(featureValues.scale).to.be.above(expectedScaleValue - epsilon);
+            expect(featureValues.scale).to.be.below(expectedScaleValue + epsilon);
+            
         });
     });
 });

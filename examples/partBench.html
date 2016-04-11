@@ -9,15 +9,14 @@
         </script>
         <script src="/config.js"></script>
         <script>
-            System.import('examples/scale.js');
+            System.import('examples/partBench.js');
         </script>
         <style>
-            body {margin: 0; padding: 0;}
-            img {display: block; will-change: transform; width: 1500px;}
+            body, html {margin: 0; padding: 0; height: 100%; overflow: hidden;}
+            img {display: block;}
         </style>
     </head>
     <body>
-        <img src="https://farm2.staticflickr.com/1643/23873901174_9984c74575_z.jpg" />
-        <img src="https://farm2.staticflickr.com/1704/24479174026_3117ea358e_z.jpg" />
+        <canvas id="canvas"></canvas>
     </body>
 </html>

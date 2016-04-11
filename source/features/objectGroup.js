@@ -1,7 +1,5 @@
-import {vector} from '../vector';
 import {featureBase,
         lowerUpperLimit} from '../feature';
-import screenCalibration from '../tuio/screenCalibration';
 
 export function objectgroup(params) {
     
@@ -10,38 +8,17 @@ export function objectgroup(params) {
     let {constraints} = params,
         baseFeature = featureBase(params),
         limit = lowerUpperLimit(constraints),
-        // TODO
-        // maybe pass in an instance somehow
-        calibration = screenCalibration.instance(),
         radius = constraints[2];
     
-    function pointToPointDistance(first, second) {
-        let x = (first.screenX - second.screenX),
-            y = (first.screenY - second.screenY),
-            directionVector = vector({x, y});
-            
-        return directionVector.length();
-    }
-
-    function calculateCentroidFrom(inputObjects) {
-        let inputCount = inputObjects.length,
-            screenX = 0,
-            screenY = 0;
-        
-        inputObjects.forEach(inputObject => {
-            screenX += inputObject.screenX;
-            screenY += inputObject.screenY;
-        });
-        
-        screenX /= inputCount;
-        screenY /= inputCount;
-        
-        let {clientX, clientY,
-                pageX, pageY} = calibration.screenToBrowserCoordinates({screenX, screenY});
-                                    
-        return {screenX, screenY,
-                    pageX, pageY,
-                    clientX, clientY};
+    function centroidToInputDistance(inputObjects, centroid) {
+        let largestDistance = 0;
+        for (let i = 0; i < inputObjects.length; i += 1) {
+            let distance = baseFeature.pointToPointDistance(inputObjects[i], centroid);
+            if (distance > largestDistance) {
+                largestDistance = distance;
+            }
+        }
+        return largestDistance;
     }
     
     return {
@@ -55,16 +32,16 @@ export function objectgroup(params) {
                 match = false;
             
             if (inputObjects.length > 1) {
-                let centroid = calculateCentroidFrom(inputObjects),
-                    distance = pointToPointDistance(centroid, inputObjects[0], true);
+                let centroid = baseFeature.calculateCentroid(inputObjects),
+                    largestDistance = centroidToInputDistance(inputObjects, centroid);
                     
-                match = Math.floor(distance) <= radius &&
+                match = Math.floor(largestDistance) <= radius &&
                         count >= limit.lower &&
                         count <= limit.upper;
             
                 if (match) {
                     baseFeature.setMatchedValue({
-                        radius: distance,
+                        radius: largestDistance,
                         midpoint: centroid
                     });
                 }   

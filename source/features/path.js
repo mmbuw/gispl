@@ -7,12 +7,36 @@ export function path(params) {
 
     let baseFeature = featureBase(params),
         {recognizer} = params,
-        // name will be something lik
+        // name will be something like
         // "0,0,10,10" from [[0,0], [10,10]]
         name = params.constraints.toString(),
-        constraints = dollarPointsFrom(params.constraints);
+        constraints = dollarPointsFrom(params.constraints),
+        allScores = [],
+        // value is empirical
+        // TODO allow it to be user defined
+        validThreshold = 1.9;
 
     recognizer.AddGesture(name, constraints);
+    
+    function coordinatesToPoint(point) {
+        // could create a pool to avoid creating objects
+        // but the $1 recognizer already creates new instances when resampling
+        return new Point(point.screenX, point.screenY);
+    }
+    
+    function toAllScores(allScores, inputObject) {
+        let $points = inputObject.path.map(coordinatesToPoint);
+        let result = recognizer.Recognize($points, true);
+        if (result.Name === name &&
+            result.Score > validThreshold) {
+            allScores[allScores.length] = result.Score;
+        }
+        return allScores;
+    }
+    
+    function toTotalScore(previous, current) {
+        return previous + current;
+    }
 
     return {
         type() {
@@ -20,31 +44,23 @@ export function path(params) {
         },
 
         load(inputState) {
-            let inputObjects = baseFeature.inputObjectsFrom(inputState),
-                totalScore = 0;
+            let inputObjects = baseFeature.inputObjectsFrom(inputState)
+                                            .filter(baseFeature.checkAgainstDefinition),
+                match = false;
 
-            let match = inputObjects.every(inputObject => {
-                let inputObjectMatch = false;
-
-                if (baseFeature.checkAgainstDefinition(inputObject)) {
-                    let $points = inputObject.path.map(point => {
-                        return new Point(point.screenX, point.screenY);
-                    });
-
-                    let result = recognizer.Recognize($points, true);
-                    
-                    totalScore += result.Score;
-                    inputObjectMatch = (result.Name === name &&
-                                // value is empirical
-                                // TODO allow it to be user defined
-                                result.Score > 1.9);
+            if (inputObjects.length !== 0) {
+                allScores.length = 0;
+                // calculate scores of valid inputs
+                let allCurrentScores = inputObjects.reduce(toAllScores, allScores);
+                // calculate total score if all inputs valid
+                if (allCurrentScores.length === inputObjects.length) {
+                    let totalScore = allCurrentScores.reduce(toTotalScore);
+                    let averageScore = totalScore / inputObjects.length;
+                    if (averageScore > validThreshold) {
+                        match = true;
+                        baseFeature.setMatchedValue(totalScore / inputObjects.length);
+                    }   
                 }
-
-                return inputObjectMatch;
-            });
-            
-            if (match) {
-                baseFeature.setMatchedValue(totalScore / inputObjects.length);
             }
             
             return match;

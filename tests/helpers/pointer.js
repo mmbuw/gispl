@@ -61,19 +61,14 @@ export function buildInputFromPointer(params) {
     let pointerBuilder = buildPointer(params);
     
     function tuioInputObject() {
-        return inputObjectFromTuio({
-            tuioComponent: pointerBuilder.finished()
-        });
+        return inputObjectFromTuio(pointerBuilder.finished());
     }
     let inputObject = tuioInputObject();
 
     return {
         moveTo: function(params) {
             pointerBuilder.moveTo(params);
-            tuioObjectUpdate({
-                inputObject,
-                tuioComponent: pointerBuilder.finished()
-            });
+            tuioObjectUpdate(inputObject, pointerBuilder.finished());
             return this;
         },
         newSessionId: function() {

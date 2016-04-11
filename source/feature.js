@@ -1,8 +1,9 @@
-import {vector} from './vector';
 import * as features from './features';
 import {extractDurationFrom,
         validInputFromDuration} from './gesture';
 import {DollarRecognizer} from './libs/dollar';
+import {vector} from './vector';
+import screenCalibration from './tuio/screenCalibration';
 
 let singleRecognizerInstance = new DollarRecognizer();
 
@@ -27,7 +28,10 @@ export function featureBase(params) {
     let {filters,
             type} = params,
         duration = extractDurationFrom(params),
-        matchedValue;
+        matchedValue,
+        // TODO
+        // maybe pass in an instance somehow
+        calibration = screenCalibration.instance();
     
     
     function matchFiltersWith(inputObject) {
@@ -68,6 +72,35 @@ export function featureBase(params) {
             if (typeof featureValues === 'object') {
                 featureValues[type.toLowerCase()] = matchedValue;
             }
+        },
+        pointToPointDistance(first, second) {
+            let x = (first.screenX - second.screenX),
+                y = (first.screenY - second.screenY),
+                directionVector = vector(x, y);
+                
+            return directionVector.length();
+        }, 
+        calculateCentroid(inputObjects, useFirstPointInPath = false) {
+            let inputCount = inputObjects.length,
+                screenX = 0,
+                screenY = 0;
+            
+            for (let i = 0; i < inputCount; i += 1) {
+                let object = inputObjects[i];
+                if (useFirstPointInPath) {
+                    if (object.path.length < 2) {
+                        return;
+                    }
+                    object = object.path[object.path.length-2];
+                }
+                screenX += object.screenX;
+                screenY += object.screenY;
+            }
+            
+            screenX /= inputCount;
+            screenY /= inputCount;
+            
+            return calibration.screenToBrowserCoordinates(screenX, screenY);
         }
     };
 }
@@ -87,38 +120,6 @@ export function extractConstraintsFrom(params) {
         constraints.push(defaultUpperLimit);
     }
     return constraints;
-}
-    
-export function pointToPointDistance(first, second) {
-    // scale helps with floating point inprecision 
-    // without it some edge case in tests will fail
-    // because instead of 2, the scale factor will be 2.00...004
-    // using screenX which is an integer does not always help
-    // also don't change to (first - second) * scale
-    let scale = 10000,
-        x = (first.relativeScreenX * scale - second.relativeScreenX * scale),
-        y = (first.relativeScreenY * scale - second.relativeScreenY * scale),
-        directionVector = vector({x, y});
-        
-    return directionVector.length() / scale;
-}
-
-export function calculateCentroidFrom(inputObjects) {
-    let inputCount = inputObjects.length,
-        // check above scale comment
-        scale = 10000,
-        relativeScreenX = 0,
-        relativeScreenY = 0;
-    
-    inputObjects.forEach(inputObject => {
-        relativeScreenX += inputObject.path[0].relativeScreenX * scale;
-        relativeScreenY += inputObject.path[0].relativeScreenY * scale;
-    });
-    
-    relativeScreenX /= inputCount * scale;
-    relativeScreenY /= inputCount * scale;
-    
-    return {relativeScreenX, relativeScreenY};
 }
 
 export function lowerUpperLimit(constraints = []) {

@@ -1,6 +1,7 @@
 export default function nodeSearch(params = {}) {
 
-    let {calibration} = params;
+    let {calibration} = params,
+        result = [];
 
     function coordinatesFromParams(params = {}) {
         let {clientX, clientY, screenX, screenY} = params;
@@ -8,7 +9,7 @@ export default function nodeSearch(params = {}) {
         if (typeof screenX !== 'undefined' &&
                 typeof screenY !== 'undefined' &&
                 calibration.isScreenUsable()) {
-            let adjustedPoints = calibration.screenToBrowserCoordinates(params);
+            let adjustedPoints = calibration.screenToBrowserCoordinates(screenX, screenY);
             ({clientX, clientY} = adjustedPoints);
         }
 
@@ -30,11 +31,11 @@ export default function nodeSearch(params = {}) {
             return foundElement;
         },
         withParentsOf(node) {
-            let existingNode = node,
-                result = [];
+            let existingNode = node;
+            result.length = 0;
                 
             while (existingNode) {
-                result.push(existingNode);
+                result[result.length] = existingNode;
                 existingNode = existingNode.parentNode;
             }
             

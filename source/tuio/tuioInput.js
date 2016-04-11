@@ -5,15 +5,33 @@ export default function tuioInput(params = {}) {
     let {tuioClient} = params,
         listeners = [],
         enabled = false,
-        tuioInputHistory = nodesInputHistory(params);
+        tuioInputHistory = nodesInputHistory(params),   
+        allTuioComponents = [];
 
     function onTuioRefresh() {
-        let tuioComponents = fetchTuioData();        
-        let allCurrentInput = tuioInputHistory.store(tuioComponents);
+        fetchTuioData();        
+        let allCurrentInput = tuioInputHistory.store(allTuioComponents);
 
         notify(tuioInputHistory.nodeCurrentInput(),
                 tuioInputHistory.nodeHistoryInput(),
                 allCurrentInput);
+    }
+    
+    function copyCurrentTuioComponents(pointers, cursors, tokens, objects) {
+        allTuioComponents.length = 0;   
+        for (let i = 0, length = pointers.length; i < length; i += 1) {
+            allTuioComponents[allTuioComponents.length] = pointers[i];
+        }
+        for (let i = 0, length = tokens.length; i < length; i += 1) {
+            allTuioComponents[allTuioComponents.length] = tokens[i];
+        }
+        // tuio v1 types are stored in an {} object
+        for (let key in cursors) {
+            allTuioComponents[allTuioComponents.length] = cursors[key];
+        }
+        for (let key in objects) {
+            allTuioComponents[allTuioComponents.length] = objects[key];
+        }
     }
     
     function fetchTuioData() {
@@ -21,18 +39,7 @@ export default function tuioInput(params = {}) {
             cursors = tuioClient.getTuioCursors(),
             tokens = tuioClient.getTuioTokens(),
             objects = tuioClient.getTuioObjects();
-            
-        let tuioComponents = pointers;
-        tuioComponents.push(...tokens);
-        // tuio v1 types are stored in an {} object
-        Object.keys(cursors).forEach(key => {
-            tuioComponents.push(cursors[key]); 
-        });
-        Object.keys(objects).forEach(key => {
-            tuioComponents.push(objects[key]); 
-        });
-        
-        return tuioComponents;
+        copyCurrentTuioComponents(pointers, cursors, tokens, objects);
     }
 
     function enable() {
@@ -43,9 +50,10 @@ export default function tuioInput(params = {}) {
     }
 
     function notify(...args) {
-        listeners.forEach(callback => {
+        for (let i = 0; i < listeners.length; i += 1) {
+            let callback = listeners[i];
             callback(...args);
-        });
+        }
     }
 
     // listen to tuio/websocket
@@ -87,27 +95,30 @@ export default function tuioInput(params = {}) {
 // it creates, keeps and updates instances of inputObjects
 // that correspond to tuioComponents like cursors or pointers
 function nodesInputHistory(params = {}) {
+        // limit for all stored objects
+    let {limit = 10,
+            findNode,
+            calibration} = params,
         // list of stored inputObject instances used by all nodes
-    let storedObjects = [],
+        storedObjects = [],
         // a map of node => [inputObjects]
         // all inputObjects that were in contact with the node at one point
         nodesWithInputHistory = new WeakMap(),
         // similar map, but only with nodes that have active input
         nodesWithInput = new Map(),
-        // limit for all stored objects
-        {limit = 10,
-            findNode,
-            calibration} = params;
+        allCurrentInput = [];
     
     // find matching inputObject for a tuioComponent
     // matches per id
     function findIndexOf(tuioComponent) {
-        let indexOfComponent = -1;  
-        storedObjects.forEach((object, index) => {
+        let indexOfComponent = -1;
+        for (let index = 0; index < storedObjects.length; index += 1) {
+            let object = storedObjects[index];
             if (object.identifier === tuioComponent.getSessionId()) {
                 indexOfComponent = index;
+                break;
             }
-        });
+        }
         return indexOfComponent;
     }
     // removes an inputObject from node => [inputObjects]
@@ -116,12 +127,13 @@ function nodesInputHistory(params = {}) {
     // it will remove the first element from the list
     // but it is still in the list for an individual node history
     function removeDroppedInputObjectsFrom(historyForNode) {
-        historyForNode.forEach((inputObject, currentIndex) => {
-            let notStored = storedObjects.indexOf(inputObject) === -1;
+        for (let historyIndex = 0; historyIndex < historyForNode.length; historyIndex += 1) {
+            let historyInputObject = historyForNode[historyIndex],
+                notStored = storedObjects.indexOf(historyInputObject) === -1;
             if (notStored) {
-                historyForNode.splice(currentIndex, 1);
+                historyForNode.splice(historyIndex, 1);
             }
-        });
+        }
     }
     // takes a tuioComponent and either
     // finds and updates a matching inputObject
@@ -134,18 +146,15 @@ function nodesInputHistory(params = {}) {
         
         if (newComponent) {
             let storeLimitReached = storedObjects.length === limit;
-            inputObject = inputObjectFromTuio({
-                tuioComponent,
-                calibration
-            });
+            inputObject = inputObjectFromTuio(tuioComponent, calibration);
             if (storeLimitReached) {
                 storedObjects.shift();
             }
-            storedObjects.push(inputObject);
+            storedObjects[storedObjects.length] = inputObject;
         }
         else {
             inputObject = storedObjects[indexOfComponent];
-            tuioObjectUpdate({inputObject, tuioComponent, calibration});
+            tuioObjectUpdate(inputObject, tuioComponent, calibration);
         }
         return inputObject;
     }
@@ -154,7 +163,8 @@ function nodesInputHistory(params = {}) {
         if (!nodesWithInput.has(node)) {
             nodesWithInput.set(node, []);
         }
-        nodesWithInput.get(node).push(inputObject);
+        let inputObjects = nodesWithInput.get(node);
+        inputObjects[inputObjects.length] = inputObject;
     }
     //
     function toNodeInputHistory(node, inputObject) {
@@ -165,23 +175,8 @@ function nodesInputHistory(params = {}) {
             inputObjectNotInHistory = historyForNode.indexOf(inputObject) === -1;
         if (inputObjectNotInHistory) {
             removeDroppedInputObjectsFrom(historyForNode);
-            historyForNode.push(inputObject);
+            historyForNode[historyForNode.length] = inputObject;
         }
-    }
-    //
-    function storeNode(foundNode, inputObject) {
-        if (foundNode) {
-            toNodeInputCurrent(foundNode, inputObject);
-            toNodeInputHistory(foundNode, inputObject);
-        }
-    }
-    // filters out input objects on the screen
-    // that are not in the browser window
-    function inputInBrowserOnly(inputObject) {
-        let foundNode = findNode.fromPoint(inputObject);
-        // ideally should not be here
-        storeNode(foundNode, inputObject);
-        return !!foundNode;
     }
         
     return {
@@ -194,9 +189,17 @@ function nodesInputHistory(params = {}) {
         // returns an array of in browser inputObjects that correspond to tuioComponents
         store(tuioComponents) {
             nodesWithInput.clear();
-            return tuioComponents
-                        .map(convertToInputObject)
-                        .filter(inputInBrowserOnly);
+            allCurrentInput.length = 0;
+            for (let i = 0; i < tuioComponents.length; i += 1) {
+                let inputObject = convertToInputObject(tuioComponents[i]);
+                let foundNode = findNode.fromPoint(inputObject);
+                if (foundNode) {
+                    toNodeInputCurrent(foundNode, inputObject);
+                    toNodeInputHistory(foundNode, inputObject);
+                    allCurrentInput[allCurrentInput.length] = inputObject;
+                }
+            }                      
+            return allCurrentInput;
         }
     };
 }

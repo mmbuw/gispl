@@ -1,7 +1,5 @@
 import {featureBase,
             extractConstraintsFrom,
-            calculateCentroidFrom,
-            pointToPointDistance,
             lowerUpperLimit} from '../feature';
 
 export function scale(params) {
@@ -19,12 +17,16 @@ export function scale(params) {
     
     function totalInputObjectsScale(totalScaleFactor, inputObject) {
         let path = inputObject.path,
-            firstPoint = path[0],
-            lastPoint = path[path.length - 1];
-            
-        let originalDistance = pointToPointDistance(centroid, firstPoint),
-            currentDistance = pointToPointDistance(centroid, lastPoint),
-            currentPointScaleFactor = currentDistance / originalDistance;
+            currentPointScaleFactor = 1;
+        
+        if (path.length > 1) {
+            let previousPoint = path[path.length - 2],
+                currentPoint = path[path.length - 1];
+                
+            let previousDistance = baseFeature.pointToPointDistance(centroid, previousPoint),
+                currentDistance = baseFeature.pointToPointDistance(centroid, currentPoint);
+            currentPointScaleFactor = currentDistance / previousDistance;
+        }
             
         return totalScaleFactor + currentPointScaleFactor;
     }
@@ -42,14 +44,15 @@ export function scale(params) {
             let inputCount = inputObjects.length;
                 
             if (inputCount > 1) {
-                centroid = calculateCentroidFrom(inputObjects);
-                
-                let totalScaleFactor = inputObjects.reduce(totalInputObjectsScale, 0),
-                    averageScaleFactor = totalScaleFactor / inputCount;
-                
-                match = matchWithValue(averageScaleFactor);
-                if (match) {
-                    baseFeature.setMatchedValue(averageScaleFactor);
+                centroid = baseFeature.calculateCentroid(inputObjects, true);
+                if (centroid) {
+                    let totalScaleFactor = inputObjects.reduce(totalInputObjectsScale, 0),
+                        averageScaleFactor = totalScaleFactor / inputCount;
+                    
+                    match = matchWithValue(averageScaleFactor);
+                    if (match) {
+                        baseFeature.setMatchedValue(averageScaleFactor);
+                    }
                 }
             }
             

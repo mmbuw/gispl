@@ -2,49 +2,47 @@ import gispl from '../source/gispl';
 import $ from 'jquery';
 
 $(document).ready(() => {
-    let fingerRotation = 'finger-rotation',
-        objectRotation = 'object-rotation';
+    let fingerRotation = 'finger-rotation';
     
     gispl.addGesture({
         name: fingerRotation,
         features: [
-            {type: 'Count', constraints: [2,4]},
-            {type: 'Rotation'},
+            {type: 'Rotation'}
         ]
     });
     
-    gispl.addGesture({
-        name: objectRotation,
-        features: [
-            {type: 'Count', constraints: [1,1]},
-            {type: 'Rotation'},
-        ]
+    let images$ = $('img'),
+        imageRotations = new WeakMap(),
+        drawing = false;
+    
+    images$.each(function(index, element) {
+        imageRotations.set(element, 0);
     });
     
-    gispl('img').on(fingerRotation, function(event) {
-        let image$ = $(this),
-            rotation = event.featureValues.rotation.touches;
-            
-        let degrees = rotation / Math.PI * 180;
-            
-        image$.css({
-            transform: `rotate(${degrees}deg)`
-        });
+    gispl(images$).on(fingerRotation, function fingerRotationCallback(event) {
+        let rotation = event.featureValues.rotation.touches,
+            degrees = rotation / Math.PI * 180;
+        let previousDegrees = imageRotations.get(this);
+        imageRotations.set(this, previousDegrees + degrees);
+        requestDraw();
     });
     
-    gispl('img').on(objectRotation, function(event) {
-        let image$ = $(this),
-            objects = event.featureValues.rotation.objects,
-            objectsKeys = Object.keys(objects),
-            key = objectsKeys[objectsKeys.length-1],
-            rotation = objects[key];
-            
-        let degrees = rotation / Math.PI * 180;
-            
-        image$.css({
-            transform: `rotate(${degrees}deg)`
-        });
-    });
+    function requestDraw() {
+        if (!drawing) {
+            requestAnimationFrame(draw);
+            drawing = true;
+        }
+    }
+    
+    function draw() {
+        for (let i = 0; i < images$.length; i += 1) {
+            let element = images$[i],
+                degrees = imageRotations.get(element);
+            element.style.transform = `rotate(${degrees}deg)`;
+        }
+        drawing = false;
+    }
+
 
     gispl.initTuio({
         host: 'ws://localhost:8080'

@@ -1,7 +1,4 @@
 language: node_js
-sudo: false
-node_js:
-- '0.12'
 cache:
   directories:
   - node_modules
@@ -21,3 +18,5 @@ branches:
 env:
   global:
     secure: SAsgwchtAgdRyK8oa49Vs7bGT0/5+XGSIFPl4eZaLrY3LEKybwj1zA+PXKwp3lsFzokFc4PZfZrqrysWU6Dt4qW2nXaeVkZ2MaiS5xDNhHyaPmBWSIdgJQXoou8G67c4nCu1LTUPRqFJC6wd7HhZtcoIx0ZAXfdlQTy5q8sMtKCgafjV8qnaRdCc9bjLbfm8rcxNA8xR+db4Ec+ljOgyfczU/OXABOGrsjtMNt8/gFr7pat6FRthm5r2n2XXdQESVfo1B5RVC+qzOPXmMmWSNH5+b8N0a1HmAjbBXd9QxDvdzOkLEG3odBkAwjObacoDt82haWd9UVTmu7BuRFLtKPr8y3m5QlIcavrcDOlHtzFLi/IGkRsIIqvwb3SrvYp56t6wF/9unfS7a0Im3Kq/aBXjP4qLA9UPqmLCM8fpVhktDc/qcI7zEa0t6GOk+q9quv313bCCiIA0+d+sQ7j0FFuZylRxQ5aJTjhtX8PW8E8exnXgbb4jchI9cGzMN0QfVFOtFjxUhwSmCFqcJzY93Dw9IjOk3ZhxcUrMwmra/mipTUmR3O3dlnKXGnafw9dmsWyI/yhM0RoOXEfuXutdAfR9Vl5X5JiBLp8DA9iSiXAdF0/qAqv7purA1hT3LjmW3CT3PPsVvaiSp9EUrjTmqgfhaBKZ/ygmpHJcn4HgTjA=
+addons:
+  firefox: "45.0"

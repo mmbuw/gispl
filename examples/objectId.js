@@ -21,30 +21,57 @@ $(document).ready(() => {
         ]
     });
     
-    let images$ = $('img');
+    let images$ = $('img'),
+        drawing = false,
+        imageRotations = new WeakMap();
+    
+    images$.each(function(index, element) {
+        imageRotations.set(element, 0);
+    });
+    
+    function updateRotation(element, addedRotation) {
+        let currentRotation = imageRotations.get(element) + addedRotation;                
+        imageRotations.set(element, currentRotation);
+    }
+    
+    function radToDeg(angle) {
+        return angle / Math.PI * 180;
+    }
     
     gispl(images$).on(rotation0, function(event) {
-        let image$ = $(this),
-            objects = event.featureValues.rotation.objects,
-            rotation = objects[0];
+        let angle = event.featureValues.rotation.objects[0],
+            degrees = radToDeg(angle);
             
-        let degrees = rotation / Math.PI * 180;
-            
-        image$.css({
-            transform: `rotate(${degrees}deg)`
-        });
+        updateRotation(this, degrees);
+        requestDraw();
     });
     
     gispl(document).on(rotation3, function(event) {
-        let objects = event.featureValues.rotation.objects,
-            rotation = objects[3];
-            
-        let degrees = rotation / Math.PI * 180;
-            
-        images$.css({
-            transform: `rotate(${degrees}deg)`
-        });
+        let angle = event.featureValues.rotation.objects[3],
+            degrees = radToDeg(angle);
+        
+        for (let i = 0; i < images$.length; i += 1) {
+            updateRotation(images$[i], degrees);
+        }
+        requestDraw();
     });
+    
+    function requestDraw() {
+    
+        if (!drawing) {
+            requestAnimationFrame(draw);
+            drawing = true;
+        }
+    }
+    
+    function draw() {
+        for (let i = 0; i < images$.length; i += 1) {
+            let element = images$[i],
+                degrees = imageRotations.get(element);
+            element.style.transform = `rotate(${degrees}deg)`;
+        }
+        drawing = false;
+    }
 
     gispl.initTuio({
         host: 'ws://localhost:8080'

@@ -19,11 +19,12 @@ export function gestureEmition(params = {}) {
             foundNode = findNode.fromPoint(lastKnownInputObject),
             foundNodeWithParents = findNode.withParentsOf(foundNode);
             
-        foundNodeWithParents.forEach(node => {
-            let inputState = {inputObjects}, 
-                eventObject = createEventObject({inputState});
+        for (let i = 0; i < foundNodeWithParents.length; i += 1) {
+            let node = foundNodeWithParents[i],
+                eventObject = createEventObject(inputObjects);
+                
             events.emit(node, event, eventObject);
-        });
+        }
     }
     
     return {
@@ -44,27 +45,40 @@ export function gestureEmition(params = {}) {
                                 builtInEvents.INPUTCHANGE);
             }
             
-            allPreviousInput = allCurrentInput;
+            allPreviousInput.length = 0;
+            for (let i = 0; i < allCurrentInput.length; i += 1) {
+                allPreviousInput[i] = allCurrentInput[i];
+            }
         },
         userDefined(nodesInput, nodesInputHistory) {
-            nodesInput.forEach((inputObjects, node) => {
-                userDefinedGestures.forEach(gesture => {
+            nodesInput.forEach(function forAllNodes(inputObjects, node) {
+                userDefinedGestures.forEach(function forAllGestures(gesture) {
                     let inputHistory = nodesInputHistory.get(node),
-                        inputState = {inputObjects, inputHistory, node},
+                        inputState = createInputState(inputObjects, inputHistory, node),
                         nodesToEmitOn = gesture.load(inputState);
                     
                     if (nodesToEmitOn.length !== 0) {
                         let eventName = gesture.name(),
-                            eventObject = createEventObject({
-                                inputState, gesture
-                            });
-                                            
-                        nodesToEmitOn.forEach(nodeToEmitOn => {
-                            events.emit(nodeToEmitOn, eventName, eventObject);
-                        });   
+                            eventObject = createEventObject(inputObjects, gesture);
+                        
+                        for (let i = 0; i < nodesToEmitOn.length; i += 1) {
+                            events.emit(nodesToEmitOn[i], eventName, eventObject);
+                        }
                     }
                 });
             });
         }
     };
+}
+
+let inputState = {
+    inputObjects: undefined,
+    inputHistory: undefined,
+    node: undefined
+};
+function createInputState(inputObjects, inputHistory, node) {
+    inputState.inputObjects = inputObjects;
+    inputState.inputHistory = inputHistory;
+    inputState.node = node;
+    return inputState;
 }

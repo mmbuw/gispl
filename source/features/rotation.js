@@ -1,21 +1,23 @@
 import {vector} from '../vector';
 import {featureBase,
             lowerUpperLimit,
-            calculateCentroidFrom,
             extractConstraintsFrom} from '../feature';
 
 export function rotation(params) {
     
     let constraints = extractConstraintsFrom(params),
         baseFeature = featureBase(params),
+        touchInput = [],
+        objectInput = [],
+        rotationDirections = [],
         limit = lowerUpperLimit(constraints);
     
     function directionVector(first, second) {
-        return vector({
-            x: second.relativeScreenX - first.relativeScreenX,
+        let x = second.screenX - first.screenX,
             // tuio has origin top left, convert to bottom left
-            y: first.relativeScreenY - second.relativeScreenY
-        });
+            y = first.screenY - second.screenY,
+            screenRatio = window.screen.width / window.screen.height;
+        return vector(x, Math.floor(y * screenRatio));
     }
     
     function normalizeAngle(value) {
@@ -41,18 +43,24 @@ export function rotation(params) {
                     angle <= limit.upper;
     }
     
-    function angleFromMovingAndFixedPoint(moving, fixed) {
-        let path = moving.path,
-            firstPoint = path[0],
-            lastPoint = path[path.length-1];
-    
-        let fixedToFirstPoint = directionVector(fixed, firstPoint),
-            fixedToLastPoint = directionVector(fixed, lastPoint);
-            
-        return directedAngleBetweenVectors(
-                    fixedToFirstPoint,
-                    fixedToLastPoint
-        );
+    function angleFromMovingAndFixedPoint(movingPoint, fixedPoint) {
+        let path = movingPoint.path,
+            angle = 0;
+        
+        if (path.length > 1) {
+            let secondToLastPoint = path[path.length-2],
+                lastPoint = path[path.length-1];
+                
+            let fixedToSecondToLast = directionVector(fixedPoint, secondToLastPoint),
+                fixedToLast = directionVector(fixedPoint, lastPoint);
+                
+            angle = directedAngleBetweenVectors(
+                        fixedToSecondToLast,
+                        fixedToLast
+            );
+        }
+        
+        return angle;
     }
     
     function isClockwise(angle) {
@@ -61,38 +69,80 @@ export function rotation(params) {
     
     function allValuesIdentical(array) {
         let first = array[0];
-        return array.every(current => current === first);
+        for (let i = 1; i < array.length; i += 1) {
+            if (first !== array[i]) {
+                return false;
+            }
+        }
+        return true;
     }
     
-    function calculateAverageAngleFrom(inputObjects) {
-        let centroid = calculateCentroidFrom(inputObjects),
+    function calculateTouchAngle() {
+        let centroid = baseFeature.calculateCentroid(touchInput, true),
             inputCount = 0,
-            rotationDirections = [],
-            averageAngle;
+            totalAngle = 0,
+            averageAngle = 0;
+        rotationDirections.length = 0;
         
-        let totalAngle = inputObjects.reduce((angleSum, inputObject) => {
-            let currentAngle = angleFromMovingAndFixedPoint(inputObject, centroid);
-            
-            if (currentAngle !== 0) {
-                angleSum += currentAngle;
-                inputCount += 1;
-                rotationDirections.push(isClockwise(currentAngle));
+        if (centroid) {
+            for (let i = 0; i < touchInput.length; i += 1) {
+                let currentAngle = angleFromMovingAndFixedPoint(touchInput[i], centroid);
+                if (currentAngle !== 0) {
+                    totalAngle += currentAngle;
+                    inputCount += 1;
+                    rotationDirections[rotationDirections.length] = isClockwise(currentAngle);
+                }
             }
-            return angleSum;
-        }, 0);
-                
-        if (inputCount !== 0 &&
-                allValuesIdentical(rotationDirections)) {
-            averageAngle = totalAngle / inputCount;
+                    
+            if (inputCount !== 0 &&
+                    allValuesIdentical(rotationDirections)) {
+                averageAngle = totalAngle / inputCount;
+            }
         }
         return averageAngle; 
     }
     
+    let objectRotations = new Map();
     function initRotationValues() {
+        objectRotations.clear();
         return {
             touches: undefined,
-            objects: {}
+            objects: objectRotations
         };
+    }
+    
+    function sortTouchObjectInput(inputObjects) {
+        touchInput.length = 0;
+        objectInput.length = 0;
+        for (let i = 0; i < inputObjects.length; i += 1) {
+            let inputObject = inputObjects[i];
+            if (baseFeature.checkAgainstDefinition(inputObject)) {
+                if (typeof inputObject.angle === 'undefined') {
+                    touchInput[touchInput.length] = inputObject;
+                }
+                else {
+                    objectInput[objectInput.length] = inputObject;
+                }
+            }
+        }
+    }
+    
+    function calculateObjectAngles(rotationValues) {
+        var atLeastOneMatch = false;
+        for (let i = 0; i < objectInput.length; i += 1) {
+            let path = objectInput[i].path;
+            if (path.length > 1) {
+                let firstAngle = path[path.length-2].angle,
+                    lastAngle = path[path.length-1].angle;
+                
+                let angle = normalizeAngle(lastAngle - firstAngle);
+                if (matchWithValue(angle)) {
+                    atLeastOneMatch = true;
+                    rotationValues.objects[objectInput[i].componentId] = angle;
+                }   
+            }
+        }
+        return atLeastOneMatch;
     }
     
     return {
@@ -101,20 +151,14 @@ export function rotation(params) {
         },
         load(inputState) {
             let inputObjects = baseFeature
-                                .inputObjectsFrom(inputState)
-                                .filter(baseFeature.checkAgainstDefinition),
-                touchInput = inputObjects.filter(inputObject => {
-                    return typeof inputObject.angle === 'undefined';
-                }),
-                objectInput = inputObjects.filter(inputObject => {
-                    return typeof inputObject.angle !== 'undefined';
-                }),
+                                .inputObjectsFrom(inputState),
                 match = false,
                 rotationValues = initRotationValues();
+            
+            sortTouchObjectInput(inputObjects);
                 
             if (touchInput.length > 1) {
-                let averageAngle = calculateAverageAngleFrom(touchInput);
-                                
+                let averageAngle = calculateTouchAngle();  
                 match = matchWithValue(averageAngle);
                 if (match) {
                     rotationValues.touches = averageAngle;
@@ -122,17 +166,8 @@ export function rotation(params) {
             }
             
             if (objectInput.length !== 0) {
-                objectInput.forEach(inputObject => {
-                    let path = inputObject.path,
-                        firstAngle = path[0].angle,
-                        lastAngle = path[path.length-1].angle;
-                    
-                    let angle = normalizeAngle(lastAngle - firstAngle);
-                    if (matchWithValue(angle)) {
-                        match = true;
-                        rotationValues.objects[inputObject.componentId] = angle;
-                    }
-                });
+                let objectMatch = calculateObjectAngles(rotationValues);
+                match = match || objectMatch;
             }
             
             if (match) {
