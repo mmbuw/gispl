@@ -30,13 +30,13 @@ export default function nodeSearch(params = {}) {
 
             return foundElement;
         },
-        withParentsOf(node) {
-            let existingNode = node;
+        parentsOf(node) {
+            let nextParent = node.parentNode;
             result.length = 0;
                 
-            while (existingNode) {
-                result[result.length] = existingNode;
-                existingNode = existingNode.parentNode;
+            while (nextParent) {
+                result[result.length] = nextParent;
+                nextParent = nextParent.parentNode;
             }
             
             return result;

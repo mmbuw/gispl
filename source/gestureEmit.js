@@ -20,8 +20,8 @@ export function gestureEmition(params = {}) {
             let currentNode = nodesToEmitOn[i];
             events.emit(currentNode, eventName, eventObject);
             if (eventPropagates(eventObject)) {
-                let parents = findNode.withParentsOf(currentNode);
-                for (let j = 1; j < parents.length; j += 1) {
+                let parents = findNode.parentsOf(currentNode);
+                for (let j = 0; j < parents.length; j += 1) {
                     if (eventPropagates(eventObject)) {
                         let parent = parents[j];
                         eventObject.currentTarget = parent;
