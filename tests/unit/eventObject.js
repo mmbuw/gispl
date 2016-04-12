@@ -16,7 +16,7 @@ describe('event object', () => {
     
     it('should contain valid current input state information', () => {
         let inputObjects = [],
-            event = createEventObject(inputObjects);
+            event = createEventObject([], 'node', inputObjects);
         expect(event.input).to.equal(inputObjects);
     });
     
@@ -58,7 +58,7 @@ describe('event object', () => {
         let featureValuesToObject = sinon.spy(),
             gesture = {featureValuesToObject};
         
-        createEventObject([], 'target', gesture);
+        createEventObject([], 'node', [], gesture);
         
         expect(featureValuesToObject.callCount).to.equal(1);
         let args = featureValuesToObject.firstCall.args;

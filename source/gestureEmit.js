@@ -16,15 +16,21 @@ export function gestureEmition(params = {}) {
         nodesForBuiltInEvents = Array(1),
         {findNode} = params;
     
-    function triggerCollection(nodesToEmitOn, eventName, eventObject) {
+    function triggerCollection(nodesToEmitOn, inputObjects, gesture) {
+        let eventName = typeof gesture === 'string' ?
+                                            gesture :
+                                            gesture.name();
+        let eventObject;
         for (let i = 0; i < nodesToEmitOn.length; i += 1) {
             let currentNode = nodesToEmitOn[i];
+            eventObject = createEventObject(nodesToEmitOn, currentNode, inputObjects, gesture);
             events.emit(currentNode, eventName, eventObject);
             if (eventPropagates(eventObject)) {
                 let parents = findNode.parentsOf(currentNode);
                 for (let j = 0; j < parents.length; j += 1) {
                     if (eventPropagates(eventObject)) {
                         let parent = parents[j];
+                        eventObject = createEventObject(nodesToEmitOn, currentNode, inputObjects, gesture);
                         eventObject.currentTarget = parent;
                         events.emit(parent, eventName, eventObject);
                     }
@@ -35,11 +41,10 @@ export function gestureEmition(params = {}) {
 
     function triggerOnLastKnownNode(inputObjects, event) {
         let lastKnownInputObject = inputObjects[0],
-            foundNode = findNode.fromPoint(lastKnownInputObject),
-            eventObject = createEventObject(inputObjects, foundNode);
+            foundNode = findNode.fromPoint(lastKnownInputObject);
             
         nodesForBuiltInEvents[0] = foundNode;
-        triggerCollection(nodesForBuiltInEvents, event, eventObject);
+        triggerCollection(nodesForBuiltInEvents, inputObjects, event);
     }
     
     return {
@@ -71,10 +76,9 @@ export function gestureEmition(params = {}) {
                     let inputHistory = nodesInputHistory.get(node),
                         inputState = createInputState(inputObjects, inputHistory, node),
                         nodesToEmitOn = gesture.load(inputState);
+                        
                     if (nodesToEmitOn.length !== 0) {
-                        let eventName = gesture.name(),
-                            eventObject = createEventObject(inputObjects, nodesToEmitOn[0], gesture);
-                        triggerCollection(nodesToEmitOn, eventName, eventObject);
+                        triggerCollection(nodesToEmitOn, inputObjects, gesture);
                     }
                 });
             });

@@ -1,28 +1,38 @@
 import * as features from './features';
 
-let propagationStopped = new WeakMap();
+let eventControls = new WeakMap();
 
 class EventObject {
-    constructor(input, node, gesture) {
+    constructor(input, target, gesture) {
         this.input = input;
-        this.target = node;
-        this.currentTarget = node;
+        this.target = target;
+        this.currentTarget = target;
         this.featureValues = new EventFeatures();
+        eventControls.set(this, {
+            stopped: false
+        });
         if (typeof gesture === 'object') {
             gesture.featureValuesToObject(this.featureValues);
         }
     }
     stopPropagation() {
-        propagationStopped.set(this, true);
+        let eventControl = eventControls.get(this);
+        eventControl.stopped = true;
+        return this;
     }
 }
 
 export function eventPropagates(eventObject) {
-    return !propagationStopped.get(eventObject);
+    let eventControl = eventControls.get(eventObject);
+    return !eventControl.stopped;
 }
 
-export function createEventObject(inputObjects, originalNode, gesture) {
-    return new EventObject(inputObjects, originalNode, gesture);
+export function createEventObject(nodes = [], targetNode, inputObjects, gesture) {
+    let eventObject = new EventObject(inputObjects, targetNode, gesture);
+    if (nodes.length > 1) {
+        eventObject.target = nodes;
+    }
+    return eventObject;
 }
 
 function EventFeatures() {

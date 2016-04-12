@@ -341,6 +341,64 @@ describe('gispl', () => {
             asyncDone();
         }, 0);
     });
+    
+    it('should contain correct target information for bubble gestures', (asyncDone) => {
+        let documentSpy = sinon.spy(),
+            bodySpy = sinon.spy(),
+            motionName = 'motion',
+            sessionId = 10,
+            xPos = 0.2,
+            yPos = 0.2,
+            host = 'test-socket-url';
+
+        gispl.addGesture({
+            name: motionName,
+            flags: 'bubble',
+            features: [
+                {type:'Motion'}
+            ]
+        });
+        gispl(document).on(motionName, documentSpy);
+        gispl(document.body).on(motionName, bodySpy);
+        window.WebSocket = WebMocket;
+        gispl.initTuio({host, calibration});
+
+        let server = new MocketServer(host);
+
+        setTimeout(() => {
+            // will hit 'body'
+            let bodyHtml$ = $('body, html');
+            bodyHtml$.css({width: '100%', height: '100%'});
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            //move pointer
+            xPos += 0.1;
+            yPos += 0.1;
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            let callbackArgs = documentSpy.lastCall.args,
+                eventObject = callbackArgs[0];
+            expect(eventObject.target).to.equal(document.body);
+            expect(eventObject.currentTarget).to.equal(document);
+            //move pointer
+            // will hit 'html'
+            bodyHtml$.removeAttr('style');
+            xPos += 0.1;
+            yPos += 0.1;
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            // check body spy
+            callbackArgs = bodySpy.lastCall.args;
+            eventObject = callbackArgs[0];
+            // target is now an array containing [body, html]
+            // it's a bubble gesture
+            expect(eventObject.target.length).to.equal(2);
+            expect(eventObject.target[0]).to.equal(document.body);
+            expect(eventObject.target[1]).to.equal(document.documentElement);
+            // current target is not an array
+            expect(eventObject.currentTarget.nodeName).to.equal(document.body.tagName); 
+            
+            server.close();
+            asyncDone();
+        }, 0);
+    });
 
     it(`should allow a callback to prevent the gesture from bubbling to parents`, (asyncDone) => {
         let spy = sinon.spy(),
