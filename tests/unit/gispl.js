@@ -399,6 +399,50 @@ describe('gispl', () => {
             asyncDone();
         }, 0);
     });
+    
+    it('should propagate to parents of bubble gesture targets only once', (asyncDone) => {
+        let documentSpy = sinon.spy(),
+            motionName = 'motion',
+            sessionId = 10,
+            xPos = 0.2,
+            yPos = 0.2,
+            host = 'test-socket-url';
+
+        gispl.addGesture({
+            name: motionName,
+            flags: 'bubble',
+            features: [
+                {type:'Motion'}
+            ]
+        });
+        gispl(document).on(motionName, documentSpy);
+        window.WebSocket = WebMocket;
+        gispl.initTuio({host, calibration});
+
+        let server = new MocketServer(host);
+
+        setTimeout(() => {
+            // will hit 'body'
+            let bodyHtml$ = $('body, html');
+            bodyHtml$.css({width: '100%', height: '100%'});
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            //move pointer, validates calls spy
+            xPos += 0.1;
+            yPos += 0.1;
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            //move pointer, validates calls spy
+            // will hit 'html'
+            bodyHtml$.removeAttr('style');
+            xPos += 0.1;
+            yPos += 0.1;
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            
+            expect(documentSpy.callCount).to.equal(2);
+            
+            server.close();
+            asyncDone();
+        }, 0);
+    });
 
     it(`should allow a callback to prevent the gesture from bubbling to parents`, (asyncDone) => {
         let spy = sinon.spy(),

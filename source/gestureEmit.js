@@ -14,6 +14,7 @@ export function gestureEmition(params = {}) {
     
     let allPreviousInput = [],
         nodesForBuiltInEvents = Array(1),
+        triggeredParents = [],
         {findNode} = params;
     
     function triggerCollection(nodesToEmitOn, inputObjects, gesture) {
@@ -21,6 +22,7 @@ export function gestureEmition(params = {}) {
                                             gesture :
                                             gesture.name();
         let eventObject;
+        triggeredParents.length = 0;
         for (let i = 0; i < nodesToEmitOn.length; i += 1) {
             let currentNode = nodesToEmitOn[i];
             eventObject = createEventObject(nodesToEmitOn, currentNode, inputObjects, gesture);
@@ -30,9 +32,12 @@ export function gestureEmition(params = {}) {
                 for (let j = 0; j < parents.length; j += 1) {
                     if (eventPropagates(eventObject)) {
                         let parent = parents[j];
-                        eventObject = createEventObject(nodesToEmitOn, currentNode, inputObjects, gesture);
-                        eventObject.currentTarget = parent;
-                        events.emit(parent, eventName, eventObject);
+                        if (triggeredParents.indexOf(parent) === -1) {
+                            triggeredParents[triggeredParents.length] = parent;
+                            eventObject = createEventObject(nodesToEmitOn, currentNode, inputObjects, gesture);
+                            eventObject.currentTarget = parent;
+                            events.emit(parent, eventName, eventObject);   
+                        }
                     }
                 }
             }
