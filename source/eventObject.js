@@ -9,7 +9,8 @@ class EventObject {
         this.currentTarget = target;
         this.featureValues = new EventFeatures();
         eventControls.set(this, {
-            stopped: false
+            stop: false,
+            stopImmediately: false
         });
         if (typeof gesture === 'object') {
             gesture.featureValuesToObject(this.featureValues);
@@ -17,14 +18,28 @@ class EventObject {
     }
     stopPropagation() {
         let eventControl = eventControls.get(this);
-        eventControl.stopped = true;
+        eventControl.stop = true;
+        return this;
+    }
+    stopImmediatePropagation() {
+        let eventControl = eventControls.get(this);
+        eventControl.stopImmediately = true;
         return this;
     }
 }
 
 export function eventPropagates(eventObject) {
     let eventControl = eventControls.get(eventObject);
-    return !eventControl.stopped;
+    return !eventControl.stop;
+}
+
+export function eventPropagatesImmediately(eventObject) {
+    let propagates = true;
+    let eventControl = eventControls.get(eventObject);
+    if (eventControl) {
+        propagates = !eventControl.stopImmediately; 
+    }
+    return propagates;
 }
 
 export function createEventObject(nodes = [], targetNode, inputObjects, gesture) {

@@ -4,6 +4,7 @@ import {gestureException} from '../../source/gesture';
 import {WebMocket, MocketServer} from 'webmocket';
 import {sendPointerBundle} from '../helpers/osc';
 import {getCalibrationMock} from '../helpers/calibration';
+import {events} from '../../source/events';
 
 describe('gispl', () => {
 
@@ -20,6 +21,7 @@ describe('gispl', () => {
 
     afterEach(() => {
         gispl.clearGestures();
+        events.clearGlobalEventsCache();
         // cleanup any appended nodes
         $('body').children().remove();
         expect($('body').children().length).to.equal(0);
@@ -484,7 +486,7 @@ describe('gispl', () => {
         }, 0);
     });
 
-    it(`should allow a callback on parents to prevent the gesture from bubbling further`, (asyncDone) => {
+    it(`should allow a callback on a parent to prevent the gesture from bubbling further`, (asyncDone) => {
         let spy = sinon.spy(),
             motionName = 'motion',
             sessionId = 10,
@@ -506,7 +508,7 @@ describe('gispl', () => {
         });
         // calling stopPropagation will prevent the event from bubbling
         // to document
-        gispl(document.documentElement).on(motionName, function(event) {
+        gispl(document.body).on(motionName, function(event) {
             event.stopPropagation();
         });
         // spy should not be called
@@ -526,6 +528,101 @@ describe('gispl', () => {
             expect(spy.callCount).to.equal(0);
             
             body$.removeAttr('style');
+            server.close();
+            asyncDone();
+        }, 0);
+    });
+        
+    it(`should allow a callback to prevent all other callbacks from being executed`, (asyncDone) => {
+        let spy = sinon.spy(),
+            motionName = 'motion',
+            sessionId = 10,
+            xPos = 0.2,
+            yPos = 0.2,
+            host = 'test-socket-url';
+
+        gispl.addGesture({
+            name: motionName,
+            features: [
+                {type:'Motion'}
+            ]
+        });
+        // ensure hitting body
+        let body$ = $('body, html');
+        body$.css({
+            width: '100%',
+            height: '100%'
+        });
+        // calling stopPropagation will prevent the event from bubbling
+        // to document
+        gispl(document.body).on(motionName, function(event) {
+            event.stopImmediatePropagation();
+        });
+        // spy should not be called
+        gispl(document.body).on(motionName, spy);
+        window.WebSocket = WebMocket;
+        gispl.initTuio({host, calibration});
+
+        let server = new MocketServer(host);
+
+        setTimeout(() => {
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            //move pointer
+            xPos += 0.5;
+            yPos += 0.5;
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            body$.removeAttr('style');
+            
+            expect(spy.callCount).to.equal(0);
+            
+            server.close();
+            asyncDone();
+        }, 0);
+    });
+        
+    it(`should allow a callback to prevent all other callbacks from being executed,
+        including parents`, (asyncDone) => {
+        let spy = sinon.spy(),
+            motionName = 'motion',
+            sessionId = 10,
+            xPos = 0.2,
+            yPos = 0.2,
+            host = 'test-socket-url';
+
+        gispl.addGesture({
+            name: motionName,
+            features: [
+                {type:'Motion'}
+            ]
+        });
+        // ensure hitting body
+        let body$ = $('body, html');
+        body$.css({
+            width: '100%',
+            height: '100%'
+        });
+        // calling stopPropagation will prevent the event from bubbling
+        // to document
+        gispl(document.body).on(motionName, function(event) {
+            event.stopImmediatePropagation();
+        });
+        // spy should not be called
+        gispl(document).on(motionName, spy);
+        window.WebSocket = WebMocket;
+        gispl.initTuio({host, calibration});
+
+        let server = new MocketServer(host);
+
+        setTimeout(() => {
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            //move pointer
+            xPos += 0.5;
+            yPos += 0.5;
+            sendPointerBundle(server, {sessionId, xPos, yPos});
+            body$.removeAttr('style');
+            
+            expect(spy.callCount).to.equal(0);
+            
             server.close();
             asyncDone();
         }, 0);

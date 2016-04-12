@@ -1,6 +1,7 @@
 import {events} from './events';
 import {compareInput} from './inputComparison';
 import {createEventObject,
+        eventPropagatesImmediately,
         eventPropagates} from './eventObject';
 import {userDefinedGestures} from './gesture';
 
@@ -31,6 +32,9 @@ export function gestureEmition(params = {}) {
                 let parents = findNode.parentsOf(currentNode);
                 for (let j = 0; j < parents.length; j += 1) {
                     if (eventPropagates(eventObject)) {
+                        if (!eventPropagatesImmediately(eventObject)) {
+                            break;
+                        }
                         let parent = parents[j];
                         if (triggeredParents.indexOf(parent) === -1) {
                             triggeredParents[triggeredParents.length] = parent;
