@@ -1,0 +1,18 @@
+// detailed
+[gispl]->[domCollectionEvents],
+[gispl]->[domCollection],
+[domCollectionEvents]-.->[events{bg:yellow}],
+[events]->[eventCache{bg:yellow}],
+[tuioInput]->[nodeSearch],
+[nodeSearch]->[screenCalibration],
+[tuioInput]->[TuioClient],
+[tuioInput]-.-        inputState>[tuioListener{bg:yellow}]
+[tuioListener]-.-               nodes and gesture>[events]
+[tuioListener]-.-       inputState>[userDefinedGestures{bg:yellow}]
+[gispl]-.-    create>[gesture]
+[gesture]-.- add>[userDefinedGestures]
+[gesture]->[feature]
+—————————————
+// overview
+[input (tuio)]-[events (gestures)]
+[gispl]-[events (gestures)]
