@@ -13,6 +13,7 @@ const builtInEvents = Object.freeze({
 export function gestureEmition(params = {}) {
     
     let allPreviousInput = [],
+        nodesForBuiltInEvents = Array(1),
         {findNode} = params;
     
     function triggerCollection(nodesToEmitOn, eventName, eventObject) {
@@ -36,8 +37,9 @@ export function gestureEmition(params = {}) {
         let lastKnownInputObject = inputObjects[0],
             foundNode = findNode.fromPoint(lastKnownInputObject),
             eventObject = createEventObject(inputObjects, foundNode);
-        
-        triggerCollection([foundNode], event, eventObject);
+            
+        nodesForBuiltInEvents[0] = foundNode;
+        triggerCollection(nodesForBuiltInEvents, event, eventObject);
     }
     
     return {
