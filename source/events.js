@@ -1,3 +1,5 @@
+import {eventPropagatesImmediately} from './eventObject';
+
 let globalEventCache = {
     map: new WeakMap(),
     getListeners(element, event) {
@@ -16,10 +18,13 @@ let globalEventCache = {
 
         return cachedListeners;
     },
-    callListeners(element, event, args) {
+    callListeners(element, event, args = []) {
         let listeners = this.getListeners(element, event);
         for (let i = 0; i < listeners.length; i += 1) {
             listeners[i].apply(element, args);
+            if (!eventPropagatesImmediately(args[0])) {
+                break;
+            }
         }
     },
     addListener(element, event, listener) {
