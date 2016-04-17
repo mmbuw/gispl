@@ -21,7 +21,3 @@ Despite accomplishing only the first step of defining how a gesture should work,
     ]
 
 In this case we are defining a gesture as any kind of motion and exactly two separate input objects (e.g. fingers). Once user input matches the specified set of features, the gesture is recognized. Of course, for it to be possible to use simple definitions like the one above, GISpL itself needs to be supported on a device or simply inside of an application, and exactly that is the goal of this work. Prior to this, GISpL was implemented in C++ as part of the TISCH Framework and was made to work with a variety of input devices. This work deals with implementing GISpL in JavaScript, in order for it to work within a web browser. In some cases this means implementing the specification as-is, and in others adapting it to make it better work within the constraints of the browser. Additionally, along with recognizing gestures based on user input, it also deals with implementing a simple way of allowing the users to define their own gesture based behavior.
-
-## GISpL
-### Differences to the original proposal
-## TUIO
