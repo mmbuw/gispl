@@ -3,4 +3,8 @@
 title: Implementing GISpL in JavaScript
 author: Goran Košutić
 documentclass: book
+bibliography: bibliography.yaml
+csl: ieee.csl
+toc: true
+link-citations: true
 ---
