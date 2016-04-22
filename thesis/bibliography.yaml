@@ -1,14 +1,36 @@
 
 ---
 references:
-- id: item1
-  type: book
+- id: tisch
+  type: webpage
   author:
-  - family: Doe
-    given: John
+  - family: Echtler
+    given: Florian
   issued:
-  - year: '2005'
-  title: First book 1
-  publisher: Cambridge University Press
-  publisher-place: Cambridge
+  - year: '2009'
+  title: TISCH Framework
+  publisher: GitHub
+  URL: 'https://github.com/floe/tisch-core'
+- id: viewports
+  type: webpage
+  author:
+    - family: Koch
+      given: Peter-Paul
+  title: A tale of two viewports — part one
+  URL: 'http://www.quirksmode.org/mobile/viewports.html'
+- id: screeny
+  type: webpage
+  author: Mozilla Developer Network
+  title: Window.screenY
+  URL: https://developer.mozilla.org/en-US/docs/Web/API/Window/screenY
+- id: touchobject
+  type: webpage
+  author: Mozilla Developer Network
+  title: Touch
+  URL: https://developer.mozilla.org/en-US/docs/Web/API/Touch
+- id: mouseevent
+  type: webpage
+  author: Mozilla Developer Network
+  title: MouseEvent
+  URL: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
 ---
