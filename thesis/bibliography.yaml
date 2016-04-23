@@ -44,4 +44,18 @@ references:
   author: Mozilla Developer Network
   title: MouseEvent
   URL: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
+- id: eventtarget
+  type: webpage
+  author: Mozilla Developer Network
+  title: EventTarget
+  URL: https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
+- id: jsonrfc
+  type: webpage
+  author:
+  - family: Crockford
+    given: Douglas
+  issued:
+  - year: '2014'
+  title: The JavaScript Object Notation (JSON) Data Interchange Format
+  publisher: IETF
 ---
