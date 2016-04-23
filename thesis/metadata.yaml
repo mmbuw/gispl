@@ -6,5 +6,6 @@ documentclass: book
 bibliography: bibliography.yaml
 csl: ieee.csl
 toc: true
+toc-depth: 1
 link-citations: true
 ---

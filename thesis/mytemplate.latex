@@ -197,8 +197,8 @@ $if(dir)$
   \newenvironment{LTR}{\beginL}{\endL}
 \fi
 $endif$
-\usepackage{titlesec}
-\newcommand{\sectionbreak}{\clearpage}
+
+
 $for(header-includes)$
 $header-includes$
 $endfor$
