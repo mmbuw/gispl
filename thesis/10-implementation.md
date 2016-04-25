@@ -51,4 +51,22 @@ The end result is that GISpL.js integrates an extended version of Tuio.js that d
 
 ## Recognizing gestures
 
+At this point, we can add gesture definitions and attach gestures' corresponding actions to page elements, but of course we need a way of actually recognizing user input as a GISpL defined gesture. That is the central topic of this work, and it will be discussed in later chapters, but in a high level overview it is also simple:
+
+1) for all nodes with input
+2) validate all registered gestures
+3) if valid, execute all registered callbacks for the gesture
+
+ A simplified version of the code is available below.
+
+```
+nodesInput.forEach(function forAllNodes(inputObjects, node) {
+    userDefinedGestures.forEach(function forAllGestures(gesture) {
+        if (gesture.load(inputObjects)) {
+            let eventName = gesture.name()
+            events.emit(node, eventName);
+        }
+    });
+});
+```
 ## From recognition to action
