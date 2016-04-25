@@ -22,6 +22,25 @@ references:
   title: TISCH Framework
   publisher: GitHub
   URL: 'https://github.com/floe/tisch-core'
+- id: tuio2spec
+  type: webpage
+  author:
+  - family: Kaltenbrunner
+    given: Martin
+  issued:
+  - year: '2014'
+  title: TUIO 2.0 Protocol Specification
+  URL: 'http://tuio.org/?tuio20'
+- id: tuiojsfelix
+  type: webpage
+  author:
+  - family: Raab
+    given: Felix
+  issued:
+  - year: '2012'
+  title: Tuio.js
+  publisher: GitHub
+  URL: 'https://github.com/fe9lix/Tuio.js'
 - id: viewports
   type: webpage
   author:
