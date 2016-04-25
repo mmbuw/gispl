@@ -86,9 +86,9 @@ $endif$
 \pagestyle{fancy}
 \pagenumbering{arabic}
 \usepackage{emptypage}
-\lfoot{}
+\fancyhf{}
+\rhead{\rightmark}
 \cfoot{\thepage}
-\rfoot{}
 $if(lang)$
 \ifxetex
   \usepackage{polyglossia}
