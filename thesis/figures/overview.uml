@@ -1,0 +1,4 @@
+[defined gestures]->[gispl]
+[user input]->[gispl]
+[actions]->[defined gestures]
+[gispl]->[actions]
