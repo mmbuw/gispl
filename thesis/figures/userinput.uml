@@ -1,0 +1,7 @@
+[tuioInput{bg:yellow}]->[TuioClient{bg:yellow}]
+[tuioInput]->[nodeSearch{bg:yellow}]
+[nodeSearch]->[screenCalibration{bg:yellow}]
+[tuioInput]->[gispl]
+[defined gestures]->[gispl]
+[actions]->[defined gestures]
+[gispl]->[actions]

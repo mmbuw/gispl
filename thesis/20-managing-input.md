@@ -59,6 +59,8 @@ The node searching part is located in a separate object, the `nodeSearch` object
 
 * retrieves current input using `TuioClient`
 * locates nodes that correspond to the input using `nodeSearch`
-* as its most important task, processes this information and notifies the part of the library that will later check if the supplied input represents a valid gesture or gestures.
+* as its most important task, processes this information and notifies the part of the library that will later check if the supplied input represents a valid gesture
 
-We can now expand the structure presented in Figure {@fig:overview} with additional information related to user input. User input is represented by a number of objects that deal with processing user input in a way that can be used for gesture validation.
+We can now expand the structure presented in Figure {@fig:overview} with additional information related to user input. As shown in Figure {@fig:userinput} user input is represented by a number of objects that deal with processing user input in a way that can be used for gesture validation.
+
+![Detailed overview of how user input gets processed](./figures/userinput.png){#fig:userinput}
