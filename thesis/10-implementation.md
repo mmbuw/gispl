@@ -69,4 +69,3 @@ nodesInput.forEach(function forAllNodes(inputObjects, node) {
     });
 });
 ```
-## From recognition to action
