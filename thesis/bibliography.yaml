@@ -63,6 +63,11 @@ references:
   author: Mozilla Developer Network
   title: MouseEvent
   URL: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
+- id: elementfrompoint
+  type: webpage
+  author: Mozilla Developer Network
+  title: Document.elementFromPoint()
+  URL: https://developer.mozilla.org/en-US/docs/Web/API/Document/elementFromPoint
 - id: eventtarget
   type: webpage
   author: Mozilla Developer Network
