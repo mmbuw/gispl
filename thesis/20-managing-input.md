@@ -13,7 +13,6 @@ element.addEventListener('touchstart', userDefinedFunction);
 This means that the user only needs to define a `function` that will be executed once the user interacts with the specified element, and never deals with actually locating the element based on user input. In the case of TUIO this is however not the case. TUIO works outside of the browser, and supplies to it only the relative screen position, e.g. `(0.5, 0.5)` for the x and y coordinates when the user touches the exact center point of the screen. There are two problems with this:
 
 * we do not know which page elements are receiving user input
-
 * screen coordinates usually do not match the browser coordinates
 
 The first problem is simple to solve because all browsers support retrieving the top most element based on x and y coordinates. This is accomplished by using `document.elementFromPoint(x, y)`, which will return either an `HTMLElement` object or `null` if none found, e.g. the coordinates are negative or outside of the visible browser area [@elementfrompoint]. The x and y coordinates that get passed into this method are however browser viewport coordinates, and not the screen coordinates received from a TUIO source.
@@ -31,7 +30,6 @@ The simplest solution would be to limit the use of GISpL to when the browser is 
 There is one place that does allow us to convert the coordinates, although indirectly, and that is the input event object, such as the mouse or touch input [@mouseevent][@touchobject]. When attaching a callback function to an e.g. `mouseover` event, the function will be called with an event object as the first parameter. Among other things it contains the following properties:
 
 * screenX and screenY
-
 * clientX and clientY
 
 The last two properties represent the viewport coordinates, and substracting clientX from screenX gives us the horizontal distance of the viewport origin from the left edge of the screen. This works indirectly because we first need to have an event object to work with. Thus, GISpL.js solves the problem of using viewport coordinates by introducing a small calibration object that captures a native user input event, such as on `mouseover`. The calibration object is then able to convert any screen coordinate to the viewport coordinate. It also listens for additional input events in the future, in case the browser window gets moved, which would invalidate the previous calibration.

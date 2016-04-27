@@ -3,9 +3,7 @@
 As already mentioned, for some kind of an input to be recognized as a gesture, we can break down the work into roughly three steps:
 
 * defining what a gesture is -- this is GISpL as a definition language
-
 * recognizing input as a defined gesture -- this is what GISpL.js mainly does
-
 * performing an action based on a recognized gesture -- this is the responsibility of the user implementing a gesture
 
 Although the most important part of GISpL.js is to recognize user input as a gesture, it also needs to be able to accept gesture definitions, and to allow a user to assign a gesture action. The first part is not difficult because GISpL uses JSON as a definition language, and as described by the JSON author, JSON is just a subset of JavaScript [@jsonrfc]. Therefore, parsing JSON is trivial, and additionally it is not even necessary for a definition to be in JSON format; a simple JavaScript object is suitable as well.
