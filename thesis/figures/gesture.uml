@@ -1,0 +1,7 @@
+[tuioInput]->[gesture{bg:yellow}]
+[gesture]->[feature{bg:yellow}]
+[gesture]->[events{bg:yellow}]
+[events]->[actions]
+[defined gestures]->[gispl]
+[actions]->[defined gestures]
+[gispl]->[actions]
