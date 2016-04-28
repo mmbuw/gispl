@@ -12,6 +12,14 @@ references:
   - year: '2012'
   title: GISpL gestures made easy
   publisher: ACM
+- id: gisplweb
+  type: webpage
+  author:
+  - family: Echtler
+    given: Florian
+  issued:
+  - year: '2012'
+  title: 'GISpL: Gestural Interface Specification Language'
 - id: tisch
   type: webpage
   author:
