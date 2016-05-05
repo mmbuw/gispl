@@ -6,7 +6,7 @@ To accomplish this, GISpL.js uses events, which means users can assign callback 
 
 This chapter deals with how this part of GISpL.js was built, how it gets used, and what some additional things the user can accomplish are.
 
-## Actions
+## Adding actions
 
 As already mentioned, GISpL's notion of regions -- parts of the screen -- that are relevant for a gesture was modified in such a way that DOM nodes are viewed as regions. The requirement is then for GISpL.js to allow a user a way to select a node, or nodes, on which to define actions for gestures. Since GISpL.js was in this regard in general modelled according to jQuery, it follows the same approach.
 
@@ -21,5 +21,12 @@ In short, where in jQuery we would use `jQuery(selection)` or `$(selection)`, wi
 * selection string, e.g. `gispl('img')` will wrap a gispl object around all images present in the page
 
 This too is similar to the way jQuery works. At this point there is maybe a question of why not use jQuery directly. Although this does make sense in a way, jQuery is also a large library that takes care of many things, including AJAX or animations. Additionally, there are other libraries that do similar work and including jQuery would require the user to potentially include multiple libraries where one is sufficient. It would've been interesting to allow a user to replace this part of GISpL.js with jQuery (or something else), but this was in the end left out.
+
+Once a gispl object exists, it can be used to assign actions with the `on` method (and remove actions with the `off` method). The `on` method takes two arguments, the gesture `name` and the `callback`. From the view of the user, it does not need to do anything else. Of course, GISpL.js needs to save the callback, retreive, and execute it when needed.
+
+## Executing actions
+The `events` object was mentioned briefly in [Validating input as gesture](#validating-input-as-gesture)
+
+figure
 
 ## Built in gestures
