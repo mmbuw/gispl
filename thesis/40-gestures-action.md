@@ -42,4 +42,6 @@ gispl(document).on('example-gesture', function2);
 
 Putting it all together, the above code will add two callbacks for a previously registered gesture with the name of `example-gesture` for the `document` node, which will be executed once the gesture is recognized.
 
+## Event object
+
 ## Built in gestures

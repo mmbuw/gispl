@@ -14,6 +14,8 @@ Every user defined gesture is stored as a gesture object. The gesture object con
 
 The types of features available are defined by the GISpL specification, and were introduced in their own chapter. As in the original implementation, GISpL.js does not care which features a gesture contains. Once a gesture has been added without errors -- meaning the definition that includes the feature is valid -- it only cares if its feature objects return `true` or `false`. As a consequence, GISpL.js as a library is easily extensible with new features if GISpL as a specification gets extended with additional features in the future.
 
+GISpL.js 
+
 Features represent a core element of a defined gesture [@gisplweb], but the GISpL specification also defines other control methods.
 
 ## Flags
@@ -36,6 +38,8 @@ nodesInput.forEach(function forAllNodes(inputObjects, node) {
     });
 });
 ```
+
+Where the gesture was previously triggered for the current node only, it now deals with the fact that the node to trigger on might not be the current node, nor is it necessarily the only one.
 
 ## Duration
 Another additional control method for gestures is the duration parameter. In short, it allows the user defining the gesture to select just a part of the user input history, and not the whole user input. It can be defined either for the whole gesture, or individual features. The GISpL specification gives an example of a double click, shown shortened below:
@@ -72,3 +76,7 @@ Filters are the simplest control method. They allow a gesture to filter out inpu
 ```
 
 This will set the filter value as `0b1111` or `15`.
+
+## Gesture bubbling
+It was noted that what was defined as a region in the GISpL specification is interpreted as a DOM node when GISpL is used in the browser. Also, as gestures are implemented as events, they are implemented in a way typical for the browser, and native events such as `mouseover` bubble from child nodes to parent nodes. When an event, e.g. `mouseover` is triggered on the target -- in the example case when the mouse cursor is over an image -- it will continue to bubble upwards to target's parents. Parents in this case being other DOM nodes that contain the target. GISpL.js implements identical behavior for gesture events -- a gesture event will therefore trigger not only on target node, but also on its parents. This makes it possible to, for instance, not implement "regions" at all by simply adding all gesture callbacks to the `document` node. Because it is the root DOM node, all the triggered gestures will eventuall bubble up to it.
+   
