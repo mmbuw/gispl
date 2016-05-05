@@ -14,7 +14,14 @@ Every user defined gesture is stored as a gesture object. The gesture object con
 
 The types of features available are defined by the GISpL specification, and were introduced in their own chapter. As in the original implementation, GISpL.js does not care which features a gesture contains. Once a gesture has been added without errors -- meaning the definition that includes the feature is valid -- it only cares if its feature objects return `true` or `false`. As a consequence, GISpL.js as a library is easily extensible with new features if GISpL as a specification gets extended with additional features in the future.
 
-GISpL.js 
+GISpL.js leans on the original C++ implementation when it comes to features, and they are here described in short:
+
+* Motion: validates if an input point contains more than one known position in the path, and if the last two known positions have different values; also, the motion direction can be constrained
+* Count: validates if the number of input points match the defined constraint
+* Rotation: validates if more than one input point exists, and if the input points are rotated compared to their original position; this is recognized by first calculating a central point between the input points and then measuring the angle formed by original and moving points
+* Scale: works in a similar way as rotation, but instead of measuring angle, it measures the distance of the moving point from its original position
+* Path: internally uses the $1 Recognizer; it compares the input point paths with the paths from defined gestures and validates if the value produced by the $1 Recognizer is above a threshold
+* Delay: validates if the length of the input (in terms of time) matches the defined delay values
 
 Features represent a core element of a defined gesture [@gisplweb], but the GISpL specification also defines other control methods.
 
