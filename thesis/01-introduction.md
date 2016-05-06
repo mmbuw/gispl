@@ -4,7 +4,7 @@ Touchscreens have in the last decade, with the rise in popularity of smartphones
 
 From the view of someone who should define and implement a gesture however, it is also a bit more than that. It would consist of at least defining what a gesture is and what kind of an input makes up a valid gesture, finding a way to notify the application in use that a gesture had occurred, and finally performing an action that corresponds to the gesture.
 
-Modern devices, for instance ones running Apple's iOS have built in support for well known gestures, but also support custom gestures. As an example, to define a custom gesture, developers for iOS need to extend the `UIGestureRecognizer` class and implement the following methods:
+Modern devices, for instance ones running Apple's iOS have built in support for well known gestures, but also support custom gestures. As an example, to define a custom gesture, developers for iOS need to extend the `UIGestureRecognizer` class and implement the following methods [@ioscustomgestures]:
     
     (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event;
     (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event;

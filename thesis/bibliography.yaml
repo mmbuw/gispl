@@ -63,24 +63,34 @@ references:
   URL: https://developer.mozilla.org/en-US/docs/Web/API/Window/screenY
 - id: touchobject
   type: webpage
-  author: Mozilla Developer Network
+  author:
+  - family: Mozilla Developer Network
   title: Touch
   URL: https://developer.mozilla.org/en-US/docs/Web/API/Touch
 - id: mouseevent
   type: webpage
-  author: Mozilla Developer Network
+  author:
+  - family: Mozilla Developer Network
   title: MouseEvent
   URL: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
 - id: elementfrompoint
   type: webpage
-  author: Mozilla Developer Network
+  author:
+  - family: Mozilla Developer Network
   title: Document.elementFromPoint()
   URL: https://developer.mozilla.org/en-US/docs/Web/API/Document/elementFromPoint
 - id: eventtarget
   type: webpage
-  author: Mozilla Developer Network
+  author:
+  - family: Mozilla Developer Network
   title: EventTarget
   URL: https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
+- id: ioscustomgestures
+  type: webpage
+  author:
+  - family: iOS Developer Library
+  title: Gesture Recognizers
+  URL: https://developer.apple.com/library/ios/documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/GestureRecognizer_basics/GestureRecognizer_basics.html
 - id: jsonrfc
   type: webpage
   author:
