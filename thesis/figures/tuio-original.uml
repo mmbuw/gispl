@@ -1,0 +1,3 @@
+[TUIO server]-UDP>[Node.js server]
+[Node.js server]-.-[TUIO parser]
+[Node.js server]-WebSocket  >[browser]

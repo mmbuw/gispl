@@ -39,9 +39,13 @@ In this simple example, once a two-fingered motion gesture over any image on the
 
 ## Extending Tuio.js
 
-GISpL.js gets its input using TUIO, making it necessary to understand TUIO and its several input types, including different protocol versions. There already exists [@tuiojsfelix] a TUIO implementation in JavaScript called Tuio.js, but at this point it has two deficiencies: it is several years old and supports only the first version of TUIO, and it does so by using an intermediate server running in Node.js. This server picks up information sent over UDP by a TUIO server, transforms this data into JavaScript data that is in the end sent using socket.io (typically WebSocket) to a browser.
+GISpL.js gets its input using TUIO, making it necessary to understand TUIO and its several input types, including different protocol versions. There already exists [@tuiojsfelix] a TUIO implementation in JavaScript called Tuio.js, but at this point it has two deficiencies: it is several years old and supports only the first version of TUIO, and it does so by using an intermediate server running in Node.js. As shown in Figure {@fig:tuiooriginal}, this server picks up information sent over UDP by a TUIO server, transforms this data into JavaScript data that is in the end sent using socket.io[^socketio] to a browser.
 
-Although this is a good solution for situations where a TUIO server is not able to communicate directly with the browser, TUIO 2.0 reference implementation and also e.g. reacTIVision have support for this feature. For this reason Tuio.js needed to be extended in order to not only connect and receive data over WebSocket, but also to actually decode the incoming data into JavaScript objects. This was accomplished by integrating a third party library called osc.js; as stated by the author of TUIO, this protocol was implemented on top of OSC -- Open Sound Protocol -- and follows its syntax [@tuio2spec]. It is therefore possible to decode TUIO data with a library such as osc.js which in principle deals with OSC data.
+![How Tuio.js received TUIO data originally](./figures/tuio-original.png){#fig:tuiooriginal}
+
+Although this is a good solution for situations where a TUIO server is not able to communicate directly with the browser, the TUIO 2.0 reference implementation and also e.g. reacTIVision[^reactivision] have support for this feature. For this reason Tuio.js needed to be extended in order to not only connect and receive data over WebSocket, but also to actually decode the incoming data into JavaScript objects. This was accomplished by integrating a third party library called osc.js; as stated by the author of TUIO, this protocol was implemented on top of OSC -- Open Sound Protocol -- and follows its syntax [@tuio2spec]. It is therefore possible to decode TUIO data with a library such as osc.js which in principle deals with OSC data. Figure {@fig:tuioextended} shows how the extended version of Tuio.js works.
+
+![Tuio.js now receives raw TUIO data and decodes it](./figures/tuio-extended.png){#fig:tuioextended}
 
 Furthermore, TUIO 2.0 is not backwards compatible to TUIO 1.0 [@tuio2spec], and in order to support the second version it was necessary to extend Tuio.js to support the new message structure and new input data types.
 
@@ -67,3 +71,6 @@ nodesInput.forEach(function forAllNodes(inputObjects, node) {
     });
 });
 ```
+
+[^socketio]: socket.io is a communication framework that uses WebSocket if possible, but it builds an additional protocol on top of the connection it uses. It is therefore a requirement to use the socket.io client library on the client side, and the server client on the server side. Because of this, it was dropped from Tuio.js as TUIO servers use regular WebSocket connections
+[^reactivision]: reacTIVision is a computer vision framework that can recognize input such as fingers or specialized markers
