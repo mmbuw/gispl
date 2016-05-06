@@ -91,6 +91,12 @@ references:
   - family: Mozilla Developer Network
   title: WeakMap
   URL: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
+- id: currenttarget
+  type: webpage
+  author:
+  - family: Mozilla Developer Network
+  title: Event.currentTarget
+  URL: https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget
 - id: ioscustomgestures
   type: webpage
   author:

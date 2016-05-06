@@ -72,5 +72,5 @@ nodesInput.forEach(function forAllNodes(inputObjects, node) {
 });
 ```
 
-[^socketio]: socket.io is a communication framework that uses WebSocket if possible, but it builds an additional protocol on top of the connection it uses. It is therefore a requirement to use the socket.io client library on the client side, and the server client on the server side. Because of this, it was dropped from Tuio.js as TUIO servers use regular WebSocket connections
+[^socketio]: socket.io is a communication framework that uses WebSocket if possible, but it builds an additional protocol on top of the connection it uses. It is therefore a requirement to use the socket.io client library on the client side, and the server library on the server side. Because of this, it was dropped from Tuio.js as TUIO servers use regular WebSocket connections
 [^reactivision]: reacTIVision is a computer vision framework that can recognize input such as fingers or specialized markers

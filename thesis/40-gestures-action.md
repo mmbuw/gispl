@@ -44,4 +44,37 @@ Putting it all together, the above code will add two callbacks for a previously 
 
 ## Event object
 
-## Built in gestures
+As stated, once a gesture is recognized, the registered gesture callbacks will be executed. However, a callback will most likely need some information related to the gesture event in order to do its work. This could be: the values related to the individual gesture features, the input that triggered the gesture, the node the event was triggered on etc. In this regard, GISpL.js further mimics native events in that the callbacks are passed in an event object as an argument. This event object contains the already mentioned information, and also contains some additional possibilities. In the example below, it is possible to see how the eventObject can be accessed.
+
+```
+gispl(document).on('example-gesture', function (eventObject) {
+    console.log(eventObject); // show the object in the console
+});
+```
+
+The event object contains the following properties:
+
+* `input` is a list of input objects that triggered the gesture event
+* `target` refers to the DOM node on which the gesture event was triggered on
+* `currentTarget` refers to the DOM node on which the event handles has been attached to [@currenttarget]
+* `featureValues` refers to the values of gesture features, e.g. `scale: 2`, or `rotation: 3.14`
+
+The properties `target` and `currentTarget` are good examples on how the gesture event object is implemented exactly like a native event object. However, some others properties were not possible to implement. For instance, the native object contains a `targetTouches` property which is in a lot of ways similar to the `input` property, but not completely. The property `featureValues` also obviously does not exist for native events.
+
+As already mentioned in [Gesture bubbling](#gesture-bubbling), gesture event bubble up the DOM tree. This is the main reason that the property `currentTarget` exists. The gesture event might be triggered on a child node and this will be noted in the `target` property, but the `currentTarget` property will refer to the parent node. The gesture event object further builds on the native event object in that it also implements methods that allow the user to control how this bubbling phase happens. These are:
+
+* `stopPropagation`
+* `stopImmediatePropagation`
+
+They are similar, but the second one is stricter. The first, `stopPropagation` will prevent the gesture event from bubbling up the DOM tree, as shown in the example below:
+
+```
+gispl(document).on('example-gesture', function onDocument(event) {
+    console.log('event on document'); // this will never execute
+});
+gispl(document.documentElement).on('example-gesture', function onHtml(event) {
+    event.stopPropagation();
+});
+```
+
+The `onDocument` function will not execute because the gesture event will execute on `document.documentElement` which is the root HTML tag, and its callback will prevent the event from bubbling further by calling `stopPropagation`. This method will not prevent multiple callbacks on the same element, e.g. `document.documentElement`, from executing because they will execute independent of the bubbling feature. However, even they can be prevented from executing by calling `stopImmediatePropagation` -- the callback that does this will be the last for the current gesture event to be executed.
