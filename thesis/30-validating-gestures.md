@@ -68,7 +68,7 @@ Another additional parameter for gestures is the duration. In short, it allows t
 
 This can be interpreted as:
 
-* look at the input between 150 and 100 time units, and find exactly 0 input points
+* look at the input between 150 and 100 time units[^timeunits], and find exactly 0 input points
 * look at the input between 100 and 50 time units, and find exactly 1 input point
 * etc.
 
@@ -89,4 +89,5 @@ This will set the filter value as `0b1111` or `15`.
 
 ## Gesture bubbling
 It was noted that what was defined as a region in the GISpL specification is interpreted as a DOM node when GISpL is used in the browser. Also, as gestures are implemented as events, they are implemented in a way typical for the browser, and native events such as `mouseover` bubble from child nodes to parent nodes. When an event, e.g. `mouseover` is triggered on the target -- in the example case when the mouse cursor is over an image -- it will continue to bubble upward to target's parents. Parents in this case being other DOM nodes that contain the target. GISpL.js implements identical behavior for gesture events -- a gesture event will therefore trigger not only on target node, but also on its parents. This makes it possible to, for instance, not implement "regions" at all by simply adding all gesture callbacks to the `document` node. Because it is the root DOM node, all the triggered gestures will eventuall bubble up to it. GISpL.js offers additional levels of control regarding this feature that are discussed in the next chapter.
-   
+
+[^timeunits]: using the original definition of GISpL, it would mean either sensor readings or seconds. GISpL.js uses only actual time in milliseconds 

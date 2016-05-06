@@ -85,6 +85,12 @@ references:
   - family: Mozilla Developer Network
   title: EventTarget
   URL: https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
+- id: weakmap
+  type: webpage
+  author:
+  - family: Mozilla Developer Network
+  title: WeakMap
+  URL: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
 - id: ioscustomgestures
   type: webpage
   author:
