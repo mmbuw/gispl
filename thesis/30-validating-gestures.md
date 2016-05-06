@@ -19,9 +19,12 @@ GISpL.js leans on the original C++ implementation when it comes to actual featur
 * Motion: validates if an input point contains more than one known position in the path, and if the last two known positions have different values; also, the motion direction can be constrained
 * Count: validates if the number of input points match the defined constraint
 * Rotation: validates if more than one input point exists, and if the input points are rotated compared to their original position; this is recognized by first calculating a central point between the input points and then measuring the angle formed by original and moving points
-* Scale: works in a similar way as rotation, but instead of measuring angle, it measures the distance of the moving point from its original position
+* Scale: works in a similar way as rotation, but instead of measuring angle, it measures the distance of the moving point from its original position, and interprets this as a scale factor
 * Path: internally uses the $1 Recognizer; it compares the input point paths with the paths from defined gestures and validates if the value produced by the $1 Recognizer is above a threshold
-* Delay: validates if the length of the input (in terms of time) matches the defined delay values
+* Delay: validates if the length (in terms of time) of the input matches the defined delay values
+* ObjectGroup: validates if the group of input points are within a circle defined by their central point and the feature defined radius
+* ObjectID: validates if the TUIO object id matches the defined range
+* ObjectParent: validates if the TUIO user id matches the defined range
 
 Features represent a core element of a defined gesture [@gisplweb], but the GISpL specification allows other parameters that influence the behavior of a gesture.
 
