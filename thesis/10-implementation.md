@@ -39,7 +39,12 @@ In this simple example, once a two-fingered motion gesture over any image on the
 
 ## Extending Tuio.js
 
-GISpL.js gets its input using TUIO, making it necessary to understand TUIO and its several input types, including different protocol versions. There already exists [@tuiojsfelix] a TUIO implementation in JavaScript called Tuio.js, but at this point it has two deficiencies: it is several years old and supports only the first version of TUIO, and it does so by using an intermediate server running in Node.js. As shown in Figure {@fig:tuiooriginal}, this server picks up information sent over UDP by a TUIO server, transforms this data into JavaScript data that is in the end sent using socket.io[^socketio] to a browser.
+GISpL.js gets its input using TUIO, making it necessary to understand TUIO and its several input types, including different protocol versions. the library could in theory also work with native touch input available in the browser, but TUIO offers several advantages:
+
+* support for a wider range of input devices
+* support for tangible objects on which some GISpL features depend
+
+There already exists [@tuiojsfelix] a TUIO implementation in JavaScript called Tuio.js, but at this point it has two deficiencies: it is several years old and supports only the first version of TUIO, and it does so by using an intermediate server running in Node.js. As shown in Figure {@fig:tuiooriginal}, this server picks up information sent over UDP by a TUIO server, transforms this data into JavaScript data that is in the end sent using socket.io[^socketio] to a browser.
 
 ![How Tuio.js received TUIO data originally](./figures/tuio-original.png){#fig:tuiooriginal}
 

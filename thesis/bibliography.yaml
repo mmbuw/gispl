@@ -30,6 +30,15 @@ references:
   title: TISCH Framework
   publisher: GitHub
   URL: 'https://github.com/floe/tisch-core'
+- id: tuio1spec
+  type: webpage
+  author:
+  - family: Kaltenbrunner
+    given: Martin
+  issued:
+  - year: '2005'
+  title: TUIO 1.1 Protocol Specification
+  URL: 'http://www.tuio.org/?specification'
 - id: tuio2spec
   type: webpage
   author:
