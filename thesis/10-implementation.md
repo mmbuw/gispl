@@ -10,7 +10,7 @@ Although the most important part of GISpL.js is to recognize user input as a ges
 
 For the last part, GISpL.js was designed and built in a way that is typical for JavaScript and the browser. Actions based on user input are usually assigned as callback functions or listeners for a particular event. For instance, every page node, e.g. an HTML tag, inherits from EventTarget [@eventtarget] and thus contains `addEventListener` and similar methods which can be used to assign actions based on user clicks, mouse movement, scroll etc. Libraries such as jQuery have further simplified this by using simple `on` and `off` methods that can assign built in and custom event actions to page elements.
 
-GISpL.js draws inspiration from jQuery and many other libraries by defining a gispl object that contains a collection or list of elements (so called array-like objects). Additionally, the gispl object contains `on` and `off` methods to add callback functions to the elements in the collection, with the events in this case representing gestures. As shown in Figure {@fig:overview}, a user is responsible for defining a gesture according to the GISpL specification that is plugged into GISpL.js; it also needs to specify the elements for the gesture and and action, or actions, that will be executed once the gesture is recognized; GISpL.js will take care of recognizing user input and executing all of the defined actions for a particular element.
+GISpL.js draws inspiration from jQuery and many other libraries by defining a gispl object that contains a collection or list of elements (so called array-like objects). Additionally, the gispl object contains `on` and `off` methods to add callback functions to the elements in the collection, with the events in this case representing gestures. As shown in Figure {@fig:overview}, a user is responsible for defining a gesture according to the GISpL specification that is plugged into GISpL.js; it also needs to specify the elements for the gesture and the associating action, or actions, that will be executed once the gesture is recognized; GISpL.js will take care of recognizing user input and executing all of the defined actions for a particular element.
 
 ![Actions to gestures added by users get triggered based on input](./figures/overview.png){#fig:overview}
 
@@ -22,7 +22,7 @@ let twoFingeredMotion = {
     name: "two-fingered-motion",
     features: [
         {type: "Motion"},
-        {type": Count, constraints: [2,2]}
+        {type": "Count", constraints: [2,2]}
     ]
 };
 
@@ -39,7 +39,7 @@ In this simple example, once a two-fingered motion gesture over any image on the
 
 ## Extending Tuio.js
 
-GISpL.js gets its input using TUIO, making it necessary to understand TUIO and its several input types, including different protocol versions. the library could in theory also work with native touch input available in the browser, but TUIO offers several advantages:
+GISpL.js gets its input using TUIO, making it necessary to understand TUIO and its several input types, including different protocol versions. GISpL.js could in theory also work with native touch input available in the browser, but TUIO offers several advantages:
 
 * support for a wider range of input devices
 * support for tangible objects on which some GISpL features depend
@@ -48,7 +48,7 @@ There already exists [@tuiojsfelix] a TUIO implementation in JavaScript called T
 
 ![How Tuio.js received TUIO data originally](./figures/tuio-original.png){#fig:tuiooriginal}
 
-Although this is a good solution for situations where a TUIO server is not able to communicate directly with the browser, the TUIO 2.0 reference implementation and also e.g. reacTIVision[^reactivision] have support for this feature. For this reason Tuio.js needed to be extended in order to not only connect and receive data over WebSocket, but also to actually decode the incoming data into JavaScript objects. This was accomplished by integrating a third party library called osc.js; as stated by the author of TUIO, this protocol was implemented on top of OSC -- Open Sound Protocol -- and follows its syntax [@tuio2spec]. It is therefore possible to decode TUIO data with a library such as osc.js which in principle deals with OSC data. Figure {@fig:tuioextended} shows how the extended version of Tuio.js works.
+Although this is a good solution for situations where a TUIO server is not able to communicate directly with the browser, the TUIO 2.0 reference implementation and also e.g. reacTIVision[^reactivision] have support for this feature. For this reason Tuio.js needed to be extended in order to not only connect and receive data over WebSocket, but also to actually decode the incoming data into JavaScript objects. This was accomplished by integrating a third party library called osc.js; as stated by the author of TUIO, this protocol was implemented on top of OSC -- Open Sound Control -- and follows its syntax [@tuio2spec]. It is therefore possible to decode TUIO data with a library such as osc.js which in principle deals with OSC data. Figure {@fig:tuioextended} shows how the extended version of Tuio.js works.
 
 ![Tuio.js now receives raw TUIO data and decodes it](./figures/tuio-extended.png){#fig:tuioextended}
 

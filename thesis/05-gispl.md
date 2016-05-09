@@ -81,9 +81,9 @@ Group       Integer     TUIO units      min/max             Group of input objec
                                                             groups of closely spaced touched points)
 -------------------------------------------------------------------------------------------------------------
 
-There are several other options other than features that allow more control over a GISpL defined gesture. But before that, it is also necessary to mention GISpL's definition of regions. A regions acts as a specific area where gestures are defined. As stated in [@gisplweb], regions:
+There are several other options other than features that allow more control over a GISpL defined gesture. But before that, it is also necessary to mention GISpL's definition of regions. A region acts as a specific area where gestures are defined. As stated in [@gisplweb], regions:
 
->define spatial areas in which a certain set of gestures is valid and which capture motion data that falls within their boundaries.
+>...define spatial areas in which a certain set of gestures is valid and which capture motion data that falls within their boundaries.
 
 One of additional options are flags. **Flags** can be assigned to a gesture, and allow control related to execution and gesture regions of a valid gesture input. specified in [@gisplweb], there are four flag types, three of which were implemented in GISpL.js:
 
@@ -103,13 +103,13 @@ There was already mention of TUIO in the previous part of the chapter. As specif
  
 >...is an attempt to provide a general and versatile communication interface between tangible tabletop controller interfaces and underlying application layers. It was designed to meet the needs of tabletop interactive multi-touch surfaces, where the user is able to manipulate a set of objects and draw gestures onto the table surface with the finger tips.
 
-TUIO as a protocol was built on top of the Open Sound Protocol, which means that [@tuio1spec]
+TUIO as a protocol was built on top of the Open Sound Control protocol, which means that [@tuio1spec]
 
 >...TUIO messages can be basically transmitted through any channel that is supported by an actual OSC implementation. The default transport method for the TUIO protocol is the encapsulation of the binary OSC bundle data within UDP packets sent to the default TUIO port number 3333.
 
-GISpL shares some parts of its specification with TUIO. This is related to the input type and component type definition of TUIO, which GISpL adopts in two ways: for some features, and filters. TUIO in versions 1.x and 2.0 defines the following types
+GISpL shares some parts of its specification with TUIO. This is related to the input type and component type definition of TUIO, which GISpL adopts in two ways: for some features, and filters. TUIO in versions 1.1 and 2.0 defines the following types
 
-* TUIO 1.x
+* TUIO 1.1
     * Cursor, e.g. finger
     * Object, e.g. tangible object with a specific pattern
     * Blob, an untagged generic object [@tuio1spec]
@@ -185,4 +185,4 @@ For instance, the specification defines the duration parameter as [@gisplweb]:
 
 > When values are not specified as floating point numbers, but as integers, the unit changes from seconds to "ticks", i.e. sensor readings. 
 
-As JavaScript has only one type for numerical values -- the type `Number` -- it is difficult to interpret the duration as either sensor readings or actual time based on the "type" specified. Therefore, GISpL.js implements only the time interpretation, but as milliseconds. Milliseconds are more common, in practice and in the language itself -- for instance the built in `setTimeout/setInterval` functions -- and it subjectively easier to specify `150` instead of `0.015`.
+As JavaScript has only one type for numerical values -- the type `Number` -- it is difficult to interpret the duration as either sensor readings or actual time based on the "type" specified. Therefore, GISpL.js implements only the time interpretation, but as milliseconds. Milliseconds are more common, in practice and in the language itself -- for instance the built in `setTimeout` or `setInterval` functions -- and it subjectively easier to specify `150` instead of `0.015`.
