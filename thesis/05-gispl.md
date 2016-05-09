@@ -9,7 +9,7 @@ Instead of implementing a gesture for a specific technology, e.g. smartphone dev
 
 ## Defining a gesture
 
-The opening paragraph already uses the word features. Features are the most important building block of a GISpL defined gesture. Once the implementer breaks down a gesture into possible features, user input can be validated as a defined gesture. As an example, how one could select festures for a motion based gesture in GISpL:
+The opening paragraph already uses the word features. **Features** are the most important building block of a GISpL defined gesture. Once the implementer breaks down a gesture into possible features, user input can be validated as a defined gesture. As an example, how one could select festures for a motion based gesture in GISpL:
 
 ```
 "features": [
@@ -81,7 +81,21 @@ Group       Integer     TUIO units      min/max             Group of input objec
                                                             groups of closely spaced touched points)
 -------------------------------------------------------------------------------------------------------------
 
-There are several other options other than features that allow more control over a GISpL defined gesture.
+There are several other options other than features that allow more control over a GISpL defined gesture. But before that, it is also necessary to mention GISpL's definition of regions. A regions acts as a specific area where gestures are defined. As stated in [@gisplweb], regions:
+
+>define spatial areas in which a certain set of gestures is valid and which capture motion data that falls within their boundaries.
+
+One of additional options are flags. **Flags** can be assigned to a gesture, and allow control related to execution and gesture regions of a valid gesture input. specified in [@gisplweb], there are four flag types, three of which were implemented in GISpL.js:
+
+>When a gesture has the "oneshot" flag, then it can only be triggered once by a given set of input IDs. Repeated triggering is only possible when the set of IDs captured by the containing region changes.
+
+>When a gesture has the "sticky" flag, then once this gesture has been triggered for the first time, all input events with participating IDs will continue to be sent to the original region, even if they subsequently leave the original boundaries.
+
+>When a gesture has the "bubble" flag set, then the result gesture will be sent to all regions that have been crossed by participating input events, even if the gesture itself has also been flagged as "sticky".
+
+Another option is the duration parameter, that can be set to a gesture and individual features. **Duration** is specified [@gisplweb] as:
+
+>...how far back the history of input events for the containing region should be considered for this gesture. The first value determines the starting point in the history, counting backwards from the present.
 
 ## TUIO
 
@@ -108,7 +122,7 @@ Other than the protocols not being backwards compatible [@tuio2spec], and the ty
 
 The feature ID allows a gesture to be constrained by a specific component type of a TUIO defined tangible object [@tuio1spec]. This corresponds with the various identifiers of TUIO Objects, and Tokens. The feature ParentID corresponds with the TUIO defined user identifier, for various users, if supported by the TUIO device that recognizes user input.
 
-Another way GISpL adopts parts of the TUIO specification is the input type and their use within filters. With them, the whole gesture or individual features can be filtered to accept only certain input types, as specified by TUIO. The whole list is available below [@gisplweb].
+Another way GISpL adopts parts of the TUIO specification is the input type and their use within **filters**. With them, the whole gesture or individual features can be filtered to accept only certain input types, as specified by TUIO. The whole list is available below [@gisplweb].
 
 -------------------------------------------------------------------------------
 ID      Description
@@ -158,4 +172,17 @@ ID      Description
 30      person
 
 ## Related work
-## Differences to the original proposal
+
+## Differences to the original specification
+
+Although GISpL.js aims the implement GISpL as specified, there are a number of differences mostly because of the nature of the environment. First, it runs in the browser, which renders HTML documents using the provided styling; second, it uses JavaScript as a programming language that can modify the page, with no support for any other language.
+
+The most important departure from the specification is the part that deals with regions. As a reminder, GISpL allows for gestures to be added to a region. The region can be defined using a series of bounding points. But as already stated, GISpL.js runs in a browser, so this implementation was modified for regions to be interpreted as DOM nodes, i.e. various elements of the page. This allows the regions to be used in a similar way as specified, with locating regions also being easy and fast because the browser is able to locate DOM nodes.
+
+Additional adjustments are mostly related to the fact that browsers can execute JavaScript, and this language and certain parts of the GISpL specification are incompatible. Additionally, the two features -- Dimensions and Position -- were dropped, along with the "default" flag.
+
+For instance, the specification defines the duration parameter as [@gisplweb]:
+
+> When values are not specified as floating point numbers, but as integers, the unit changes from seconds to "ticks", i.e. sensor readings. 
+
+As JavaScript has only one type for numerical values -- the type `Number` -- it is difficult to interpret the duration as either sensor readings or actual time based on the "type" specified. Therefore, GISpL.js implements only the time interpretation, but as milliseconds. Milliseconds are more common, in practice and in the language itself -- for instance the built in `setTimeout/setInterval` functions -- and it subjectively easier to specify `150` instead of `0.015`.
