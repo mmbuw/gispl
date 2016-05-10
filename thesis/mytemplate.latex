@@ -271,7 +271,7 @@ I declare that I have developed and written the enclosed Bachelor's Thesis compl
 
 \vspace{1cm}
 
-Weimar $if(thesisdate)$, $thesisdate$ $endif$
+Weimar$if(thesisdate)$, $thesisdate$ $endif$
 
 \vspace{1cm}
 
