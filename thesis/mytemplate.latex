@@ -216,21 +216,58 @@ $endif$
 \date{$date$}
 
 \begin{document}
-$if(title)$
-\maketitle
-$endif$
-$if(abstract)$
-\begin{abstract}
-$abstract$
-\end{abstract}
-$endif$
+
+% Frontpage
+\begin{titlepage}
+  \vspace{2cm}
+  \parbox{10cm}{\normalsize Bauhaus-Universit\"at Weimar\\
+    Faculty of Media\\
+    Degree Programme Computer Science and Media}
+
+  \begin{center}
+    \vspace{3cm}\Huge
+    $if(title)$
+      {\bf $title$}
+    $endif$
+    
+    $if(thesistype)$
+      \vspace{3cm}\Huge
+      {\bf $thesistype$}
+    $endif$
+  \end{center}
+  \vspace{\fill}\normalsize
+  
+  
+  $if(author)$
+    $author$
+  $endif$
+  \hfill
+  $if(title)$
+    Matriculation Number $matnumber$
+  $endif$
+  \\
+  $if(authorbirth)$
+  Born $authorbirth$ \\
+  $endif$
+  [3em]
+  $if(thesissupervisor)$
+    1. Supervisor: $thesissupervisor$ \\
+  $endif$
+  $if(thesissupervisor2)$
+    2. Supervisor: $thesissupervisor2$ \\
+  $endif$
+  \makeatother\\[3em]%
+  $if(thesisdate)$
+    Submission date: $thesisdate$
+  $endif$
+\end{titlepage}
 
 $for(include-before)$
 $include-before$
 
 $endfor$
 \chapter*{Declaration}
-I declare that I have developed and written the enclosed Bachelor Thesis completely by myself, and have not used sources or means without declaration in the text. Any  thoughts from others or literal quotations are clearly marked. The Bachelor Thesis was not used in the same or in a similar version to achieve an academic grading or is being published elsewhere.
+I declare that I have developed and written the enclosed Bachelor's Thesis completely by myself, and have not used sources or means without declaration in the text. Any  thoughts from others or literal quotations are clearly marked. The Bachelor's Thesis was not used in the same or in a similar version to achieve an academic grading or is being published elsewhere.
 
 Location, Date Signature
 $if(toc)$
