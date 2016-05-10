@@ -1,6 +1,32 @@
 
 ---
 references:
+- id: gdl
+  type: article
+  author:
+  - family: Huq Khandkar
+    given: Shahedul
+  - family: Maurer
+    given: Frank
+  issued:
+  - year: '2010'
+  title: 'A Language to Define Multi-Touch Interactions'
+  publisher: ACM
+- id: midas
+  type: article
+  author:
+  - family: Scholliers
+    given: Christophe
+  - family: Hoste
+    given: Lode
+  - family: Signer
+    given: Beat
+  - family: De Meuter
+    given: Wolfgang
+  issued:
+  - year: '2011'
+  title: 'Midas: a declarative multi-touch interaction framework'
+  publisher: ACM
 - id: gispl
   type: article
   author:
@@ -61,13 +87,20 @@ references:
 - id: viewports
   type: webpage
   author:
-    - family: Koch
-      given: Peter-Paul
+  - family: Koch
+    given: Peter-Paul
   title: A tale of two viewports — part one
   URL: 'http://www.quirksmode.org/mobile/viewports.html'
+- id: hammerdocs
+  type: webpage
+  author:
+  - family: Hammer.js
+  title: Getting Started
+  URL: http://hammerjs.github.io/getting-started/
 - id: screeny
   type: webpage
-  author: Mozilla Developer Network
+  author:
+  - family: Mozilla Developer Network
   title: Window.screenY
   URL: https://developer.mozilla.org/en-US/docs/Web/API/Window/screenY
 - id: touchobject
