@@ -269,7 +269,14 @@ $endfor$
 \chapter*{Declaration}
 I declare that I have developed and written the enclosed Bachelor's Thesis completely by myself, and have not used sources or means without declaration in the text. Any  thoughts from others or literal quotations are clearly marked. The Bachelor's Thesis was not used in the same or in a similar version to achieve an academic grading or is being published elsewhere.
 
-Location, Date Signature
+\vspace{1cm}
+
+Weimar $if(thesisdate)$, $thesisdate$ $endif$
+
+\vspace{1cm}
+
+\makebox[6cm]{\dotfill}\\
+Signature
 $if(toc)$
 {
 
