@@ -1,6 +1,6 @@
 # GISpL
 
-This chapter gives a brief overview of GISpL, the ideas and specification behind it. At its core, the Gestural Interface Specification Language allows a user to define a gesture by merely specifying of what kind of features it should consist of, and then relying on the underneath GISpL implementation to validate future user input. This is decribed in [@gispl]:
+This chapter gives a brief overview of GISpL, the ideas and specification behind it. At its core, the Gestural Interface Specification Language allows a user to define a gesture by merely specifying of what kind of features it should consist of, and then relying on the underneath GISpL implementation to validate future user input. This is described in [@gispl]:
 
 >GISpL is a formal language which allows both researchers and developers to unambiguously describe the behavior of a wide range of gestural interfaces using a simple JSON-based syntax. GISpL supports a multitude of input modalities, including multi-touch, digital pens, multiple regular
 mice, tangible interfaces or mid-air gestures. GISpL introduces a novel view on gestural interfaces from a software-engineering perspective. By using GISpL, developers can avoid tedious tasks such as reimplementing the same gesture recognition algorithms over and over again. Researchers benefit from the ability to quickly reconfigur prototypes of gestural UIs on-the-fly, possibly even in the middle of an expert review
@@ -9,7 +9,7 @@ Instead of implementing a gesture for a specific technology, e.g. smartphone dev
 
 ## Defining a gesture
 
-The opening paragraph already uses the word features. **Features** are the most important building block of a GISpL defined gesture. Once the implementer breaks down a gesture into possible features, user input can be validated as a defined gesture. As an example, how one could select festures for a motion based gesture in GISpL:
+The opening paragraph already uses the word features. **Features** are the most important building block of a GISpL defined gesture. Once the implementer breaks down a gesture into possible features, user input can be validated as a defined gesture. As an example, how one could select features for a motion based gesture in GISpL:
 
 ```
 "features": [
@@ -33,13 +33,13 @@ This gesture will recognize any user input that is simply moving. But what if th
 ]
 ```
 
-Simply adding a second feature was enough to modify the gesture, and have it in other ways work as it did before. This examples also shows how GISpL in essence works: a gesture is valid, if user input satisfies all the features specified in the gesture. In total, GISpL in its current form specifies 11 features, two of which we already saw. The features allow for futher configuration by specifying constraints, which then forces a feature to additionally match the constraints.
+Simply adding a second feature was enough to modify the gesture, and have it in other ways work as it did before. This examples also shows how GISpL in essence works: a gesture is valid, if user input satisfies all the features specified in the gesture. In total, GISpL in its current form specifies 11 features, two of which we already saw. The features allow for further configuration by specifying constraints, which then forces a feature to additionally match the constraints.
 
 **Count** is probably the simplest feature, as it only checks the number of input points. In contrast to some other features, the usage of constraints is mandatory, as it defines the lower and upper bound of input points.
 
 **Motion** checks if user input is in fact moving. The constraints can further allow for this motion to be directed; the two points in the constraints form a box. The average motion vector of all input points [@gispl] then needs to be constrained within this box.
 
-The table from [@gispl] sumarizes all of the features.
+The table from [@gispl] summarizes all of the features.
 
 ------------------------------------------------------------------------------------------------------------
 Name        Type        Unit            Constraints         Description
@@ -101,7 +101,7 @@ Another option is the duration parameter, that can be set to a gesture and indiv
 
 There was already mention of TUIO in the previous part of the chapter. As specified in [@tuio1spec], TUIO
  
->...is an attempt to provide a general and versatile communication interface between tangible tabletop controller interfaces and underlying application layers. It was designed to meet the needs of tabletop interactive multi-touch surfaces, where the user is able to manipulate a set of objects and draw gestures onto the table surface with the finger tips.
+>...is an attempt to provide a general and versatile communication interface between tangible tabletop controller interfaces and underlying application layers. It was designed to meet the needs of tabletop interactive multi-touch surfaces, where the user is able to manipulate a set of objects and draw gestures onto the table surface with the fingertips.
 
 TUIO as a protocol was built on top of the Open Sound Control protocol, which means that [@tuio1spec]
 
