@@ -27,6 +27,19 @@ references:
   - year: '2010'
   title: 'A Language to Define Multi-Touch Interactions'
   publisher: ACM
+- id: 1recognizer
+  type: article
+  author:
+  - family: Wobbrock
+    given: Jacob O.
+  - family: Wilson	
+    given: Andrew D.
+  - family: Li	
+    given: Yang
+  issued:
+  - year: '2007'
+  title: 'Gestures without libraries, toolkits or training: a $1 recognizer for user interface prototypes'
+  publisher: ACM
 - id: midas
   type: article
   author:
