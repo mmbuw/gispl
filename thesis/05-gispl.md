@@ -56,10 +56,10 @@ Path        Float       dimensionless   template path       Accuracy of match be
 Motion      Vector      TUIO units / s  lower/upper bound   Average motion vector of all input objects 
                                                             in region
 
-Rotation    Float       rad             lower/upper bound   Relative rotation of the input objects with
+Rotation    Float       rad / s         lower/upper bound   Relative rotation of the input objects with
                                                             respect to their starting positions
 
-Scale       Float                       lower/upper bound   Relative size change of input objects with
+Scale       Float       1 / s           lower/upper bound   Relative size change of input objects with
                                                             respect to their starting positions
 
 Position    Vector      TUIO units      bounding box        Positions of all individual input objects (e.g
