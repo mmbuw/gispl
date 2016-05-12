@@ -2,12 +2,12 @@
 ---
 title: Implementing GISpL in JavaScript
 author: Goran Košutić
-authorbirth: 'Apr. 28, 1984 in Sisak, Jugoslawien'
+authorbirth: 'Apr. 28, 1984 in Sisak, SFR Yugoslavia'
 thesistype: Bachelor's Thesis
 thesisdate: 'June 20, 2016'
 thesissupervisor: Jun.-Prof Florian Echtler
 thesissupervisor2: Prof. Benno Stein
-matnumber: 101100
+mtrnumber: 101100
 documentclass: book
 bibliography: bibliography.yaml
 csl: ieee.csl

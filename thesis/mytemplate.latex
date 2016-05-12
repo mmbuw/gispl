@@ -242,8 +242,8 @@ $endif$
     $author$
   $endif$
   \hfill
-  $if(title)$
-    Matriculation Number $matnumber$
+  $if(mtrnumber)$
+    Matriculation Number $mtrnumber$
   $endif$
   \\
   $if(authorbirth)$
@@ -251,10 +251,10 @@ $endif$
   $endif$
   [3em]
   $if(thesissupervisor)$
-    1. Supervisor: $thesissupervisor$ \\
+    1. Referee: $thesissupervisor$ \\
   $endif$
   $if(thesissupervisor2)$
-    2. Supervisor: $thesissupervisor2$ \\
+    2. Referee: $thesissupervisor2$ \\
   $endif$
   \makeatother\\[3em]%
   $if(thesisdate)$
