@@ -1,6 +1,21 @@
 
 ---
 references:
+- id: partbench
+  type: article
+  author:
+  - family: Krauß
+    given: Veronika
+  - family: Molina León
+    given: Gabriela C.
+  - family: Popescu
+    given: Oana-Iuliana
+  - family: Fuchkina
+    given: Ekaterina.
+  issued:
+  - year: '2015'
+  title: 'pART bench: a HybridSearch Tool for Floor Plans in Architecture'
+  publisher: 'Bauhaus-Universität Weimar'
 - id: gdl
   type: article
   author:
