@@ -1,8 +1,78 @@
 # Usage
 
-This chapter shows some typical use cases and their implementation. The [Implementation Overview](#implementation-overview) chapter showed one simple example, and this chapter will give some more detailed examples. The most obvious example is using multi-point input to move, rotate, and scale images.
+This chapter shows some typical use cases and their implementation. The [Implementation Overview](#implementation-overview) chapter showed one simple example, and this chapter will give some more detailed examples.
 
 ## Examples
+
+The most obvious example is using multi-point input to move, rotate, and scale images. It is also in essence relatively easy to implement. The different features can be implemented as separate gestures, and values can be applied as image transformations. The motion part is left out of the example because the translation transformation in CSS requires more work, and more space on the page.
+
+```
+gispl.addGesture({
+    "name": "scaling",
+    "features": [
+        {"type": "Scale"}
+    ]
+});
+gispl.addGesture({
+    "name": "rotating",
+    "features": [
+        {"type": "Rotation"}
+    ]
+});
+
+let images = document.getElementsByTagName('img');
+// reference their current scale and rotation values
+let imageRotations = new WeakMap(),
+    imageScales = new WeakMap();
+
+for (let i = 0; i < images.length; i += 1) {
+    // initial scale is 1
+    imageScales.set(images[i], 1);
+    // initial angle is zero
+    imageRotations.set(images[i], 0);
+}
+
+// transform images on gestures and store their values
+gispl(images)
+    .on('rotating', function fingerRotationCallback(event) {
+        let rotation = event.featureValues.rotation.touches,
+            degrees = rotation / Math.PI * 180;
+        let previousDegrees = imageRotations.get(event.target);
+        imageRotations.set(event.target, previousDegrees + degrees);
+        requestDraw();
+    })
+    .on('scaling', function(event) {
+        let scale = event.featureValues.scale;
+        let previousScale = imageScales.get(event.target);
+        imageScales.set(event.target, scale * previousScale);
+        requestDraw();
+    });
+```
+
+The `requestDraw` function is simple and takes care of applying the appropriate tranformations. Since the usage is graphical, it consists of calling `requestAnimationFrame` if the previous call was completed.
+
+Other interesting examples can be found in some non-graphical cases. For instance, deleting an element by using a path gesture. Figure {@fig:delete-gesture} a) demonstrates the path of the required gesture. The points can be supplied to the feature definition:
+
+```
+{
+    "type": "Path", "constraints": [
+        [0, 100],
+        [100,0], 
+        [0, 0],
+        [100, 100]
+    ]
+}
+```
+
+![a) The path must contain at least the points 1, 2, 3, and 4
+b) the path does not get recognized above the desired element
+c) multiple elements can be selected](./figures/delete-gesture.jpeg){#fig:delete-gesture}
+
+A flaw with this approach is that it is not guaranteed that the gesture will be recognized on the exact element we want to remove, as shown in Figure {@fig:delete-gesture} b). This is especially true if the image is relatively small. The problem can be solved by applying the `bubble` flag to the gesture. As a reminder, this flag forces the gesture to be triggered on all elements encountered by the input. The gesture will then trigger on an image if the input was even for a moment in contact with the element. This approach also works when we want to remove several elements at once, as shown in Figure {@fig:delete-gesture} c).
+
+FIGURE
+
+The possibilities are vast and other examples can be found on the GISpL website [@gisplweb], and in the GISpL.js repository [@gispljsrepo].
 
 ## pART bench
 

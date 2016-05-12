@@ -71,6 +71,16 @@ references:
   title: TISCH Framework
   publisher: GitHub
   URL: 'https://github.com/floe/tisch-core'
+- id: gispljsrepo
+  type: webpage
+  author:
+  - family: Košutić
+    given: Goran
+  issued:
+  - year: '2016'
+  title: GISpL.js
+  publisher: GitHub
+  URL: 'https://github.com/mmbuw/gispl'
 - id: tuio1spec
   type: webpage
   author:
