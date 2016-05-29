@@ -16,6 +16,6 @@ toc-depth: 1
 link-citations: true
 mainfont: 'Droid Serif'
 mainfontoptions: 'LetterSpace=3.0'
-monofont: 'Droid Sans Mono'
+monofont: 'Andale Mono'
 linkcolor: cyan
 ---
