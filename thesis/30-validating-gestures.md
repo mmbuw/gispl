@@ -30,7 +30,13 @@ Features represent a core element of a defined gesture [@gisplweb], but the GISp
 
 ## Flags
 
-Flags are one such parameter. The key value of a gesture flag is that it can adjust where the gesture event gets triggered. Normally, the element where the input is placed at the time when the gesture is recognized will also receive the gesture event. Flags allow us to change this behavior; there are three types of flags: `oneshot`, `sticky`, and `bubble`. The behavior of the flags is defined in the specification, but it is important to note that of the three types, `bubble` is the one that can potentially cause a gesture event to be triggered on multiple page nodes.
+Flags are one such parameter. The key value of a gesture flag is that it can adjust where the gesture event gets triggered. Normally, the element where the input is placed at the time when the gesture is recognized will also receive the gesture event. Flags allow us to change this behavior; there are three types of flags: `oneshot`, `sticky`, and `bubble`. The behavior of the flags is defined in the specification and early in this work (chapter [Defining a gesture](#defining-a-gesture)), but they are described in short here for clarity:
+
+* `oneshot` guarantees that a gesture will only be triggered once by a certain input. As an example, placing an input on the screen and moving it will trigger a motion based gesture for the first two input points. The gesture can be triggered again by e.g. removing the input and placing it again
+* `sticky` guarantees that a gesture will be triggered, once recognized, on the same node where the input was placed at the time the gesture was recognized. Using motion as an example again, once motion is recognized, the same node will keep receiving the gesture even if the input moves to some other node
+* `bubble` makes sure that all nodes that the input interacted with receive the recognized gesture. This is mostly related to motion based features like `Motion` or `Path`. 
+
+Some of the gestures like `sticky` and `bubble` are mutually exclusive; in this particular case, `bubble` will have precedence. It is important to note that of the three types, `bubble` is the one that can potentially cause a gesture event to be triggered on multiple page nodes.
 
 Since the gesture definition itself and subsequently the gesture object contains the flag information, it was the logical place in GISpL.js for deciding how specific flags affect behavior. More simply put, this means that the gesture object's `load` method returns a list of page nodes that are affected by the gesture. This is in contrast with the feature object's `load` method that returns a boolean value. It also means that when a gesture was not recognized, an empty list will be returned.
 
