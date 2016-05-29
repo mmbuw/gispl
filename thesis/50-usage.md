@@ -1,6 +1,6 @@
 # Usage
 
-This chapter shows some typical use cases and their implementation. The [Implementation Overview](#implementation-overview) chapter showed one simple example, and this chapter will give some more detailed examples.
+This chapter shows some typical use cases and their implementation. The [Implementation Overview](#implementation-overview) chapter showed one simple example, and this chapter will give some more detailed examples. Before this, it is important to mention some technical aspects of GISpL.js. It was built using some of the latest features defined in JavaScript or better said ECMAScript. Some of the additions defined in the ECMAScript 2015 specification and used in GISpL.js such as `WeakMap` have partial or full support in most modern browsers. Most, but not all. Although it is possible to polyfill [@polyfill] some features, GISpL.js will work best in the latest and most modern browsers. Additionally, the performance has been best in Chrome, but it works also in others such as Firefox or Safari.
 
 ## Examples
 

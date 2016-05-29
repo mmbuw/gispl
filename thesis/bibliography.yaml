@@ -140,6 +140,13 @@ references:
     given: Peter-Paul
   title: A tale of two viewports — part one
   URL: 'http://www.quirksmode.org/mobile/viewports.html'
+- id: polyfill
+  type: webpage
+  author:
+  - family: Sharp
+    given: Remy
+  title: 'What is a Polyfill?'
+  URL: 'https://remysharp.com/2010/10/08/what-is-a-polyfill'
 - id: hammerdocs
   type: webpage
   author:
