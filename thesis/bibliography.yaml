@@ -1,6 +1,17 @@
 
 ---
 references:
+- id: reactivision
+  type: article
+  author:
+  - family: Kaltenbrunner
+    given: Martin
+  - family: Bencina
+    given: Ross
+  issued:
+  - year: '2007'
+  title: 'reacTIVision: a computer-vision framework for table-based tangible interaction'
+  publisher: 'ACM'
 - id: partbench
   type: article
   author:
@@ -11,7 +22,7 @@ references:
   - family: Popescu
     given: Oana-Iuliana
   - family: Fuchkina
-    given: Ekaterina.
+    given: Ekaterina
   issued:
   - year: '2015'
   title: 'pART bench: a HybridSearch Tool for Floor Plans in Architecture'
