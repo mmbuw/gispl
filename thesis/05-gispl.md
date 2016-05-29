@@ -103,11 +103,11 @@ There was already mention of TUIO in the previous part of the chapter. As specif
  
 >...is an attempt to provide a general and versatile communication interface between tangible tabletop controller interfaces and underlying application layers. It was designed to meet the needs of tabletop interactive multi-touch surfaces, where the user is able to manipulate a set of objects and draw gestures onto the table surface with the fingertips.
 
-TUIO as a protocol was built on top of the Open Sound Control protocol, which means that [@tuio1spec]
+In essence, the mentioned controller interface is in charge of recognizing user input. An application needs to receive this information, and this is the role of TUIO. It standardizes a communication protocol by defining different message types and the way they are transmitted from a TUIO Server to a TUIO Client. An application that acts as a TUIO Client can thus receive user input information from any source that can transmit this information acting as a TUIO Server. TUIO was built on top of the Open Sound Control protocol, which means that this information is transmitted over a network. This allows applications to receive user input from different physical devices. As stated in the specification [@tuio1spec]:
 
 >...TUIO messages can be basically transmitted through any channel that is supported by an actual OSC implementation. The default transport method for the TUIO protocol is the encapsulation of the binary OSC bundle data within UDP packets sent to the default TUIO port number 3333.
 
-GISpL shares some parts of its specification with TUIO. This is related to the input type and component type definition of TUIO, which GISpL adopts in two ways: for some features, and filters. TUIO in versions 1.1 and 2.0 defines the following types
+TUIO in versions 1.1 and 2.0 defines the following message types:
 
 * TUIO 1.1
     * Cursor, e.g. finger
@@ -118,11 +118,11 @@ GISpL shares some parts of its specification with TUIO. This is related to the i
     * Token
     * Bound
     
-Other than the protocols not being backwards compatible [@tuio2spec], and the types containing additional information in the second protocol version, e.g. cursors and pointers on the one hand, and objects and tokens on the other represent identical input.
+The two protocols are not backwards compatible[@tuio2spec]; other then the types in some cases having different capability, the messages are also structured differently. However in general, Pointers refer to the same input as Cursors of TUIO 1 (e.g. fingers) and the same is true for Tokens and Objects.
 
-The feature ID allows a gesture to be constrained by a specific component type of a TUIO defined tangible object [@tuio1spec]. This corresponds with the various identifiers of TUIO Objects, and Tokens. The feature ParentID corresponds with the TUIO defined user identifier, for various users, if supported by the TUIO device that recognizes user input.
+GISpL shares some parts of its specification with TUIO. The GISpL specified feature ID (also referred to as ObjectID) allows a gesture to be constrained by a specific component ID of a TUIO defined tangible object [@tuio1spec]. Two TUIO Objects or Tokens on the one hand represent the same message type, but they can also be distinguished based on their component identifiers. The feature ParentID corresponds with the TUIO defined user identifier, for various users, if supported by the TUIO device that recognizes user input.
 
-Another way GISpL adopts parts of the TUIO specification is the input type and their use within **filters**. With them, the whole gesture or individual features can be filtered to accept only certain input types, as specified by TUIO. The whole list is available below [@gisplweb].
+Another way GISpL adopts parts of the TUIO specification is the input type and their use within **filters**. With them, the whole gesture or individual features can be filtered to accept only certain types, as specified by TUIO. The whole list is available below [@gisplweb].
 
 -------------------------------------------------------------------------------
 ID      Description
