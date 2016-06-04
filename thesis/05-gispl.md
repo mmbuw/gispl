@@ -175,6 +175,42 @@ ID      Description
 
 GISpL is not the only attempt to allow for more easily defined gesture recognition. For example, GDL [@gdl], or Gesture Definition Language, offers some built in gestures and a way to compose new out of primitive conditions. This can be a very detailed rule based configuration, taking into account e.g. point distance which makes it arguably more complicated. It is structurally similar to GISpL.js, validating input and using events to notify the application. Midas [@midas] is also rule based and concentrates in its implementation on a clean build from the software engineering perspective. For this it avoids events, but ties behavior of gestures with their definition.
 
+There are various others solutions and proposals, each with a slightly different goal. Proton [@proton] recognizes a user defined gesture by analyzing the stream of touch events using regular expressions. It also focuses on analyzing possible conflicts between gestures, e.g. when user actions might lead to more than one defined gesture being recognized. It comes with a tool called GestureTablature that translates defined gestures into regular expressions.
+
+In his dissertation on formal gesture definitions [@kammer], Dr. Dietrich Kammer offered this overview of some of the available options:
+
+------------------------------------------------------------------------------------------------------------
+                GDL             Proton          Midas           Framous         GISpl           GDML             
+--------------- --------------- --------------- --------------- --------------- --------------- ------------
+Basis           MGrammar        Regular         Logic           Labeled         JSON            XML
+                (DSL)           expressions                     Deductive
+                                                                Systems
+
+Multimodal      No              No              Yes             No              Yes             No
+Applicability
+[^multimodal]
+
+Application     External        External        Internal        External        External        External
+logic
+
+Focus objects   External        Internal        Internal        External        External        Internal
+[^focusobj]
+
+Evaluation type Parameter       Parameter       Parameter       Parameter       Flag            Parameter
+
+Reference
+implementation  Gesture         Proton          JMidas (Java)   Framous (Java)  libTISCH (C++)  None
+                Toolkit (C#)
+
+Embedded in     No              Yes             No              No              Yes             No
+Code
+
+Status          Open Source     Research        Research        Discontinued    Open Source     Open Source
+
+Tools           In Visual       Gesture         None            None            None            XML Editors
+                Studio          Tablature
+
+
 Directly related to this work, there is Hammer.js, a library for gesture recognition in the browser [@hammerdocs]. The library implements six standard recognizers such as pan, pinch etc. that can be configured and combined, so in that regard it works in a similar way as GISpL. It also shares some implementation details with GISpL.js, such as an event based structure. However, the interface is stills strictly programmatic, and recognizers have their own set of configurable options. The library is generally more geared toward typical website usage, which makes it less flexible, but at the same time easier to configure for typical user website interaction. For instance, for movement direction one can define horizontal, vertical, or all directions, but does not have a way for more accurate direction control. It obviously also does not support TUIO and works with the input normally available within a browser, such as mouse or touch input. Some other frameworks like jQuery mobile also implement gesture based events, but they are mostly limited to simple swipeleft or swiperight gestures.
 
 ## Differences to the original specification
@@ -190,3 +226,6 @@ For instance, the specification defines the duration parameter as [@gisplweb]:
 > When values are not specified as floating point numbers, but as integers, the unit changes from seconds to "ticks", i.e. sensor readings. 
 
 As JavaScript has only one type for numerical values -- the type `Number` -- it is difficult to interpret the duration as either sensor readings or actual time based on the "type" specified. Therefore, GISpL.js implements only the time interpretation, but as milliseconds. Milliseconds are more common, in practice and in the language itself -- for instance the built in `setTimeout` or `setInterval` functions -- and it subjectively easier to specify `150` instead of `0.015`.
+
+[^multimodal]: refers to the possibility of using different sources as input
+[^focusobj]: definition of gesture targets
