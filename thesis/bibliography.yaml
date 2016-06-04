@@ -1,6 +1,29 @@
 
 ---
 references:
+- id: proton
+  type: article
+  author:
+  - family: Kin
+    given: Kenrick
+  - family: Hartmann
+    given: Björn
+  - family: DeRose
+    given: Tony
+  - family: Agrawala
+    given: Maneesh
+  issued:
+  - year: '2012'
+  title: 'Proton: multitouch gestures as regular expressions'
+  publisher: 'ACM'
+- id: kammer
+  type: thesis
+  author:
+  - family: Kammer
+    given: Dietrich
+  issued:
+  - year: '2013'
+  title: 'Formalisierung gestischer Eingabe für Multitouch-Systeme'
 - id: reactivision
   type: article
   author:
