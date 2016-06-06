@@ -85,7 +85,7 @@ There are several other options other than features that allow more control over
 
 >...define spatial areas in which a certain set of gestures is valid and which capture motion data that falls within their boundaries.
 
-One of additional options are flags. **Flags** can be assigned to a gesture, and allow control related to execution and gesture regions of a valid gesture input. specified in [@gisplweb], there are four flag types, three of which were implemented in GISpL.js:
+One of additional options are flags. **Flags** can be assigned to a gesture, and allow control related to execution and gesture regions of a valid gesture input. Specified in [@gisplweb], there are four flag types, three of which were implemented in GISpL.js:
 
 >When a gesture has the "oneshot" flag, then it can only be triggered once by a given set of input IDs. Repeated triggering is only possible when the set of IDs captured by the containing region changes.
 
@@ -172,6 +172,7 @@ ID      Description
 29      head
 
 30      person
+
 -------------------------------------------------------------------------------
 
 
@@ -224,13 +225,13 @@ Although GISpL.js aims the implement GISpL as specified, there are a number of d
 
 The most important departure from the specification is the part that deals with regions. As a reminder, GISpL allows for gestures to be added to a region. The region can be defined using a series of bounding points. But as already stated, GISpL.js runs in a browser, so this implementation was modified for regions to be interpreted as DOM nodes, i.e. various elements of the page. This allows the regions to be used in a similar way as specified, with locating regions also being easy and fast because the browser is able to locate DOM nodes.
 
-Additional adjustments are mostly related to the fact that browsers can execute JavaScript, and this language and certain parts of the GISpL specification are incompatible. Additionally, the two features -- Dimensions and Position -- were dropped, along with the "default" flag.
+Additional adjustments are mostly related to the fact that browsers can execute JavaScript, and this language and certain parts of the GISpL specification are incompatible. Also, two features -- Dimensions and Position -- were dropped, along with the "default" flag.
 
 For instance, the specification defines the duration parameter as [@gisplweb]:
 
 > When values are not specified as floating point numbers, but as integers, the unit changes from seconds to "ticks", i.e. sensor readings. 
 
-As JavaScript has only one type for numerical values -- the type `Number` -- it is difficult to interpret the duration as either sensor readings or actual time based on the "type" specified. Therefore, GISpL.js implements only the time interpretation, but as milliseconds. Milliseconds are more common, in practice and in the language itself -- for instance the built in `setTimeout` or `setInterval` functions -- and it subjectively easier to specify `150` instead of `0.015`.
+As JavaScript has only one type for numerical values -- the type `Number` -- it is difficult to interpret the duration as either sensor readings or actual time based on the "type" specified. Therefore, GISpL.js implements only the time interpretation, but as milliseconds. Milliseconds are more common, in practice and in the language itself -- for instance the built in `setTimeout` or `setInterval` functions -- and it is subjectively easier to specify `150` instead of `0.015`.
 
 [^multimodal]: refers to the possibility of using different sources as input
 [^focusobj]: definition of gesture targets
