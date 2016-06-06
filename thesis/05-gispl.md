@@ -172,6 +172,8 @@ ID      Description
 29      head
 
 30      person
+-------------------------------------------------------------------------------
+
 
 ## Related work
 
@@ -211,6 +213,7 @@ Status          Open Source     Research        Research        Discontinued    
 
 Tools           In Visual       Gesture         None            None            None            XML Editors
                 Studio          Tablature
+------------------------------------------------------------------------------------------------------------
 
 
 Directly related to this work, there is Hammer.js, a library for gesture recognition in the browser [@hammerdocs]. The library implements six standard recognizers such as pan, pinch etc. that can be configured and combined, so in that regard it works in a similar way as GISpL. It also shares some implementation details with GISpL.js, such as an event based structure. However, the interface is stills strictly programmatic, and recognizers have their own set of configurable options. The library is generally more geared toward typical website usage, which makes it less flexible, but at the same time easier to configure for typical user website interaction. For instance, for movement direction one can define horizontal, vertical, or all directions, but does not have a way for more accurate direction control. It obviously also does not support TUIO and works with the input normally available within a browser, such as mouse or touch input. Some other frameworks like jQuery mobile also implement gesture based events, but they are mostly limited to simple `swipeleft` or `swiperight` gestures.
