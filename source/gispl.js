@@ -5,6 +5,7 @@ import {createGesture,
 import TuioClient from 'tuio/src/TuioClient';
 import nodeSearch from './tuio/nodeSearch';
 import tuioInput from './tuio/tuioInput';
+import touchInput from './tuio/touchInput';
 import screenCalibration from './tuio/screenCalibration';
 import {gestureEmition} from './gestureEmit';
 
@@ -78,6 +79,14 @@ gispl.initTuio = function gisplInitTuio(params) {
     tuioInput({tuioClient,
                 findNode,
                 calibration}).listen(handleInput);
+};
+
+gispl.initTouch = function gisplInitTouch(params) {
+    let {calibration = defaultCalibration} = params;
+
+    findNode = nodeSearch({calibration});
+
+    tuioInput({findNode}).listen(handleInput);
 };
 
 gispl.filterBitmask = function gisplFilterBitmask(filters = []) {
