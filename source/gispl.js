@@ -5,7 +5,7 @@ import {createGesture,
 import TuioClient from 'tuio/src/TuioClient';
 import nodeSearch from './tuio/nodeSearch';
 import tuioInput from './tuio/tuioInput';
-import touchInput from './tuio/touchInput';
+import touchInput from './touch/touchInput';
 import screenCalibration from './tuio/screenCalibration';
 import {gestureEmition} from './gestureEmit';
 
