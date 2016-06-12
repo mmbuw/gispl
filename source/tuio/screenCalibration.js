@@ -22,10 +22,10 @@ export default function screenCalibration(params = {}) {
         return mouseEvent.screenX - mouseEvent.clientX;
     }
 
-    function captureEvent(event) {
+    function captureMouseEvent(event) {
         if (listenForInputEvent) {
 
-            calibrationMouseEvent(event);
+            calibrationEvent(event);
             listenForInputEvent = false;
 
             setTimeout(function pauseBeforeAllowingRecalibration() {
@@ -34,7 +34,19 @@ export default function screenCalibration(params = {}) {
         }
     }
 
-    function calibrationMouseEvent(event = {}) {
+    function captureTouchEvent(event) {
+        if (listenForInputEvent) {
+
+            calibrationEvent(event.touches[0]);
+            listenForInputEvent = false;
+
+            setTimeout(function pauseBeforeAllowingRecalibration() {
+                listenForInputEvent = true;
+            }, inputEventPause);
+        }
+    }
+
+    function calibrationEvent(event = {}) {
         if (typeof event.clientX === 'undefined' ||
                 typeof event.clientY === 'undefined' ||
                 typeof event.screenX === 'undefined' ||
@@ -49,12 +61,13 @@ export default function screenCalibration(params = {}) {
 
     // called before the object is returned
     if (typeof mouseEvent !== 'undefined') {
-        calibrationMouseEvent(mouseEvent);
+        calibrationEvent(mouseEvent);
     }
-    document.addEventListener('mouseover', captureEvent);
+    document.addEventListener('mouseover', captureMouseEvent);
+    document.addEventListener('touchstart', captureTouchEvent);
 
     instance = {
-        mouseEvent: calibrationMouseEvent,
+        mouseEvent: calibrationEvent,
 
         viewportPosition() {
             let top = viewportPositionTop(),

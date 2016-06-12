@@ -81,12 +81,12 @@ gispl.initTuio = function gisplInitTuio(params) {
                 calibration}).listen(handleInput);
 };
 
-gispl.initTouch = function gisplInitTouch(params) {
+gispl.initTouch = function gisplInitTouch(params = {}) {
     let {calibration = defaultCalibration} = params;
 
     findNode = nodeSearch({calibration});
 
-    tuioInput({findNode}).listen(handleInput);
+    touchInput({findNode}).listen(handleInput);
 };
 
 gispl.filterBitmask = function gisplFilterBitmask(filters = []) {
