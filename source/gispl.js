@@ -75,9 +75,10 @@ gispl.initTuio = function gisplInitTuio(params) {
     let tuioClient = new TuioClient({host});
     findNode = nodeSearch({calibration});
 
-    tuioInput({tuioClient,
-                findNode,
-                calibration}).listen(handleInput);
+    tuioInput({
+        tuioClient,
+        findNode,
+        calibration}).listen(handleInput);
 };
 
 gispl.filterBitmask = function gisplFilterBitmask(filters = []) {
