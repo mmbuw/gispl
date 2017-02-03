@@ -10,23 +10,22 @@ import {gestureEmition} from './gestureEmit';
 
 export default function gispl(selection) {
 
-    let gisplApi = {},
-        selectionInsertion = elementInsertion(gisplApi);
-
+    let gisplApi = {};
+    
+    elementInsertion(gisplApi);
     domCollectionEvents(gisplApi);
 
-    //initial selection insertion as gispl[index]
-    selectionInsertion.append(selection);
+    gisplApi.append(selection);
 
     //iterate over the selection collection
     gisplApi.forEach = function gisplForEach(...args) {
-        [].forEach.apply(this, args);
+        [].forEach.apply(gisplApi, args);
     };
 
     //additional elements
     // the registered callbacks up to this point
     // won't be applied to the new elements
-    gisplApi.add = selectionInsertion.append;
+    gisplApi.add = gisplApi.append;
 
     //event method aliases
     gisplApi.trigger = gisplApi.emit;

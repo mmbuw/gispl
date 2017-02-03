@@ -15,10 +15,6 @@ const gisplObjects = new WeakMap();
 export default function elementInsertion(object) {
     gisplObjects.set(object, new WeakSet());
 
-    if (typeof object.length === 'undefined') {
-        object.length = 0;
-    }
-
     function isNodeValid(node) {
         return node !== null &&
                 !gisplObjects.get(object).has(node);
@@ -30,13 +26,15 @@ export default function elementInsertion(object) {
         gisplObjects.get(object).add(node);
     }
 
-    return {
-        append(selection) {
-            const
-                nodesToAdd = selectionToArray(selection);
-            nodesToAdd
-                .filter(isNodeValid)
-                .forEach(addNodeToObject);
-        }
-    };
+    object.append = function append(selection) {
+        const nodesToAdd = selectionToArray(selection);
+        nodesToAdd
+            .filter(isNodeValid)
+            .forEach(addNodeToObject);
+        return object;
+    }
+
+    if (typeof object.length === 'undefined') {
+        object.length = 0;
+    }
 }
