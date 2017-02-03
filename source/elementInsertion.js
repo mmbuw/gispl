@@ -1,4 +1,4 @@
-function assureSelectionIsArray(selection = []) {
+function selectionToArray(selection = []) {
     if (selection === null) {
         selection = [];
     }
@@ -10,8 +10,9 @@ function assureSelectionIsArray(selection = []) {
                                         [...selection];
 }
 
+const gisplObjects = new WeakMap();
 export default function elementInsertion(object) {
-    let elementCollection = new WeakSet();
+    gisplObjects.set(object, new WeakSet());
 
     if (typeof object.length === 'undefined') {
         object.length = 0;
@@ -19,15 +20,16 @@ export default function elementInsertion(object) {
 
     return {
         append(selection) {
-            const elements = assureSelectionIsArray(selection);
-
-            elements.forEach((element, index) => {
-                if (!elementCollection.has(element) &&
-                        element !== null) {
-                    object[object.length] = elements[index];
-                    object.length += 1;
-                    elementCollection.add(element);
-                }
+            const
+                nodesToAdd = selectionToArray(selection),
+                existingNodes = gisplObjects.get(object);
+            nodesToAdd.filter(function useNewOnly(node) {
+                return node !== null &&
+                        !existingNodes.has(node);
+            }).forEach(function addNodeToExisting(node) {
+                object[object.length] = node;
+                object.length += 1;
+                existingNodes.add(node);
             });
         }
     };
