@@ -1,10 +1,13 @@
-function assureSelectionIsArrayLike(selection = []) {
+function assureSelectionIsArray(selection = []) {
     if (selection === null) {
         selection = [];
     }
+    if (typeof selection === 'string') {
+        selection = document.querySelectorAll(selection);
+    }
     return typeof selection.length === 'undefined' ?
                                         [selection] :
-                                        selection;
+                                        [...selection];
 }
 
 export default function elementInsertion(object) {
@@ -16,22 +19,16 @@ export default function elementInsertion(object) {
 
     return {
         append(selection) {
-            if (typeof selection === 'string') {
-                selection = document.querySelectorAll(selection);
-            }
+            const elements = assureSelectionIsArray(selection);
 
-            if (typeof selection !== 'undefined') {
-                let elements = assureSelectionIsArrayLike(selection);
-
-                [].forEach.call(elements, (element, index) => {
-                    if (!elementCollection.has(element) &&
-                            element !== null) {
-                        object[object.length] = elements[index];
-                        object.length += 1;
-                        elementCollection.add(element);
-                    }
-                });
-            }
+            elements.forEach((element, index) => {
+                if (!elementCollection.has(element) &&
+                        element !== null) {
+                    object[object.length] = elements[index];
+                    object.length += 1;
+                    elementCollection.add(element);
+                }
+            });
         }
     };
 }
