@@ -11,6 +11,7 @@ function selectionToArray(selection = []) {
 }
 
 const gisplObjects = new WeakMap();
+
 export default function elementInsertion(object) {
     gisplObjects.set(object, new WeakSet());
 
@@ -18,19 +19,24 @@ export default function elementInsertion(object) {
         object.length = 0;
     }
 
+    function isNodeValid(node) {
+        return node !== null &&
+                !gisplObjects.get(object).has(node);
+    }
+
+    function addNodeToObject(node) {
+        object[object.length] = node;
+        object.length += 1;
+        gisplObjects.get(object).add(node);
+    }
+
     return {
         append(selection) {
             const
-                nodesToAdd = selectionToArray(selection),
-                existingNodes = gisplObjects.get(object);
-            nodesToAdd.filter(function useNewOnly(node) {
-                return node !== null &&
-                        !existingNodes.has(node);
-            }).forEach(function addNodeToExisting(node) {
-                object[object.length] = node;
-                object.length += 1;
-                existingNodes.add(node);
-            });
+                nodesToAdd = selectionToArray(selection);
+            nodesToAdd
+                .filter(isNodeValid)
+                .forEach(addNodeToObject);
         }
     };
 }
