@@ -1,4 +1,4 @@
-import {domCollectionEvents} from './events';
+import {events} from './events';
 import elementInsertion from './elementInsertion';
 import {createGesture,
             userDefinedGestures} from './gesture';
@@ -8,29 +8,40 @@ import tuioInput from './tuio/tuioInput';
 import screenCalibration from './tuio/screenCalibration';
 import {gestureEmition} from './gestureEmit';
 
+
+class GISpL {
+    constructor(selection) {
+        elementInsertion(this);
+        this.append(selection);
+        this.add = this.append;
+        this.trigger = this.emit;
+    }
+    forEach(...args) {
+        [].forEach.apply(this, args);
+        return this;
+    }
+    on(event, listener) {
+        this.forEach(node => events.on(node,
+                                            event,
+                                            listener));
+        return this;
+    }
+    off(event, listener) {
+        this.forEach(node => events.off(node,
+                                            event,
+                                            listener));
+        return this;
+    }
+    emit(event, ...args) {
+        this.forEach(node => events.emit(node,
+                                                event,
+                                                ...args));
+        return this;
+    }
+}
+
 export default function gispl(selection) {
-
-    let gisplApi = {};
-    
-    elementInsertion(gisplApi);
-    domCollectionEvents(gisplApi);
-
-    gisplApi.append(selection);
-
-    //iterate over the selection collection
-    gisplApi.forEach = function gisplForEach(...args) {
-        [].forEach.apply(gisplApi, args);
-    };
-
-    //additional elements
-    // the registered callbacks up to this point
-    // won't be applied to the new elements
-    gisplApi.add = gisplApi.append;
-
-    //event method aliases
-    gisplApi.trigger = gisplApi.emit;
-
-    return gisplApi;
+    return new GISpL(selection);
 }
 
 let emitGesture;

@@ -1,5 +1,5 @@
 import gispl from '../../source/gispl';
-import {domCollectionEvents, events} from '../../source/events';
+import {events} from '../../source/events';
 
 describe('gispl event emitting', () => {
 
@@ -11,16 +11,6 @@ describe('gispl event emitting', () => {
 
     afterEach(() => {
         events.clearGlobalEventsCache();
-    });
-
-    it('should construct', () => {
-        expect(domCollectionEvents()).to.be.an('object');
-    });
-
-    it('should extend objects passed into it', () => {
-        expect(domCollectionEvents({})).to.be.an('object');
-        let testEmitter = domCollectionEvents({prop: 1});
-        expect(testEmitter.prop).to.equal(1);
     });
 
     it('should have basic event on/off/emit capabilities', () => {

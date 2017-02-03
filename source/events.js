@@ -62,7 +62,6 @@ export let events = {
     },
     on(element, event, listener) {
         globalEventCache.addListener(element, event, listener);
-
     },
     off(element, event, listener) {
         globalEventCache.removeListeners(element, event, listener);
@@ -71,29 +70,3 @@ export let events = {
         globalEventCache.clear();
     }
 };
-
-export function domCollectionEvents(object = {}) {
-
-    object.on = function collectionEventOn(event, listener) {
-        this.forEach(element => events.on(element,
-                                            event,
-                                            listener));
-        return this;
-    };
-
-    object.off = function collectionEventOff(event, listener) {
-        this.forEach(element => events.off(element,
-                                            event,
-                                            listener));
-        return this;
-    };
-
-    object.emit = function collectionEventEmit(event, ...args) {
-        this.forEach(element => events.emit(element,
-                                                event,
-                                                ...args));
-        return this;
-    };
-
-    return object;
-}
