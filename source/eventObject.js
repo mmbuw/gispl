@@ -2,6 +2,14 @@ import * as features from './features';
 
 let eventControls = new WeakMap();
 
+class EventFeatures {
+    constructor() {
+        for (const key in features) {
+            this[key] = undefined;
+        }
+    }
+}
+
 class EventObject {
     constructor(input, target, gesture) {
         this.input = input;
@@ -48,10 +56,4 @@ export function createEventObject(nodes = [], targetNode, inputObjects, gesture)
         eventObject.target = nodes;
     }
     return eventObject;
-}
-
-function EventFeatures() {
-    for (let key in features) {
-        this[key] = undefined;
-    }
 }
