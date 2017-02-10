@@ -40,17 +40,13 @@ class GISpL {
     }
     append(selection) {
         const nodesToAdd = nodeSelectionToArray(selection);
-        const object = this;
-        nodesToAdd
-            .filter(function isNodeValid(node) {
-                return node !== null &&
-                        !gisplObjects.get(object).has(node);
-            })
-            .forEach(function addNodeToObject(node) {
-                object[object.length] = node;
-                object.length += 1;
-                gisplObjects.get(object).add(node);
-            });
+        nodesToAdd.filter(
+            node => node !== null && !gisplObjects.get(this).has(node)
+        ).forEach(node => {
+            this[this.length] = node;
+            this.length += 1;
+            gisplObjects.get(this).add(node);
+        });
         return this;
     }
 }
