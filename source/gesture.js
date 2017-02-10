@@ -14,134 +14,146 @@ const gestureFlagNames = Object.freeze(
     Object.keys(gestureFlags).map(key => gestureFlags[key])
 );
 
-export function createGesture(gestureDefinition) {
-    let bubbleTopNodes = [],
-        stickyTopNode = null,
-        validTopNodesOnEmit = [],
-        features;
+const gesturePrivate = new WeakMap();
 
+class Gesture {
+    constructor(gestureDefinition) {
+        gesturePrivate.set(this, {
+            gestureDefinition,
+            bubbleTopNodes: [],
+            validTopNodesOnEmit: [],
+            stickyTopNode: null,
+            features: initializeFeaturesFrom(gestureDefinition),
+            flags: extractFlagsFrom(gestureDefinition),
+            duration: extractDurationFrom(gestureDefinition),
+            inputCheck: inputComparison()
+        });
+    }
+
+    definition() {
+        return gesturePrivate.get(this).gestureDefinition;
+    }
+
+    name() {
+        return gesturePrivate.get(this).gestureDefinition.name;
+    }
+
+    features() {
+        return gesturePrivate.get(this).features;
+    }
+
+    flags() {
+        return gesturePrivate.get(this).flags;
+    }
+
+    duration() {
+        return gesturePrivate.get(this).duration;
+    }
+
+    featureValuesToObject(data) {
+        const {features} = gesturePrivate.get(this);
+        for (let i = 0; i < features.length; i += 1) {
+            features[i].setValueToObject(data);
+        }
+        return this;
+    }
+    // hopefully somehow simpler in the future
+    // checks if the gesture is valid by validating every feature
+    // and returns nodes to emit gestures on (based on which flags are set)
+    load(inputState = {}) {
+        
+        let {
+            flags,
+            duration,
+            features,
+            bubbleTopNodes,
+            validTopNodesOnEmit,
+            inputCheck
+        } = gesturePrivate.get(this);
+
+        let hasOneshotFlag = flags.indexOf(gestureFlags.ONESHOT) !== -1,
+            hasBubbleFlag = flags.indexOf(gestureFlags.BUBBLE) !== -1,
+            hasStickyFlag = flags.indexOf(gestureFlags.STICKY) !== -1,
+            hasNoFlag = flags.length === 0;
+
+        // temp inline
+        function inputObjectsFrom(inputState) {
+            let {inputObjects} = inputState;
+
+            if (duration.definition.length !== 0) {
+                inputObjects = validInputFromDuration(inputObjects, duration);
+            }
+
+            return inputObjects;
+        }
+
+        inputState.inputObjects = inputObjectsFrom(inputState);
+
+        let {node,
+            inputObjects} = inputState;
+
+        if (validInput(inputObjects)) {
+            inputCheck.use(inputObjects);
+            // boils down to
+            // gestures with oneshot flags should be triggered once
+            // until the identifiers change (e.g. tuio session ids)
+            let everyFeatureMatches = false,
+                oneshotFlagFulfilled = hasOneshotFlag &&
+                                            inputCheck.previouslyMatched();
+            // the gesture should not match if it is oneshot
+            // and already triggered
+            if (!oneshotFlagFulfilled) {
+                //inline temporarily
+                everyFeatureMatches = true;
+                for (let i = 0; i < features.length; i += 1) {
+                    if (!features[i].load(inputState)) {
+                        everyFeatureMatches = false; break;
+                    } 
+                }
+            }
+            if (hasBubbleFlag) {
+                if (!inputCheck.previouslyUsed()) {
+                    bubbleTopNodes.length = 0;
+                }
+                if (bubbleTopNodes.indexOf(node) === -1) {
+                    bubbleTopNodes[bubbleTopNodes.length] = node;
+                }
+            }
+            if (everyFeatureMatches) {
+                validTopNodesOnEmit.length = 0;
+                if (hasBubbleFlag) {
+                    for (let i = 0; i < bubbleTopNodes.length; i += 1) {
+                        validTopNodesOnEmit[i] = bubbleTopNodes[i];
+                    }
+                }
+                else if (hasStickyFlag) {
+                    // if input the same use the already known sticky node
+                    if (!inputCheck.previouslyMatched()) {
+                        gesturePrivate.get(this).stickyTopNode = node;
+                    }
+                    validTopNodesOnEmit[validTopNodesOnEmit.length] = gesturePrivate.get(this).stickyTopNode;
+                }
+                else if (
+                    // oneshot gestures will get here only once
+                    hasOneshotFlag || hasNoFlag
+                ) {
+                    validTopNodesOnEmit[validTopNodesOnEmit.length] = node;
+                }
+                // save currentInputIds for future reference
+                inputCheck.matched();
+            }
+            else {
+                validTopNodesOnEmit.length = 0;
+            }
+        }
+        return validTopNodesOnEmit;
+    }
+}
+
+export function createGesture(gestureDefinition) {
     // don't store gesture if definition invalid 
     isValidGesture(gestureDefinition);
-    // initialize and store features
-    // a valid gesture has every feature valid
-    features = initializeFeaturesFrom(gestureDefinition);
-    // initialize flags
-    let flags = extractFlagsFrom(gestureDefinition),
-        hasOneshotFlag = flags.indexOf(gestureFlags.ONESHOT) !== -1,
-        hasBubbleFlag = flags.indexOf(gestureFlags.BUBBLE) !== -1,
-        hasStickyFlag = flags.indexOf(gestureFlags.STICKY) !== -1,
-        hasNoFlag = flags.length === 0,
-        duration = extractDurationFrom(gestureDefinition);
-    
-    let inputCheck = inputComparison();
-
-    function validateEveryFeatureFor(inputState) {
-        for (let i = 0; i < features.length; i += 1) {
-            if (!features[i].load(inputState)) {
-                return false;
-            } 
-        }
-        return true;
-    }
-
-    function inputObjectsFrom(inputState) {
-        let {inputObjects} = inputState;
-
-        if (duration.definition.length !== 0) {
-            inputObjects = validInputFromDuration(inputObjects, duration);
-        }
-
-        return inputObjects;
-    }
-
-    return {
-        definition() {
-            return gestureDefinition;
-        },
-
-        name() {
-            return gestureDefinition.name;
-        },
-
-        features() {
-            return features;
-        },
-
-        flags() {
-            return flags;
-        },
-
-        duration() {
-            return duration;
-        },
-        // hopefully somehow simpler in the future
-        // checks if the gesture is valid by validating every feature
-        // and returns nodes to emit gestures on (based on which flags are set)
-        load(inputState = {}) {
-
-            inputState.inputObjects = inputObjectsFrom(inputState);
-
-            let {node,
-                inputObjects} = inputState;
-
-            if (validInput(inputObjects)) {
-                inputCheck.use(inputObjects);
-                // boils down to
-                // gestures with oneshot flags should be triggered once
-                // until the identifiers change (e.g. tuio session ids)
-                let everyFeatureMatches = false,
-                    oneshotFlagFulfilled = hasOneshotFlag &&
-                                                inputCheck.previouslyMatched();
-                // the gesture should not match if it is oneshot
-                // and already triggered
-                if (!oneshotFlagFulfilled) {
-                    everyFeatureMatches = validateEveryFeatureFor(inputState);
-                }
-                if (hasBubbleFlag) {
-                    if (!inputCheck.previouslyUsed()) {
-                        bubbleTopNodes.length = 0;
-                    }
-                    if (bubbleTopNodes.indexOf(node) === -1) {
-                        bubbleTopNodes[bubbleTopNodes.length] = node;
-                    }
-                }
-                if (everyFeatureMatches) {
-                    validTopNodesOnEmit.length = 0;
-                    if (hasBubbleFlag) {
-                        for (let i = 0; i < bubbleTopNodes.length; i += 1) {
-                            validTopNodesOnEmit[i] = bubbleTopNodes[i];
-                        }
-                    }
-                    else if (hasStickyFlag) {
-                        // if input the same use the already known sticky node
-                        if (!inputCheck.previouslyMatched()) {
-                            stickyTopNode = node;
-                        }
-                        validTopNodesOnEmit[validTopNodesOnEmit.length] = stickyTopNode;
-                    }
-                    else if (
-                        // oneshot gestures will get here only once
-                        hasOneshotFlag || hasNoFlag
-                    ) {
-                        validTopNodesOnEmit[validTopNodesOnEmit.length] = node;
-                    }
-                    // save currentInputIds for future reference
-                    inputCheck.matched();
-                }
-                else {
-                    validTopNodesOnEmit.length = 0;
-                }
-            }
-            return validTopNodesOnEmit;
-        },
-        featureValuesToObject(data) {
-            for (let i = 0; i < features.length; i += 1) {
-                let feature = features[i];
-                feature.setValueToObject(data);
-            }
-            return this;
-        }
-    };
+    return new Gesture(gestureDefinition);
 }
 
 export const gestureException = Object.freeze({
